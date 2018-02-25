@@ -30,6 +30,7 @@ function MyGame() {
     
     this.mCurrentObj = 0;
     this.mTarget = null;
+    this.playfield = null;
 }
 gEngine.Core.inheritPrototype(MyGame, Scene);
 
@@ -59,6 +60,7 @@ MyGame.prototype.initialize = function () {
     this.mCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
             // sets the background to gray
     gEngine.DefaultResources.setGlobalAmbientIntensity(3);
+    this.playfield = new Playfield(5, 5, this.mCamera);
       
     this.mHero = new Hero(this.kMinionSprite);
     this.mAllObjs = new GameObjectSet();
