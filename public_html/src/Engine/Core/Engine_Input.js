@@ -173,10 +173,10 @@ gEngine.Input = (function () {
             mIsButtonPressed[i] = false;
             mIsButtonClicked[i] = false;
         }
-        window.addEventListener('mousedown', _onMouseDown);
-        window.addEventListener('mouseup', _onMouseUp);
-        window.addEventListener('mousemove', _onMouseMove);
         mCanvas = document.getElementById(canvasID);
+        mCanvas.addEventListener('mousedown', _onMouseDown);
+        mCanvas.addEventListener('mouseup', _onMouseUp);
+        mCanvas.addEventListener('mousemove', _onMouseMove);
         //</editor-fold>
     };
 
