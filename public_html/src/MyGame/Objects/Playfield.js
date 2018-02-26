@@ -55,10 +55,9 @@ Playfield.prototype.draw = function(cam) {
         this.nodes[i].draw(cam);
     }
     this.towers.draw(cam);
-    if(this.pfState === Playfield.PlayfieldState.pathDemo) { 
-        for(var i = 0; i < this.lineRenderers.length; i++) {
-            this.lineRenderers[i].draw(cam);
-        }
+    for(var i = 0; i < this.lineRenderers.length; i++) 
+    {
+        this.lineRenderers[i].draw(cam);
     }
     if(this.selectedTower && this.pfState === Playfield.PlayfieldState.placementDemo)
         this.selectedTower.draw(cam);
@@ -88,14 +87,7 @@ Playfield.prototype.update = function()
                         this.endIndex = this.WCToIndexs(x, y);
                     }
                     this.start = !this.start;
-                    if(this.endIndex.length > 0) {
-                        //Get the path for drawing line.
-                        this.path = astar.search(this.graph, 
-                            this.graph.grid[this.startIndex[1]][this.startIndex[0]], 
-                            this.graph.grid[this.endIndex[1]][this.endIndex[0]], null);
-                        //Draw the line.
-                        this.DrawPath();
-                    }
+                    this.UpdatePath();
                 }    
                 break;
 
@@ -105,18 +97,22 @@ Playfield.prototype.update = function()
                     this.selectedTower.getXform().setPosition(-10, 0);  // Demo only case where it displays at 0,0
                     this.selectedTower.getXform().setSize(this.nodeW, this.nodeH);
                 }               
-
                 if(this.graph.grid[gridPos[1]][gridPos[0]].weight > 0) {
                     this.selectedTower.getXform().setPosition(worldPos[0], worldPos[1]);
-                    if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
+                    if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left)) {
                         this.PlaceTower(gridPos);
+                        //I think this will only be called when a tower actually gets created.
+                        this.UpdatePath();
                     }
                 }
                 break;
-                
             case Playfield.PlayfieldState.deleteDemo:
-                if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
-                    this.DeleteTower(gridPos);
+                if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left)) {
+                    //Only redraw the path if a tower was actually deleted.
+                    if(this.DeleteTower(gridPos))
+                    {
+                        this.UpdatePath();
+                    }
                 }
                 break;
         }
@@ -129,6 +125,19 @@ Playfield.prototype.WCToIndexs = function(x, y) {
 
 Playfield.prototype.IndexsToWC = function(x, y) {
     return [Math.round(x) * this.nodeW + this.nodeW / 2, -Math.round(y) * this.nodeH - this.nodeH / 2];
+};
+
+Playfield.prototype.UpdatePath = function() 
+{
+    if(this.endIndex.length > 0 && this.startIndex.length > 0) 
+    {
+        //Get the path for drawing line.
+        this.path = astar.search(this.graph, 
+            this.graph.grid[this.startIndex[1]][this.startIndex[0]], 
+            this.graph.grid[this.endIndex[1]][this.endIndex[0]], null);
+        //Draw the line.
+        this.DrawPath();
+    }
 };
 
 Playfield.prototype.DrawPath = function() {
@@ -182,5 +191,7 @@ Playfield.prototype.DeleteTower = function(gPos) {
     if(index >= 0) {
         this.towers.removeAt(index);
         this.graph.grid[gPos[1]][gPos[0]].weight = 1;
+        return true;
     }
+    return false;
 };
