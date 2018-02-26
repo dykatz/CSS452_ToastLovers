@@ -26,7 +26,7 @@ GameScene.prototype.update = function () {
 
 GameScene.prototype.draw = function () { 
     this.mCam.setupViewProjection();
-    this.playfield.draw();
+    this.playfield.draw(this.mCam);
 };
 
 GameScene.prototype.loadScene = function () {
