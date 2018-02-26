@@ -1,4 +1,5 @@
 /* global gEngine, Scene, vec2 */
+"use strict";
 
 function GameScene() {
     this.fakeToast = "assets/target.png";
@@ -19,7 +20,8 @@ GameScene.prototype.initialize = function () {
     this.playfield = new Playfield(31, 21, this.mCam);
 };
 
-GameScene.prototype.update = function () {            
+GameScene.prototype.update = function () {     
+    this.playfield.update();
 };
 
 GameScene.prototype.draw = function () { 
