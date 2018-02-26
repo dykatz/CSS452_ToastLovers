@@ -171,7 +171,7 @@ Playfield.prototype.DrawPath = function() {
 Playfield.prototype.PlaceTower = function(gPos) {
     var newTower;
     if(this.selectedTower === null) {
-        newTower = new Toast("assets/target.png", gPos); // just for demo purposes
+        newTower = new Toast("assets/toast.png", gPos); // just for demo purposes
     } else {
         newTower = this.selectedTower;
         this.selectedTower.gridPos = gPos;

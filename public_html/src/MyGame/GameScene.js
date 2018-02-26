@@ -2,7 +2,7 @@
 "use strict";
 
 function GameScene() {
-    this.fakeToast = "assets/target.png";
+    this.fakeToast = "assets/toast.png";
     this.fakeTower = "assets/wall.png";
     
     this.playfield = null;

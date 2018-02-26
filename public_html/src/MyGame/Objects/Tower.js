@@ -3,7 +3,7 @@
 function Tower(texture, pos) {
     this.gridPos = pos;
     this.towerSize = [1, 1];
-    this.obj = new TextureRenderable(texture);     
+    this.obj = new SpriteRenderable(texture);     
     
     GameObject.call(this, this.obj);
 }
