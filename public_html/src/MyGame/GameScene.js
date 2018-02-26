@@ -21,8 +21,8 @@ GameScene.prototype.initialize = function () {
     this.playfield = new Playfield(31, 21, this.mCam);
 };
 
-GameScene.prototype.update = function () {     
-    this.playfield.update();
+GameScene.prototype.update = function (dt) {     
+    this.playfield.update(dt);
 };
 
 GameScene.prototype.draw = function () { 

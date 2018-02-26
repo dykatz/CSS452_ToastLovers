@@ -63,7 +63,7 @@ Playfield.prototype.draw = function(cam) {
         this.selectedTower.draw(cam);
 };
 
-Playfield.prototype.update = function()
+Playfield.prototype.update = function(dt)
 {
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.One))
         this.pfState = Playfield.PlayfieldState.pathDemo;

@@ -42,10 +42,18 @@ Scene.prototype.initialize = function () {
  * @memberOf Scene
  * @returns {void}
  */
-Scene.prototype.update = function () {
+Scene.prototype.update = function (dt) {
     // when done with this level should call:
     // GameLoop.stop() ==> which will call this.unloadScene();
 };
+
+/**
+ * update function to be called from EngineCore.GameLoop. Always called at fixed
+ * interval instead of just whenever. Use this for physics and physics alone
+ * @memberOf Scene
+ * @returns {void}
+ */
+Scene.prototype.fixed_update = function () {};
 
 /**
  * draw function to be called from EngineCore.GameLoop.

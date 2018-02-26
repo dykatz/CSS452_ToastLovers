@@ -48,15 +48,18 @@ gEngine.GameLoop = (function () {
             mPreviousTime = mCurrentTime;
             mLagTime += mElapsedTime;
 
-            // Step C: Make sure we update the game the appropriate number of times.
+            // Step C: call the main update method with the actual elapsed time
+            gEngine.Input.update();
+            this.update(mElapsedTime / 1000.0);
+
+            // Step D: Make sure we update the game the appropriate number of times.
             //      Update only every Milliseconds per frame.
             //      If lag larger then update frames, update until caught up.
             while ((mLagTime >= kMPF) && mIsLoopRunning) {
-                gEngine.Input.update();
-                this.update();      // call Scene.update()
+                this.fixed_update();      // call Scene.update()
                 mLagTime -= kMPF;
             }
-            // Step D: now let's draw
+            // Step E: now let's draw
             this.draw();    // Call Scene.draw()
         } else {
             // this scene is done, unload it!
