@@ -9,8 +9,9 @@ function Playfield(width, height, camRef) {
     this.pfState = 0;
     
     this.toastCords = [Math.floor(width/2), Math.floor(height/2)];
-    this.towers = new GameObjectSet();
+    this.towers = new GameObjectSet(); 
     this.nodes = [];
+    this.nodesActive = true;
     this.selectedTower = null;
     
     var tmpGraph = [];
@@ -50,16 +51,19 @@ Playfield.prototype.initNodes = function() {
     this.PlaceTower(this.toastCords, "Toast");
 };
 
-Playfield.prototype.draw = function(cam) {
-    for(var i = 0; i < this.nodes.length; i++) {
-        this.nodes[i].draw(cam);
+Playfield.prototype.draw = function(cam, drawGrid = true) {
+    if(this.nodesActive && drawGrid) {
+        for(var i = 0; i < this.nodes.length; i++) {
+            this.nodes[i].draw(cam);
+        }
     }
     this.towers.draw(cam);
     for(var i = 0; i < this.lineRenderers.length; i++) 
     {
         this.lineRenderers[i].draw(cam);
     }
-    if(this.selectedTower && this.pfState === Playfield.PlayfieldState.placementDemo)
+    if(this.selectedTower && this.pfState === Playfield.PlayfieldState.placementDemo
+            && drawGrid)
         this.selectedTower.draw(cam);
 };
 
@@ -71,6 +75,8 @@ Playfield.prototype.update = function(dt)
         this.pfState = Playfield.PlayfieldState.placementDemo;
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Three))
         this.pfState = Playfield.PlayfieldState.deleteDemo;
+    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.D))
+        this.nodesActive = !this.nodesActive;
     
     if(this.cam.isMouseInViewport()) {
         var x = this.cam.mouseWCX();
@@ -101,18 +107,12 @@ Playfield.prototype.update = function(dt)
                     this.selectedTower.getXform().setPosition(worldPos[0], worldPos[1]);
                     if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left)) {
                         this.PlaceTower(gridPos);
-                        //I think this will only be called when a tower actually gets created.
-                        this.UpdatePath();
                     }
                 }
                 break;
             case Playfield.PlayfieldState.deleteDemo:
                 if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left)) {
-                    //Only redraw the path if a tower was actually deleted.
-                    if(this.DeleteTower(gridPos))
-                    {
-                        this.UpdatePath();
-                    }
+                    this.DeleteTower(gridPos)
                 }
                 break;
         }
@@ -183,6 +183,7 @@ Playfield.prototype.PlaceTower = function(gPos) {
                             -gPos[1] * this.nodeH - this.nodeH / 2);
     this.towers.addToSet(newTower);
     this.graph.grid[gPos[1]][gPos[0]].weight = 0;
+    this.UpdatePath();
 };
 
 Playfield.prototype.DeleteTower = function(gPos) {
@@ -191,7 +192,6 @@ Playfield.prototype.DeleteTower = function(gPos) {
     if(index >= 0) {
         this.towers.removeAt(index);
         this.graph.grid[gPos[1]][gPos[0]].weight = 1;
-        return true;
+        this.UpdatePath();
     }
-    return false;
 };
