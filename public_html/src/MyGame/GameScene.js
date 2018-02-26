@@ -3,6 +3,7 @@
 
 function GameScene() {
     this.fakeToast = "assets/target.png";
+    this.fakeTower = "assets/wall.png";
     
     this.playfield = null;
     this.mCam = null;
@@ -31,8 +32,10 @@ GameScene.prototype.draw = function () {
 
 GameScene.prototype.loadScene = function () {
     gEngine.Textures.loadTexture(this.fakeToast);
+    gEngine.Textures.loadTexture(this.fakeTower);
 };
 
 GameScene.prototype.unloadScene = function () {
     gEngine.Textures.unloadTexture(this.fakeToast);
+    gEngine.Textures.unloadTexture(this.fakeTower);
 };
