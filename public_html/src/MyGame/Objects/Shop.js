@@ -25,10 +25,9 @@ Shop.shopState = Object.freeze({
 });
 
 Shop.prototype.initializeShop = function(towers, padding) {
-    var shopWidth = this.cam.getWCWidth() - padding * (towers.length - 1);
+    var shopWidth = this.cam.getWCWidth() - padding * (towers.length + 1);
     var shopHeight = this.cam.getWCHeight();
-    var bSz = (shopWidth / towers.length) < shopHeight 
-                ? (shopWidth / towers.length) : shopHeight / 1.5;
+    var bSz = Math.min(shopWidth / towers.length, shopHeight / 1.5);
     
     for(var i = 0; i < towers.length; ++i) {
         var tower = towers[i].getRenderable();
@@ -53,7 +52,7 @@ Shop.prototype.initializeShop = function(towers, padding) {
 };
 
 Shop.prototype.getTowers = function() {
-    return [new LongRange(), new ShortRange()];
+    return [new LongRange(), new ShortRange(), new Honeypot()];
 };
 
 Shop.prototype.purchaseTower = function(index) {

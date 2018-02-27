@@ -14,7 +14,7 @@ function Tower(texture, pos) {
     this.mRange = 20;
     this.mCost = 1;
     this.mName = "";
-    this.obj = new SpriteRenderable(texture);     
+    this.obj = new SpriteAnimateRenderable(texture);     
     
     GameObject.call(this, this.obj);
 }
