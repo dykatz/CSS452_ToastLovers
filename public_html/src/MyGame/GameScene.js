@@ -7,6 +7,8 @@ function GameScene() {
     
     this.playfield = null;
     this.mCam = null;
+    this.uiCam = null;
+    this.minimap = null;
 }
 gEngine.Core.inheritPrototype(GameScene, Scene);
 
@@ -18,7 +20,15 @@ GameScene.prototype.initialize = function () {
     );
     this.mCam.setBackgroundColor([0.8, 0.8, 0.8, 1]);
     
+    this.uiCam = new Camera(
+        vec2.fromValues(500, 500), // Top left = (0, 0), World = 200x150
+        200,
+        [0, 0, 800, 200]
+    );
+    this.uiCam.setBackgroundColor([0.3, 0.4, 0.8, 1]);
+    
     this.playfield = new Playfield(31, 21, this.mCam);
+    this.minimap = new Minimap(this.mCam);
 };
 
 GameScene.prototype.update = function (dt) {     
@@ -28,6 +38,9 @@ GameScene.prototype.update = function (dt) {
 GameScene.prototype.draw = function () { 
     this.mCam.setupViewProjection();
     this.playfield.draw(this.mCam);
+    this.uiCam.setupViewProjection();
+    this.minimap.cam.setupViewProjection();
+    this.playfield.draw(this.minimap.cam, false);
 };
 
 GameScene.prototype.loadScene = function () {
