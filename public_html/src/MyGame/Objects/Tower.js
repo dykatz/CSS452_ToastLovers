@@ -10,6 +10,7 @@ function Tower(texture, pos) {
     this.mFiringEnabled = false;
     this.mAnimationTime = 0.8;
     this.mAnimationIsShooting = false;
+    this.mRange = 20;
     this.obj = new SpriteRenderable(texture);     
     
     GameObject.call(this, this.obj);

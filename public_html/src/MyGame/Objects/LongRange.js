@@ -7,6 +7,8 @@ function LongRange(pos) {
 	this.bkg.mTexRight = 0.333;
 	this.bkg._setTexInfo();
 
+	this.mProjectiles = new Set();
+
 	this.changeAnimationNoShoot();
 }
 gEngine.Core.inheritPrototype(LongRange, Tower);
@@ -22,7 +24,7 @@ LongRange.prototype.spawnProjectile = function() {
 	var d = this.obj.getXform().getRotationInRad();
 	var x = Math.cos(d) * this.mProjectileSpeed * this.mAccumulator;
 	var y = Math.sin(d) * this.mProjectileSpeed * this.mAccumulator;
-	// TODO - actually spawn the projectile
+	var np = new Projectile(this, x, y, d, this.mRange, this.mProjectileSpeed);
 }
 
 LongRange.prototype.changeAnimationShoot = function() {

@@ -3,6 +3,7 @@
 function ShortRange(pos) {
 	Tower.call(this, "assets/short_range.png", pos);
 	this.changeAnimationNoShoot();
+	this.mProjectiles = new Set();
 }
 gEngine.Core.inheritPrototype(ShortRange, Tower);
 
@@ -23,7 +24,6 @@ ShortRange.prototype.spawnProjectile = function() {
 		var d = Math.PI * i / 8;
 		var x = Math.cos(d) * this.mProjectileSpeed * this.mAccumulator;
 		var y = Math.sin(d) * this.mProjectileSpeed * this.mAccumulator;
-
-		// TODO - spawn the projectile
+		var np = new Projectile(this, x, y, d, this.mRange, this.mProjectileSpeed);
 	}
 }
