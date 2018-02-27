@@ -1,7 +1,6 @@
 "use strict";
 
-function Node(center, w, h)
-{
+function Node(center, w, h) {
     this.w = w;
     this.h = h;
     

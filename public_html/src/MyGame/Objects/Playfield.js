@@ -9,7 +9,7 @@ function Playfield(width, height, camRef) {
     this.pfState = 0;
     
     this.toastCords = [Math.floor(width/2), Math.floor(height/2)];
-    this.towers = new GameObjectSet(); 
+    this.towers = new GameObjectSet();
     this.nodes = [];
     this.nodesActive = true;
     this.selectedTower = null;
@@ -58,8 +58,7 @@ Playfield.prototype.draw = function(cam, drawGrid = true) {
         }
     }
     this.towers.draw(cam);
-    for(var i = 0; i < this.lineRenderers.length; i++) 
-    {
+    for(var i = 0; i < this.lineRenderers.length; i++) {
         this.lineRenderers[i].draw(cam);
     }
     if(this.selectedTower && this.pfState === Playfield.PlayfieldState.placementDemo
@@ -67,8 +66,7 @@ Playfield.prototype.draw = function(cam, drawGrid = true) {
         this.selectedTower.draw(cam);
 };
 
-Playfield.prototype.update = function(dt)
-{
+Playfield.prototype.update = function(dt) {
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.One))
         this.pfState = Playfield.PlayfieldState.pathDemo;
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Two))
@@ -127,10 +125,8 @@ Playfield.prototype.IndexsToWC = function(x, y) {
     return [Math.round(x) * this.nodeW + this.nodeW / 2, -Math.round(y) * this.nodeH - this.nodeH / 2];
 };
 
-Playfield.prototype.UpdatePath = function() 
-{
-    if(this.endIndex.length > 0 && this.startIndex.length > 0) 
-    {
+Playfield.prototype.UpdatePath = function() {
+    if(this.endIndex.length > 0 && this.startIndex.length > 0) {
         //Get the path for drawing line.
         this.path = astar.search(this.graph, 
             this.graph.grid[this.startIndex[1]][this.startIndex[0]], 
@@ -171,7 +167,7 @@ Playfield.prototype.DrawPath = function() {
 Playfield.prototype.PlaceTower = function(gPos) {
     var newTower;
     if(this.selectedTower === null) {
-        newTower = new Toast("assets/toast.png", gPos); // just for demo purposes
+        newTower = new Toast(gPos); // just for demo purposes
     } else {
         newTower = this.selectedTower;
         this.selectedTower.gridPos = gPos;

@@ -2,8 +2,10 @@
 "use strict";
 
 function GameScene() {
-    this.fakeToast = "assets/toast.png";
-    this.fakeTower = "assets/wall.png";
+    this.iToast = "assets/toast.png";
+    this.iWall = "assets/wall.png";
+    this.iLongRange = "assets/long_range.png";
+    this.iShortRange = "assets/short_range.png";
     
     this.playfield = null;
     this.mCam = null;
@@ -44,11 +46,15 @@ GameScene.prototype.draw = function () {
 };
 
 GameScene.prototype.loadScene = function () {
-    gEngine.Textures.loadTexture(this.fakeToast);
-    gEngine.Textures.loadTexture(this.fakeTower);
+    gEngine.Textures.loadTexture(this.iToast);
+    gEngine.Textures.loadTexture(this.iWall);
+    gEngine.Textures.loadTexture(this.iLongRange);
+    gEngine.Textures.loadTexture(this.iShortRange);
 };
 
 GameScene.prototype.unloadScene = function () {
-    gEngine.Textures.unloadTexture(this.fakeToast);
-    gEngine.Textures.unloadTexture(this.fakeTower);
+    gEngine.Textures.unloadTexture(this.iToast);
+    gEngine.Textures.unloadTexture(this.iWall);
+    gEngine.Textures.unloadTexture(this.iLongRange);
+    gEngine.Textures.unloadTexture(this.iShortRange);
 };
