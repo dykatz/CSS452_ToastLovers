@@ -116,6 +116,8 @@ Playfield.prototype.update = function(dt) {
                 break;
         }
     }
+
+    this.towers.update(dt);
 };
 
 Playfield.prototype.WCToGridIndex = function(x, y) {

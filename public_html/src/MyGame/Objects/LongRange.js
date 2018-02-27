@@ -6,15 +6,28 @@ function LongRange(pos) {
 	this.obj.mTexRight = 0.25;
 	this.obj._setTexInfo();
 
+	this.bg = new SpriteRenderable("assets/long_range.png");
+	this.bg.mTexRight = 0.25;
+	this.bg._setTexInfo();
+	this.bg.getXform().mPosition = this.obj.getXform().mPosition;
+	this.bg.getXform().mScale = this.obj.getXform().mScale;
+	this.bg.mColor = this.obj.mColor;
+
 	this.mProjectiles = new Set();
 
 	this.changeAnimationNoShoot();
 }
 gEngine.Core.inheritPrototype(LongRange, Tower);
 
+LongRange.prototype.draw = function(cam) {
+	this.bg.draw(cam);
+	Tower.prototype.draw.call(this, cam);
+}
+
 LongRange.prototype.update = function(dt) {
 	Tower.prototype.update.call(this, dt);
 
+	this.obj.getXform().incRotationByRad(dt);
 	this.mProjectiles.forEach(p => { p.update(dt); });
 }
 

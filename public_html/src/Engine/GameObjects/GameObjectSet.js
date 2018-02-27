@@ -85,10 +85,10 @@ GameObjectSet.prototype.moveToLast = function (obj) {
  * @returns {void}
  * @memberOf GameObjectSet
  */
-GameObjectSet.prototype.update = function () {
+GameObjectSet.prototype.update = function (dt) {
     var i;
     for (i = 0; i < this.mSet.length; i++) {
-        this.mSet[i].update();
+        this.mSet[i].update(dt);
     }
 };
 
