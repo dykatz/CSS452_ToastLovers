@@ -4,6 +4,7 @@ function ShortRange(pos) {
 	Tower.call(this, "assets/short_range.png", pos);
 	this.changeAnimationNoShoot();
 	this.mProjectiles = new Set();
+	this.mName = "Short Range";
 }
 gEngine.Core.inheritPrototype(ShortRange, Tower);
 

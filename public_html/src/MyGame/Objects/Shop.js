@@ -13,6 +13,8 @@ function Shop(playfield) {
     this.playerCurrency = 10;
     
     this.towerButtons = [];
+    this.towerButtonTitles = [];
+    this.towerButtonCosts = [];
     this.initializeShop(this.getTowers(), 1);
 };
 
@@ -21,17 +23,28 @@ Shop.shopState = Object.freeze({
     upgradeShop: 2
 });
 
-Shop.prototype.initializeShop = function(towers, padding) {    
+Shop.prototype.initializeShop = function(towers, padding) {
     var shopWidth = this.cam.getWCWidth() - padding * (towers.length - 1);
-    var shopHeight = this.cam.getWCHeight();        
+    var shopHeight = this.cam.getWCHeight();
     var bSz = (shopWidth / towers.length) < shopHeight 
                 ? (shopWidth / towers.length) : shopHeight / 1.5;
     
-    for(var i = 0; i < towers.length; i++) {
+    for(var i = 0; i < towers.length; ++i) {
         var tower = towers[i].getRenderable();
-        var newButton = new Button([bSz * i + bSz / 2 + padding * (i + 1), 37.5],
-                                    bSz, bSz, tower, i + 49);
-        this.towerButtons.push(newButton);        
+        var x = bSz * (i + 0.5) + padding * (i + 1);
+
+        var newButton = new Button([x, 37.5], bSz, bSz, tower, i + 49);
+        var newTitle = new FontRenderable(towers[i].mName);
+        var newCost = new FontRenderable(towers[i].mCost.toString());
+
+        newTitle.getXform().setPosition(x, 37.5 + 5 / 2 + 1 + bSz / 2);
+        newTitle.getXform().setSize(bSz, 5);
+        newCost.getXform().setPosition(x, 37.5 - 5 / 2 - bSz / 2);
+        newCost.getXform().setSize(5, 5);
+
+        this.towerButtons.push(newButton);
+        this.towerButtonTitles.push(newTitle);
+        this.towerButtonCosts.push(newCost);
     }
 };
 
@@ -45,7 +58,7 @@ Shop.prototype.purchaseTower = function(index) {
         this.playerCurrency -= newTower.mCost;
         newTower.getXform().setPosition(-10, 0);
         newTower.getXform().setSize(this.pf.nodeW, this.pf.nodeH);
-        newTower.getRenderable().setColor([1,0,0,0.4]);
+        newTower.getRenderable().setColor([1, 0, 0, 0.4]);
         this.pf.selectedTower = newTower;
         this.pf.pfState = Playfield.PlayfieldState.placementState;
         console.log("Player currency: " + this.playerCurrency);
@@ -64,11 +77,12 @@ Shop.prototype.update = function(dt) {
 
     switch(this.shopState) {
         case Shop.shopState.towerShop:
-            for(var i = 0; i < this.towerButtons.length; i++)
+            for(var i = 0; i < this.towerButtons.length; ++i)
                 if(this.towerButtons[i].checkButton(x, y))
                     this.purchaseTower(i);
 
             break;
+
         case Shop.shopState.upgradeShop:
             break;
     }
@@ -79,13 +93,20 @@ Shop.prototype.draw = function() {
     
     switch(this.shopState) {
         case Shop.shopState.towerShop:            
-            for(var i = 0; i < this.towerButtons.length; i++)
+            for(var i = 0; i < this.towerButtons.length; ++i)
                 this.towerButtons[i].draw(this.cam);
+
+            for(var i = 0; i < this.towerButtonTitles.length; ++i)
+                this.towerButtonTitles[i].draw(this.cam);
+
+            for(var i = 0; i < this.towerButtonCosts.length; ++i)
+                this.towerButtonCosts[i].draw(this.cam);
 
             if(this.pf.selectedTower !== null)
                 this.pf.selectedTower.draw(this.cam);
 
             break;
+
         case Shop.shopState.upgradeShop:
             break;
     }

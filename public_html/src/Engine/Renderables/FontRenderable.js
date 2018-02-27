@@ -42,7 +42,7 @@ FontRenderable.prototype.draw = function (aCamera) {
     var yPos = this.mXform.getYPos();
 
     // center position of the first char
-    var xPos = this.mXform.getXPos() - (widthOfOneChar / 2) + (widthOfOneChar * 0.5);
+    var xPos = this.mXform.getXPos() - (this.mXform.getWidth() / 2) + (widthOfOneChar / 2);
     var charIndex, aChar, charInfo, xSize, ySize, xOffset, yOffset;
     for (charIndex = 0; charIndex < this.mText.length; charIndex++) {
         aChar = this.mText.charCodeAt(charIndex);

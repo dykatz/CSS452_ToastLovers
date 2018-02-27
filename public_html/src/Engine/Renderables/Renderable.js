@@ -63,7 +63,12 @@ Renderable.prototype.getXform = function () { return this.mXform; };
  * @param {float[]} color The desired Color of the Renderable.
  * @returns {void}
  */
-Renderable.prototype.setColor = function (color) { this.mColor = color; };
+Renderable.prototype.setColor = function (color) {
+    this.mColor[0] = color[0];
+    this.mColor[1] = color[1];
+    this.mColor[2] = color[2];
+    this.mColor[3] = color[3];
+};
 
 /**
  * Gets the Color of the Renderable.

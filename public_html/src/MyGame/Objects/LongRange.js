@@ -14,6 +14,7 @@ function LongRange(pos) {
 	this.bg.mColor = this.obj.mColor;
 
 	this.mProjectiles = new Set();
+	this.mName = "Long Range";
 
 	this.changeAnimationNoShoot();
 }
