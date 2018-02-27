@@ -19,7 +19,7 @@ function Shop(playfield) {
 Shop.shopState = Object.freeze({
     towerShop: 1,
     upgradeShop: 2
-    });
+});
 
 Shop.prototype.initializeShop = function(towers, padding) {    
     var shopWidth = this.cam.getWCWidth() - padding * (towers.length - 1);
@@ -29,9 +29,8 @@ Shop.prototype.initializeShop = function(towers, padding) {
     
     for(var i = 0; i < towers.length; i++) {
         var tower = towers[i].getRenderable();
-        // LMAO I gave up trying to make it fancy. Assign keys 1-9
-        var newButton = new Button([bSz * i + bSz / 2 + padding * i, 37.5]
-                                            , bSz, bSz, tower, i + 49);
+        var newButton = new Button([bSz * i + bSz / 2 + padding * (i + 1), 37.5],
+                                    bSz, bSz, tower, i + 49);
         this.towerButtons.push(newButton);        
     }
 };
@@ -58,18 +57,18 @@ Shop.prototype.update = function(dt) {
     if(this.cam.isMouseInViewport()) {
         x = this.cam.mouseWCX();
         y = this.cam.mouseWCY();
-        if(this.pf.selectedTower) {
+
+        if(this.pf.selectedTower)
             this.pf.selectedTower.getXform().setPosition(x, y);
-        }
     }
 
     switch(this.shopState) {
-        case Shop.shopState.towerShop:            
-            for(var i = 0; i < this.towerButtons.length; i++) {
-                if(this.towerButtons[i].checkButton(x, y)) {
+        case Shop.shopState.towerShop:
+            for(var i = 0; i < this.towerButtons.length; i++)
+                if(this.towerButtons[i].checkButton(x, y))
                     this.purchaseTower(i);
-                }
-            }            
+
+            break;
         case Shop.shopState.upgradeShop:
             break;
     }
@@ -80,12 +79,14 @@ Shop.prototype.draw = function() {
     
     switch(this.shopState) {
         case Shop.shopState.towerShop:            
-            for(var i = 0; i < this.towerButtons.length; i++) {
+            for(var i = 0; i < this.towerButtons.length; i++)
                 this.towerButtons[i].draw(this.cam);
-            }
-            if(this.pf.selectedTower !== null) {
+
+            if(this.pf.selectedTower !== null)
                 this.pf.selectedTower.draw(this.cam);
-            }
+
+            break;
+        case Shop.shopState.upgradeShop:
             break;
     }
 };
