@@ -7,11 +7,11 @@ function GameScene() {
     this.iLongRange = "assets/long_range.png";
     this.iShortRange = "assets/short_range.png";
     this.iProjectile = "assets/projectile.png";
-    this.iHoneypot = "assets/honeypot.png"
+    this.iHoneypot = "assets/honeypot.png";
     
     this.playfield = null;
     this.mCam = null;
-    this.uiCam = null;
+    this.shop = null;
     this.minimap = null;
 }
 gEngine.Core.inheritPrototype(GameScene, Scene);
@@ -24,25 +24,20 @@ GameScene.prototype.initialize = function () {
     );
     this.mCam.setBackgroundColor([0.8, 0.8, 0.8, 1]);
     
-    this.uiCam = new Camera(
-        vec2.fromValues(500, 500),
-        200,
-        [0, 0, 800, 200]
-    );
-    this.uiCam.setBackgroundColor([0.3, 0.4, 0.8, 1]);
-    
     this.playfield = new Playfield(31, 21, this.mCam);
     this.minimap = new Minimap(this.mCam);
+    this.shop = new Shop(this.playfield);
 };
 
 GameScene.prototype.update = function (dt) {     
     this.playfield.update(dt);
+    this.shop.update(dt);
 };
 
 GameScene.prototype.draw = function () { 
     this.mCam.setupViewProjection();
     this.playfield.draw(this.mCam);
-    this.uiCam.setupViewProjection();
+    this.shop.draw();
     this.minimap.cam.setupViewProjection();
     this.playfield.draw(this.minimap.cam, false);
 };

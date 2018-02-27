@@ -33,8 +33,8 @@ function Playfield(width, height, camRef) {
 
 Playfield.PlayfieldState = Object.freeze({
     pathDemo: 1,
-    placementDemo: 2,
-    deleteDemo: 3
+    placementState: 2,
+    deleteState: 3
 });
 
 Playfield.prototype.initNodes = function() {
@@ -61,18 +61,16 @@ Playfield.prototype.draw = function(cam, drawGrid = true) {
     for(var i = 0; i < this.lineRenderers.length; i++) {
         this.lineRenderers[i].draw(cam);
     }
-    if(this.selectedTower && this.pfState === Playfield.PlayfieldState.placementDemo
+    if(this.selectedTower && this.pfState === Playfield.PlayfieldState.placementState
             && drawGrid)
         this.selectedTower.draw(cam);
 };
 
 Playfield.prototype.update = function(dt) {
-    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.One))
+    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Q))
         this.pfState = Playfield.PlayfieldState.pathDemo;
-    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Two))
-        this.pfState = Playfield.PlayfieldState.placementDemo;
-    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Three))
-        this.pfState = Playfield.PlayfieldState.deleteDemo;
+    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R))
+        this.pfState = Playfield.PlayfieldState.deleteState;
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.G))
         this.nodesActive = !this.nodesActive;
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.D)) {
@@ -83,51 +81,48 @@ Playfield.prototype.update = function(dt) {
     if(this.cam.isMouseInViewport()) {
         var x = this.cam.mouseWCX();
         var y = this.cam.mouseWCY();
-        var gridPos = this.WCToIndexs(x, y);
-        var worldPos = this.IndexsToWC(gridPos[0], gridPos[1]);
+        var gridPos = this.WCToGridIndex(x, y);
+        var worldPos = this.GridIndexToWC(gridPos[0], gridPos[1]);
         
         switch(this.pfState) {
             case Playfield.PlayfieldState.pathDemo:
                 if (gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
                     if(this.start === true) {
-                        this.startIndex = this.WCToIndexs(x, y);
+                        this.startIndex = this.WCToGridIndex(x, y);
                     } else {
-                        this.endIndex = this.WCToIndexs(x, y);
+                        this.endIndex = this.WCToGridIndex(x, y);
                     }
                     this.start = !this.start;
                     this.UpdatePath();
                 }    
                 break;
-
-            case Playfield.PlayfieldState.placementDemo:
-                if(this.selectedTower === null) {
-                    this.selectedTower = new Tower("assets/wall.png");
-                    this.selectedTower.getXform().setPosition(-10, 0);  // Demo only case where it displays at 0,0
+                
+            case Playfield.PlayfieldState.placementState:
+                if(this.graph.grid[gridPos[1]][gridPos[0]].weight > 0 && this.selectedTower !== null) {
+                    this.selectedTower.getXform().setPosition(worldPos[0], worldPos[1]);
                     this.selectedTower.getXform().setSize(this.nodeW, this.nodeH);
                     this.selectedTower.getRenderable().setColor([0.4,0.9,0.4,0.4]);
-                }               
-                if(this.graph.grid[gridPos[1]][gridPos[0]].weight > 0) {
-                    this.selectedTower.getXform().setPosition(worldPos[0], worldPos[1]);
-                    if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left)) {
+                    
+                    if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
                         this.PlaceTower(gridPos);
                     }
                 }
                 break;
 
-            case Playfield.PlayfieldState.deleteDemo:
+            case Playfield.PlayfieldState.deleteState:
                 if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left)) {
-                    this.DeleteTower(gridPos)
+                    this.DeleteTower(gridPos);
                 }
                 break;
         }
     }
 };
 
-Playfield.prototype.WCToIndexs = function(x, y) {
+Playfield.prototype.WCToGridIndex = function(x, y) {
     return [Math.floor(x / this.nodeW), Math.floor(-y / this.nodeH)];
 };
 
-Playfield.prototype.IndexsToWC = function(x, y) {
+Playfield.prototype.GridIndexToWC = function(x, y) {
     return [Math.round(x) * this.nodeW + this.nodeW / 2, -Math.round(y) * this.nodeH - this.nodeH / 2];
 };
 
@@ -152,21 +147,21 @@ Playfield.prototype.DrawPath = function() {
         if(this.path.length > 0) {
             this.lineRenderers.push(new LineRenderable());
             this.lineRenderers[0].setColor([1,0,0,1]);
-            var IndexWCPosition = this.IndexsToWC(this.startIndex[0], 
+            var IndexWCPosition = this.GridIndexToWC(this.startIndex[0], 
                 this.startIndex[1]);
             this.lineRenderers[0].setFirstVertex(IndexWCPosition[0], 
                 IndexWCPosition[1]);
-            IndexWCPosition = this.IndexsToWC(this.path[0].y, this.path[0].x);
+            IndexWCPosition = this.GridIndexToWC(this.path[0].y, this.path[0].x);
             this.lineRenderers[0].setSecondVertex(IndexWCPosition[0], 
                 IndexWCPosition[1]);
             for(var i = 0; i < this.path.length - 1; i++) {
                 this.lineRenderers.push(new LineRenderable());
                 this.lineRenderers[i + 1].setColor([1,0,0,1]);
-                IndexWCPosition = this.IndexsToWC(this.path[i].y, 
+                IndexWCPosition = this.GridIndexToWC(this.path[i].y, 
                     this.path[i].x);
                 this.lineRenderers[i + 1].setFirstVertex(IndexWCPosition[0], 
                     IndexWCPosition[1]);
-                IndexWCPosition = this.IndexsToWC(this.path[i + 1].y, 
+                IndexWCPosition = this.GridIndexToWC(this.path[i + 1].y, 
                     this.path[i + 1].x);
                 this.lineRenderers[i + 1].setSecondVertex(IndexWCPosition[0], 
                     IndexWCPosition[1]);
@@ -175,7 +170,6 @@ Playfield.prototype.DrawPath = function() {
     }
 };
 
-// Todo: Create "tower" class holding associated tower stats.
 Playfield.prototype.PlaceTower = function(gPos) {
     var newTower;
     if(this.selectedTower === null) {
