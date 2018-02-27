@@ -23,7 +23,7 @@ GameScene.prototype.initialize = function () {
     this.mCam.setBackgroundColor([0.8, 0.8, 0.8, 1]);
     
     this.uiCam = new Camera(
-        vec2.fromValues(500, 500), // Top left = (0, 0), World = 200x150
+        vec2.fromValues(500, 500),
         200,
         [0, 0, 800, 200]
     );

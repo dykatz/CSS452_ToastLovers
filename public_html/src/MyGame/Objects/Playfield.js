@@ -73,8 +73,12 @@ Playfield.prototype.update = function(dt) {
         this.pfState = Playfield.PlayfieldState.placementDemo;
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Three))
         this.pfState = Playfield.PlayfieldState.deleteDemo;
-    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.D))
+    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.G))
         this.nodesActive = !this.nodesActive;
+    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.D)) {
+    	this.graph.diagonal = !this.graph.diagonal;
+    	this.UpdatePath();
+    }
     
     if(this.cam.isMouseInViewport()) {
         var x = this.cam.mouseWCX();
@@ -100,6 +104,7 @@ Playfield.prototype.update = function(dt) {
                     this.selectedTower = new Tower("assets/wall.png");
                     this.selectedTower.getXform().setPosition(-10, 0);  // Demo only case where it displays at 0,0
                     this.selectedTower.getXform().setSize(this.nodeW, this.nodeH);
+                    this.selectedTower.getRenderable().setColor([0.4,0.9,0.4,0.4]);
                 }               
                 if(this.graph.grid[gridPos[1]][gridPos[0]].weight > 0) {
                     this.selectedTower.getXform().setPosition(worldPos[0], worldPos[1]);
@@ -108,6 +113,7 @@ Playfield.prototype.update = function(dt) {
                     }
                 }
                 break;
+
             case Playfield.PlayfieldState.deleteDemo:
                 if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left)) {
                     this.DeleteTower(gridPos)
@@ -127,11 +133,15 @@ Playfield.prototype.IndexsToWC = function(x, y) {
 
 Playfield.prototype.UpdatePath = function() {
     if(this.endIndex.length > 0 && this.startIndex.length > 0) {
-        //Get the path for drawing line.
-        this.path = astar.search(this.graph, 
-            this.graph.grid[this.startIndex[1]][this.startIndex[0]], 
-            this.graph.grid[this.endIndex[1]][this.endIndex[0]], null);
-        //Draw the line.
+        if(this.graph.diagonal)
+	        this.path = astar.search(this.graph, 
+	            this.graph.grid[this.startIndex[1]][this.startIndex[0]], 
+	            this.graph.grid[this.endIndex[1]][this.endIndex[0]], null);
+    	else
+	        this.path = astar.search(this.graph, 
+	            this.graph.grid[this.startIndex[1]][this.startIndex[0]], 
+	            this.graph.grid[this.endIndex[1]][this.endIndex[0]],
+	            { heuristic: astar.heuristics.diagonal });
         this.DrawPath();
     }
 };
@@ -141,6 +151,7 @@ Playfield.prototype.DrawPath = function() {
         this.lineRenderers = [];
         if(this.path.length > 0) {
             this.lineRenderers.push(new LineRenderable());
+            this.lineRenderers[0].setColor([1,0,0,1]);
             var IndexWCPosition = this.IndexsToWC(this.startIndex[0], 
                 this.startIndex[1]);
             this.lineRenderers[0].setFirstVertex(IndexWCPosition[0], 
@@ -150,6 +161,7 @@ Playfield.prototype.DrawPath = function() {
                 IndexWCPosition[1]);
             for(var i = 0; i < this.path.length - 1; i++) {
                 this.lineRenderers.push(new LineRenderable());
+                this.lineRenderers[i + 1].setColor([1,0,0,1]);
                 IndexWCPosition = this.IndexsToWC(this.path[i].y, 
                     this.path[i].x);
                 this.lineRenderers[i + 1].setFirstVertex(IndexWCPosition[0], 
@@ -177,6 +189,7 @@ Playfield.prototype.PlaceTower = function(gPos) {
     newTower.getXform().setSize(this.nodeW * newTower.towerSize[0], this.nodeH * newTower.towerSize[1]);
     newTower.getXform().setPosition(gPos[0] * this.nodeW + this.nodeW / 2, 
                             -gPos[1] * this.nodeH - this.nodeH / 2);
+    newTower.getRenderable().setColor([1,1,1,0]);
     this.towers.addToSet(newTower);
     this.graph.grid[gPos[1]][gPos[0]].weight = 0;
     this.UpdatePath();
