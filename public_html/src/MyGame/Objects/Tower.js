@@ -37,7 +37,6 @@ Tower.prototype.update = function(dt) {
 			this.changeAnimationShoot();
 		}
 	}
-
 }
 
 Tower.prototype.enableFiring = function() {

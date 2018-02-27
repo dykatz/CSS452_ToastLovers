@@ -11,6 +11,7 @@ function Shop(playfield) {
     this.pf = playfield;
     this.shopState = Shop.shopState.towerShop;
     this.playerCurrency = 10;
+    this.playerCurrencyText = new FontRenderable("$10");
     
     this.towerButtons = [];
     this.towerButtonTitles = [];
@@ -35,17 +36,20 @@ Shop.prototype.initializeShop = function(towers, padding) {
 
         var newButton = new Button([x, 37.5], bSz, bSz, tower, i + 49);
         var newTitle = new FontRenderable(towers[i].mName);
-        var newCost = new FontRenderable(towers[i].mCost.toString());
+        var newCost = new FontRenderable("$" + towers[i].mCost.toString());
 
-        newTitle.getXform().setPosition(x, 37.5 + 5 / 2 + 1 + bSz / 2);
+        newTitle.getXform().setPosition(x, 40 + 1 + bSz / 2);
         newTitle.getXform().setSize(bSz, 5);
-        newCost.getXform().setPosition(x, 37.5 - 5 / 2 - bSz / 2);
+        newCost.getXform().setPosition(x, 35 - bSz / 2);
         newCost.getXform().setSize(5, 5);
 
         this.towerButtons.push(newButton);
         this.towerButtonTitles.push(newTitle);
         this.towerButtonCosts.push(newCost);
     }
+
+    this.playerCurrencyText.getXform().setSize(6, 4);
+    this.playerCurrencyText.getXform().setPosition(shopWidth - 3, 40.5 - shopHeight / 2);
 };
 
 Shop.prototype.getTowers = function() {
@@ -56,12 +60,12 @@ Shop.prototype.purchaseTower = function(index) {
     var newTower = this.getTowers()[index];
     if(this.playerCurrency - newTower.mCost >= 0 && this.pf.selectedTower === null) {
         this.playerCurrency -= newTower.mCost;
+        this.playerCurrencyText.setText("$" + this.playerCurrency);
         newTower.getXform().setPosition(-10, 0);
         newTower.getXform().setSize(this.pf.nodeW, this.pf.nodeH);
         newTower.getRenderable().setColor([1, 0, 0, 0.4]);
         this.pf.selectedTower = newTower;
         this.pf.pfState = Playfield.PlayfieldState.placementState;
-        console.log("Player currency: " + this.playerCurrency);
     }
 };
 
@@ -91,6 +95,8 @@ Shop.prototype.update = function(dt) {
 Shop.prototype.draw = function() {    
     this.cam.setupViewProjection();    
     
+    this.playerCurrencyText.draw(this.cam);
+
     switch(this.shopState) {
         case Shop.shopState.towerShop:            
             for(var i = 0; i < this.towerButtons.length; ++i)
