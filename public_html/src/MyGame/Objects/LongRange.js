@@ -12,6 +12,10 @@ function LongRange(pos) {
 	this.bg.getXform().mPosition = this.obj.getXform().mPosition;
 	this.bg.getXform().mScale = this.obj.getXform().mScale;
 	this.bg.mColor = this.obj.mColor;
+	this.mFiringEnabled = true;
+	this.mRange = 40;
+	this.mDamage = 50;
+	this.mProjectileSpeed = 50;
 
 	this.mProjectiles = new Set();
 	this.mName = "Long Range";
@@ -39,7 +43,7 @@ LongRange.prototype.spawnProjectile = function() {
 	var s = this.obj.getXform().getWidth() / 2;
 	x += Math.cos(d) * (s + this.mProjectileSpeed * this.mAccumulator);
 	y += Math.sin(d) * (s + this.mProjectileSpeed * this.mAccumulator);
-	var np = new Projectile(this, x, y, d, this.mRange, this.mProjectileSpeed);
+	var np = new Projectile(this, x, y, d, this.mRange, this.mProjectileSpeed, this.mDamage);
 }
 
 LongRange.prototype.changeAnimationShoot = function() {

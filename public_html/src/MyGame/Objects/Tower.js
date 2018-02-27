@@ -10,6 +10,7 @@ function Tower(texture, pos) {
     this.mFiringEnabled = false;
     this.mAnimationTime = 0.3;
     this.mAnimationIsShooting = false;
+    this.mDamage = 0;
     this.mRange = 20;
     this.mCost = 1;
     this.mName = "";
