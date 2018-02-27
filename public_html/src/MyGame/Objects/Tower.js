@@ -8,7 +8,7 @@ function Tower(texture, pos) {
     this.mFireRate = 2;
     this.mProjectileSpeed = 3;
     this.mFiringEnabled = false;
-    this.mAnimationTime = 0.4;
+    this.mAnimationTime = 0.8;
     this.mAnimationIsShooting = false;
     this.obj = new SpriteRenderable(texture);     
     
@@ -22,7 +22,7 @@ Tower.prototype.update = function(dt) {
 	var haveAlreadyChanged = false;
 	this.mAccumulator += dt;
 
-	if (this.mAccumulator > this.mAnimationTime)
+	if (this.mAccumulator > this.mAnimationTime / this.mFireRate)
 		this.changeAnimationNoShoot();
 
 	while (this.mAccumulator > 1 / this.mFireRate) {
@@ -35,6 +35,16 @@ Tower.prototype.update = function(dt) {
 		}
 	}
 
+}
+
+Tower.prototype.enableFiring = function() {
+	this.mFiringEnabled = true;
+}
+
+Tower.prototype.disableFiring = function() {
+	this.mFiringEnabled = false;
+	this.mAccumulator = 0;
+	this.changeAnimationNoShoot();
 }
 
 Tower.prototype.spawnProjectile = function() {}
