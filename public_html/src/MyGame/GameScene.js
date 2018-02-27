@@ -27,6 +27,12 @@ GameScene.prototype.initialize = function () {
     this.playfield = new Playfield(31, 21, this.mCam);
     this.minimap = new Minimap(this.mCam);
     this.shop = new Shop(this.playfield);
+
+    var c = gEngine.DefaultResources.getGlobalAmbientColor();
+    c[0] = 1.0;
+    c[1] = 1.0;
+    c[2] = 1.0;
+    c[3] = 1.0;
 };
 
 GameScene.prototype.update = function (dt) {     
