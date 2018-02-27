@@ -31,7 +31,7 @@ function SpriteAnimateRenderable(myTexture) {
 
     //
     // per animation settings
-    this.mUpdateInterval = 1;   // how often to advance
+    this.mUpdateInterval = 8;   // advancements per second
     this.mAnimationType = SpriteAnimateRenderable.eAnimationType.eAnimateRight;
 
     this.mCurrentAnimAdvance = -1;
@@ -42,7 +42,7 @@ gEngine.Core.inheritPrototype(SpriteAnimateRenderable, SpriteRenderable);
 
 SpriteAnimateRenderable.prototype._initAnimation = function () {
     // Currently running animation
-    this.mCurrentTick = 0;
+    this.mTimeAccumulator = 0;
     switch (this.mAnimationType) {
     case SpriteAnimateRenderable.eAnimationType.eAnimateRight:
         this.mCurrentElm = 0;
@@ -158,10 +158,10 @@ SpriteAnimateRenderable.prototype.setAnimationType = function (animationType) {
  * @returns {void}
  * @memberOf SpriteAnimateRenderable
  */
-SpriteAnimateRenderable.prototype.updateAnimation = function () {
-    this.mCurrentTick++;
-    if (this.mCurrentTick >= this.mUpdateInterval) {
-        this.mCurrentTick = 0;
+SpriteAnimateRenderable.prototype.updateAnimation = function (dt) {
+    this.mTimeAccumulator += dt;
+    if (this.mTimeAccumulator >= 1 / this.mUpdateInterval) {
+        this.mTimeAccumulator = 0;
         this.mCurrentElm += this.mCurrentAnimAdvance;
         if ((this.mCurrentElm >= 0) && (this.mCurrentElm < this.mNumElems)) {
             this._setSpriteElement();

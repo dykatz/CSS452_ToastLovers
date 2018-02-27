@@ -6,9 +6,9 @@ function Tower(texture, pos) {
     this.mHitPoints = 100;
     this.mAccumulator = 0;
     this.mFireRate = 2;
-    this.mProjectileSpeed = 3;
+    this.mProjectileSpeed = 15;
     this.mFiringEnabled = false;
-    this.mAnimationTime = 0.8;
+    this.mAnimationTime = 0.3;
     this.mAnimationIsShooting = false;
     this.mRange = 20;
     this.mCost = 1;

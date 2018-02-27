@@ -20,6 +20,7 @@ function Playfield(width, height, camRef) {
         tmp.fill(1, 0);        
         tmpGraph.push(tmp);
     }
+
     this.graph = new Graph(tmpGraph);
     this.path = [];
     this.nodes = [];
@@ -46,23 +47,23 @@ Playfield.prototype.initNodes = function() {
             this.nodes.push(tmpRend);
         }
     }
+
     this.endIndex = [0, 0];
     this.startIndex = [0, 0];
     this.PlaceTower(this.toastCords, "Toast");
 };
 
 Playfield.prototype.draw = function(cam, drawGrid = true) {
-    if(this.nodesActive && drawGrid) {
-        for(var i = 0; i < this.nodes.length; i++) {
+    if(this.nodesActive && drawGrid)
+        for(var i = 0; i < this.nodes.length; i++)
             this.nodes[i].draw(cam);
-        }
-    }
+
     this.towers.draw(cam);
-    for(var i = 0; i < this.lineRenderers.length; i++) {
+
+    for(var i = 0; i < this.lineRenderers.length; i++)
         this.lineRenderers[i].draw(cam);
-    }
-    if(this.selectedTower && this.pfState === Playfield.PlayfieldState.placementState
-            && drawGrid)
+
+    if(this.selectedTower && this.pfState === Playfield.PlayfieldState.placementState && drawGrid)
         this.selectedTower.draw(cam);
 };
 
@@ -87,14 +88,14 @@ Playfield.prototype.update = function(dt) {
         switch(this.pfState) {
             case Playfield.PlayfieldState.pathDemo:
                 if (gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
-                    if(this.start === true) {
+                    if(this.start)
                         this.startIndex = this.WCToGridIndex(x, y);
-                    } else {
+                    else
                         this.endIndex = this.WCToGridIndex(x, y);
-                    }
+
                     this.start = !this.start;
                     this.UpdatePath();
-                }    
+                }
                 break;
                 
             case Playfield.PlayfieldState.placementState:
@@ -103,16 +104,15 @@ Playfield.prototype.update = function(dt) {
                     this.selectedTower.getXform().setSize(this.nodeW, this.nodeH);
                     this.selectedTower.getRenderable().setColor([0.4,0.9,0.4,0.4]);
                     
-                    if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
+                    if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left))
                         this.PlaceTower(gridPos);
-                    }
                 }
                 break;
 
             case Playfield.PlayfieldState.deleteState:
-                if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left)) {
+                if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left))
                     this.DeleteTower(gridPos);
-                }
+
                 break;
         }
     }
@@ -139,6 +139,7 @@ Playfield.prototype.UpdatePath = function() {
 	            this.graph.grid[this.startIndex[1]][this.startIndex[0]], 
 	            this.graph.grid[this.endIndex[1]][this.endIndex[0]],
 	            { heuristic: astar.heuristics.diagonal });
+ 
         this.DrawPath();
     }
 };
@@ -146,27 +147,22 @@ Playfield.prototype.UpdatePath = function() {
 Playfield.prototype.DrawPath = function() {
     if(this.path !== null) {
         this.lineRenderers = [];
+
         if(this.path.length > 0) {
             this.lineRenderers.push(new LineRenderable());
             this.lineRenderers[0].setColor([1,0,0,1]);
-            var IndexWCPosition = this.GridIndexToWC(this.startIndex[0], 
-                this.startIndex[1]);
-            this.lineRenderers[0].setFirstVertex(IndexWCPosition[0], 
-                IndexWCPosition[1]);
+            var IndexWCPosition = this.GridIndexToWC(this.startIndex[0], this.startIndex[1]);
+            this.lineRenderers[0].setFirstVertex(IndexWCPosition[0], IndexWCPosition[1]);
             IndexWCPosition = this.GridIndexToWC(this.path[0].y, this.path[0].x);
-            this.lineRenderers[0].setSecondVertex(IndexWCPosition[0], 
-                IndexWCPosition[1]);
+            this.lineRenderers[0].setSecondVertex(IndexWCPosition[0], IndexWCPosition[1]);
+
             for(var i = 0; i < this.path.length - 1; i++) {
                 this.lineRenderers.push(new LineRenderable());
                 this.lineRenderers[i + 1].setColor([1,0,0,1]);
-                IndexWCPosition = this.GridIndexToWC(this.path[i].y, 
-                    this.path[i].x);
-                this.lineRenderers[i + 1].setFirstVertex(IndexWCPosition[0], 
-                    IndexWCPosition[1]);
-                IndexWCPosition = this.GridIndexToWC(this.path[i + 1].y, 
-                    this.path[i + 1].x);
-                this.lineRenderers[i + 1].setSecondVertex(IndexWCPosition[0], 
-                    IndexWCPosition[1]);
+                IndexWCPosition = this.GridIndexToWC(this.path[i].y, this.path[i].x);
+                this.lineRenderers[i + 1].setFirstVertex(IndexWCPosition[0], IndexWCPosition[1]);
+                IndexWCPosition = this.GridIndexToWC(this.path[i + 1].y, this.path[i + 1].x);
+                this.lineRenderers[i + 1].setSecondVertex(IndexWCPosition[0], IndexWCPosition[1]);
             }
         }
     }
@@ -194,6 +190,7 @@ Playfield.prototype.PlaceTower = function(gPos) {
 Playfield.prototype.DeleteTower = function(gPos) {
     var index = this.towers.mSet.findIndex(tower => tower.gridPos[0] === gPos[0] && 
             tower.gridPos[1] === gPos[1] && !(tower instanceof Toast));
+ 
     if(index >= 0) {
         this.towers.removeAt(index);
         this.graph.grid[gPos[1]][gPos[0]].weight = 1;
