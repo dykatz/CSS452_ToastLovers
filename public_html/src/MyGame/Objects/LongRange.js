@@ -20,6 +20,12 @@ LongRange.prototype.draw = function(cam) {
 	Tower.prototype.draw.call(this);
 }
 
+LongRange.prototype.update = function(dt) {
+	Tower.prototype.update.call(this, dt);
+
+	this.mProjectiles.forEach(p => { p.update(dt); });
+}
+
 LongRange.prototype.spawnProjectile = function() {
 	var d = this.obj.getXform().getRotationInRad();
 	var x = Math.cos(d) * this.mProjectileSpeed * this.mAccumulator;

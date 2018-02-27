@@ -7,6 +7,13 @@ function ShortRange(pos) {
 }
 gEngine.Core.inheritPrototype(ShortRange, Tower);
 
+
+ShortRange.prototype.update = function(dt) {
+	Tower.prototype.update.call(this, dt);
+
+	this.mProjectiles.forEach(p => { p.update(dt); });
+}
+
 ShortRange.prototype.changeAnimationNoShoot = function() {
 	this.obj.mTexLeft = 0.0;
 	this.obj.mTexRight = 0.5;
