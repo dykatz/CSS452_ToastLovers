@@ -58,11 +58,8 @@ Shop.prototype.getTowers = function() {
 Shop.prototype.purchaseTower = function(index) {
     var newTower = this.getTowers()[index];
     if(this.playerCurrency - newTower.mCost >= 0 && this.pf.selectedTower === null) {
-        this.playerCurrency -= newTower.mCost;
-        this.playerCurrencyText.setText("$" + this.playerCurrency);
         newTower.getXform().setPosition(-10, 0);
         newTower.getXform().setSize(this.pf.nodeW, this.pf.nodeH);
-        newTower.getRenderable().setColor([1, 0, 0, 0.4]);
         this.pf.selectedTower = newTower;
         this.pf.pfState = Playfield.PlayfieldState.placementState;
     }
@@ -74,8 +71,10 @@ Shop.prototype.update = function(dt) {
         x = this.cam.mouseWCX();
         y = this.cam.mouseWCY();
 
-        if(this.pf.selectedTower)
+        if(this.pf.selectedTower) {
             this.pf.selectedTower.getXform().setPosition(x, y);
+            this.pf.selectedTower.getRenderable().setColor([1, 0, 0, 0.4]);
+        }
     }
 
     switch(this.shopState) {

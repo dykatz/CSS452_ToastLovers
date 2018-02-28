@@ -101,12 +101,12 @@ Playfield.prototype.update = function(dt) {
             case Playfield.PlayfieldState.placementState:
                 if(this.graph.grid[gridPos[1]][gridPos[0]].weight > 0 && this.selectedTower !== null) {
                     this.selectedTower.getXform().setPosition(worldPos[0], worldPos[1]);
-                    this.selectedTower.getXform().setSize(this.nodeW, this.nodeH);
                     this.selectedTower.getRenderable().setColor([0.4,0.9,0.4,0.4]);
                     
                     if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left))
                         this.PlaceTower(gridPos);
-                }
+                } else
+                	this.selectedTower.getRenderable().setColor([1, 0, 0, 0.5]);
                 break;
 
             case Playfield.PlayfieldState.deleteState:
