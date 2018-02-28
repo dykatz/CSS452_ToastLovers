@@ -116,15 +116,20 @@ gEngine.Textures = (function () {
         gEngine.ResourceMap.unloadAsset(textureName);
     };
 
+    var textureModes = Object.freeze({
+        Nearest: 0,
+        Linear: 1
+    });
+
     /**
      * Activate gl.LINEAR_MIPMAP_LINEAR for texture <p>
      * @memberOf gEngine.Textures
      * @param {String} textureName Name of Texture
      * @returns {void}
      */
-    var activateTexture = function (textureName) {
+    var activateTexture = function (_textureName, _textureMode) {
         var gl = gEngine.Core.getGL();
-        var texInfo = gEngine.ResourceMap.retrieveAsset(textureName);
+        var texInfo = gEngine.ResourceMap.retrieveAsset(_textureName);
 
         // Binds our texture reference to the current webGL texture functionality
         gl.activeTexture(gl.TEXTURE0);
@@ -135,12 +140,16 @@ gEngine.Textures = (function () {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
         // Handles how magnification and minimization filters will work.
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-
-        // For pixel-graphics where you want the texture to look "sharp" do the following:
-        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        switch (_textureMode) {
+        case textureModes.Linear:
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+            break;
+        case textureModes.Nearest:
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+            break;
+        }
     };
 
     /**
@@ -218,6 +227,7 @@ gEngine.Textures = (function () {
     // Public interface for this object. Anything not in here will
     // not be accessable.
     var mPublic = {
+        textureModes: textureModes,
         loadTexture: loadTexture,
         unloadTexture: unloadTexture,
         activateTexture: activateTexture,

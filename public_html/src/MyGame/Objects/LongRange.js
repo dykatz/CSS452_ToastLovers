@@ -5,6 +5,7 @@ function LongRange(pos) {
         
 	this.obj.mTexRight = 0.25;
 	this.obj._setTexInfo();
+	this.obj.setTextureMode(gEngine.Textures.textureModes.Nearest);
 
 	this.bg = new SpriteRenderable("assets/long_range.png");
 	this.bg.mTexRight = 0.25;
@@ -53,7 +54,7 @@ LongRange.prototype.changeAnimationShoot = function() {
 }
 
 LongRange.prototype.changeAnimationNoShoot = function() {
-	this.obj.mTexLeft = 0.25;
+	this.obj.mTexLeft = 0.2535;
 	this.obj.mTexRight = 0.5;
 	this.obj._setTexInfo();
 }

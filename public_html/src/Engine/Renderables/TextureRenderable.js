@@ -31,6 +31,7 @@ function TextureRenderable(myTexture) {
     this.mTexHeight = 0;
     this.mTexLeftIndex = 0;
     this.mTexBottomIndex = 0;
+    this.mTexMode = gEngine.Textures.textureModes.Linear;
 
     this.setTexture(myTexture);     // texture for this object, cannot be a "null"
 }
@@ -48,9 +49,12 @@ gEngine.Core.inheritPrototype(TextureRenderable, Renderable);
  */
 TextureRenderable.prototype.draw = function (aCamera) {
     // activate the texture
-    gEngine.Textures.activateTexture(this.mTexture);
+    gEngine.Textures.activateTexture(this.mTexture, this.mTexMode);
     Renderable.prototype.draw.call(this, aCamera);
 };
+
+TextureRenderable.prototype.getTextureMode = function () { return this.mTexMode; };
+TextureRenderable.prototype.setTextureMode = function (newMode) { this.mTexMode = newMode; };
 
 /**
  * Returns a refrence to Texture
