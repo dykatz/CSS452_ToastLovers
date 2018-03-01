@@ -6,7 +6,7 @@ function Playfield(size, camRef, shop) {
     this.gHeight = size[1];
     this.nodeW = this.cam.getWCWidth() / this.gWidth;
     this.nodeH = this.cam.getWCHeight() / this.gHeight;
-    this.pfState = 0;
+    this.pfState = Playfield.PlayfieldState.inactive;
     this.shop = shop;
 
     this.toastCords = [Math.floor(this.gWidth/2), Math.floor(this.gHeight/2)];
@@ -34,9 +34,11 @@ function Playfield(size, camRef, shop) {
 };
 
 Playfield.PlayfieldState = Object.freeze({
+	inactive: 0,
     pathDemo: 1,
     placementState: 2,
-    deleteState: 3
+    deleteState: 3,
+    grabState: 4
 });
 
 Playfield.prototype.initNodes = function() {
@@ -70,10 +72,14 @@ Playfield.prototype.draw = function(cam, drawGrid = true) {
 };
 
 Playfield.prototype.update = function(dt) {
+	console.log(this.pfState);
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Q))
         this.pfState = Playfield.PlayfieldState.pathDemo;
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R))
         this.pfState = Playfield.PlayfieldState.deleteState;
+    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.W) 
+    		&& this.pfState === Playfield.PlayfieldState.inactive)
+    	this.pfState = Playfield.PlayfieldState.grabState;
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.G))
         this.nodesActive = !this.nodesActive;
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.D)) {
@@ -91,7 +97,7 @@ Playfield.prototype.update = function(dt) {
         var worldPos = this.GridIndexToWC(gridPos[0], gridPos[1]);
 
 	    switch(this.pfState) {
-	    	
+
 	        case Playfield.PlayfieldState.pathDemo:
 	            if (gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
 	                if(this.start)
@@ -120,6 +126,11 @@ Playfield.prototype.update = function(dt) {
 	        case Playfield.PlayfieldState.deleteState:
 	            if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left))
 	                this.DeleteTower(gridPos);
+	            break;
+
+	       	case Playfield.PlayfieldState.grabState:
+	            if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left))
+	                this.GrabTower(gridPos);
 	            break;
 	    }
 	}
@@ -183,9 +194,11 @@ Playfield.prototype.PlaceTower = function(gPos) {
     newTower.gridPos = gPos;
     newTower.getXform().setPosition(gPos[0] * this.nodeW + this.nodeW / 2, 
                             -gPos[1] * this.nodeH - this.nodeH / 2);
+    newTower.mFiringEnabled = true;
     this.towers.addToSet(newTower);    
     this.shop.completeTransaction(newTower);
     this.graph.grid[gPos[1]][gPos[0]].weight = 0;
+    this.pfState = Playfield.PlayfieldState.inactive;
     this.UpdatePath();
 };
 
@@ -197,6 +210,21 @@ Playfield.prototype.DeleteTower = function(gPos) {
         this.towers.removeAt(index);
         this.graph.grid[gPos[1]][gPos[0]].weight = 1;
         this.UpdatePath();
+    }
+    this.pfState = Playfield.PlayfieldState.inactive;
+};
+
+Playfield.prototype.GrabTower = function(gPos) {
+    var index = this.towers.mSet.findIndex(tower => tower.gridPos[0] === gPos[0] && 
+            tower.gridPos[1] === gPos[1] && !(tower instanceof Toast));
+ 
+    if(index >= 0) {
+    	this.selectedTower = this.towers.getObjectAt(index);
+        this.towers.removeAt(index);
+        this.graph.grid[gPos[1]][gPos[0]].weight = 1;
+        this.UpdatePath();
+        this.selectedTower.mFiringEnabled = false;
+        this.pfState = Playfield.PlayfieldState.placementState;
     }
 };
 

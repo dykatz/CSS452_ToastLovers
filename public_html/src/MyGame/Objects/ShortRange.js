@@ -5,7 +5,6 @@ function ShortRange(pos) {
 	this.changeAnimationNoShoot();
 	this.mProjectiles = new Set();
 	this.mName = "Short Range";
-	this.mFiringEnabled = true;
 	this.mRange = 15;
 	this.mFireRate = 3;
 	this.mDamage = 20;

@@ -13,7 +13,6 @@ function LongRange(pos) {
 	this.bg.getXform().mPosition = this.obj.getXform().mPosition;
 	this.bg.getXform().mScale = this.obj.getXform().mScale;
 	this.bg.mColor = this.obj.mColor;
-	this.mFiringEnabled = true;
 	this.mRange = 40;
 	this.mDamage = 50;
 	this.mProjectileSpeed = 50;
