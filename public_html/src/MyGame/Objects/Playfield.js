@@ -72,7 +72,6 @@ Playfield.prototype.draw = function(cam, drawGrid = true) {
 };
 
 Playfield.prototype.update = function(dt) {
-	console.log(this.pfState);
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Q))
         this.pfState = Playfield.PlayfieldState.pathDemo;
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R))
@@ -112,6 +111,7 @@ Playfield.prototype.update = function(dt) {
 	            
 	        case Playfield.PlayfieldState.placementState:
 	        	if(this.selectedTower) {
+        		    this.selectedTower.update(dt);
 	                if(this.graph.grid[gridPos[1]][gridPos[0]].weight > 0) {
 	                    this.selectedTower.getXform().setPosition(worldPos[0], worldPos[1]);
 	                    this.selectedTower.getRenderable().setColor([0.4,0.9,0.4,0.4]);
