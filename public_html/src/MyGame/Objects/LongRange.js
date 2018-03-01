@@ -33,7 +33,7 @@ LongRange.prototype.draw = function(cam) {
 LongRange.prototype.update = function(dt) {
 	Tower.prototype.update.call(this, dt);
 
-	this.obj.getXform().incRotationByRad(dt);
+	if(this.mFiringEnabled) { this.obj.getXform().incRotationByRad(dt); }
 	this.mProjectiles.forEach(p => { p.update(dt); });
 }
 

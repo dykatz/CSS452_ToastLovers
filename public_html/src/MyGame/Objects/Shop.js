@@ -57,11 +57,18 @@ Shop.prototype.getTowers = function() {
 
 Shop.prototype.purchaseTower = function(index) {
     var newTower = this.getTowers()[index];
-    if(this.playerCurrency - newTower.mCost >= 0 && this.pf.selectedTower === null) {
-        newTower.getXform().setPosition(-10, 0);
-        newTower.getXform().setSize(this.pf.nodeW, this.pf.nodeH);
-        this.pf.selectedTower = newTower;
-        this.pf.pfState = Playfield.PlayfieldState.placementState;
+    newTower.getXform().setSize(this.pf.nodeW, this.pf.nodeH);
+    newTower.mFiringEnabled = false;
+
+    if(this.playerCurrency - newTower.mCost >= 0) {
+        if(this.pf.selectedTower == null) {
+            this.pf.selectedTower = newTower;
+            this.pf.pfState = Playfield.PlayfieldState.placementState;
+        } else if(this.pf.selectedTower.gridPos == null) {
+            console.log("test");
+            this.pf.selectedTower = newTower;
+            this.pf.pfState = Playfield.PlayfieldState.placementState;
+        }
     }
 };
 
