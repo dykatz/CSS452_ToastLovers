@@ -65,9 +65,13 @@ Shop.prototype.purchaseTower = function(index) {
             this.pf.selectedTower = newTower;
             this.pf.pfState = Playfield.PlayfieldState.placementState;
         } else if(this.pf.selectedTower.gridPos == null) {
-            console.log("test");
-            this.pf.selectedTower = newTower;
-            this.pf.pfState = Playfield.PlayfieldState.placementState;
+            if(newTower instanceof this.pf.selectedTower.constructor) {
+                this.pf.selectedTower = null;
+                this.pf.pfState = Playfield.PlayfieldState.inactive;
+            } else {
+                this.pf.selectedTower = newTower;
+                this.pf.pfState = Playfield.PlayfieldState.placementState;
+            }
         }
     }
 };
@@ -89,7 +93,6 @@ Shop.prototype.update = function(dt) {
             for(var i = 0; i < this.towerButtons.length; ++i)
                 if(this.towerButtons[i].checkButton(x, y))
                     this.purchaseTower(i);
-
             break;
 
         case Shop.shopState.upgradeShop:
