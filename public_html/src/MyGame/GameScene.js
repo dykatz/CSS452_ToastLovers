@@ -24,9 +24,10 @@ GameScene.prototype.initialize = function () {
     );
     this.mCam.setBackgroundColor([0.8, 0.8, 0.8, 1]);
     
-    this.playfield = new Playfield(31, 21, this.mCam);
+    this.shop = new Shop();
+    this.playfield = new Playfield([31, 21], this.mCam, this.shop);
     this.minimap = new Minimap(this.mCam);
-    this.shop = new Shop(this.playfield);
+    this.shop.pf = this.playfield;
 
     var c = gEngine.DefaultResources.getGlobalAmbientColor();
     c[0] = 1.0;

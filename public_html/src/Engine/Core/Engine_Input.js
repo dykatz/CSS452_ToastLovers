@@ -33,6 +33,9 @@ gEngine.Input = (function () {
         Right: 39,
         Down: 40,
 
+        // esc
+        Escape: 27,
+
         // space bar
         Space: 32,
 

@@ -1,6 +1,6 @@
 "use strict";
 
-function Shop(playfield) {
+function Shop() {
     this.cam = new Camera(
         vec2.fromValues(50, 37.5),
         100,
@@ -8,7 +8,7 @@ function Shop(playfield) {
     );
     this.cam.setBackgroundColor([0.3, 0.4, 0.8, 1]);
     
-    this.pf = playfield;
+    this.pf;
     this.shopState = Shop.shopState.towerShop;
     this.playerCurrency = 10;
     this.playerCurrencyText = new FontRenderable("$10");
@@ -114,4 +114,9 @@ Shop.prototype.draw = function() {
         case Shop.shopState.upgradeShop:
             break;
     }
+};
+
+Shop.prototype.completeTransaction = function(tower) {
+    this.playerCurrency -= tower.mCost;
+    this.playerCurrencyText.setText("$" + this.playerCurrency);
 };
