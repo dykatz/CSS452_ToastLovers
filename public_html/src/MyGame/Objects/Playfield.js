@@ -11,6 +11,7 @@ function Playfield(size, camRef, shop) {
 
     this.toastCords = [Math.floor(this.gWidth/2), Math.floor(this.gHeight/2)];
     this.towers = new GameObjectSet();
+    this.minion;
     this.nodes = [];
     this.nodesActive = true;
     this.selectedTower = null;
@@ -55,6 +56,7 @@ Playfield.prototype.initNodes = function() {
     this.startIndex = [0, 0];
     this.selectedTower = new Toast();
     this.PlaceTower(this.toastCords);
+    this.minion = new Minion(this, [1, 1]);
 };
 
 Playfield.prototype.draw = function(cam, drawGrid = true) {
@@ -67,11 +69,14 @@ Playfield.prototype.draw = function(cam, drawGrid = true) {
     for(var i = 0; i < this.lineRenderers.length; i++)
         this.lineRenderers[i].draw(cam);
 
+    this.minion.draw(cam);
+
     if(this.selectedTower && this.pfState === Playfield.PlayfieldState.placementState && drawGrid)
         this.selectedTower.draw(cam);
 };
 
 Playfield.prototype.update = function(dt) {
+	this.minion.update(dt);
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Q))
         this.pfState = Playfield.PlayfieldState.pathDemo;
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R))
@@ -147,7 +152,7 @@ Playfield.prototype.GridIndexToWC = function(x, y) {
 
 Playfield.prototype.UpdatePath = function() {
     if(this.endIndex.length > 0 && this.startIndex.length > 0) {
-        if(this.graph.diagonal)
+        if(!this.graph.diagonal)
 	        this.path = astar.search(this.graph,
 	            this.graph.grid[this.startIndex[1]][this.startIndex[0]],
 	            this.graph.grid[this.endIndex[1]][this.endIndex[0]], null);
