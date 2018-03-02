@@ -8,7 +8,7 @@ function GameScene() {
     this.iShortRange = "assets/short_range.png";
     this.iProjectile = "assets/projectile.png";
     this.iHoneypot = "assets/honeypot.png";
-    this.iAnt = "assets/target.png";
+    this.iMinion = "assets/target.png";
     
     this.playfield = null;
     this.mCam = null;
@@ -57,7 +57,7 @@ GameScene.prototype.loadScene = function () {
     gEngine.Textures.loadTexture(this.iShortRange);
     gEngine.Textures.loadTexture(this.iProjectile);
     gEngine.Textures.loadTexture(this.iHoneypot);
-        gEngine.Textures.loadTexture(this.iAnt);
+    gEngine.Textures.loadTexture(this.iMinion);
 };
 
 GameScene.prototype.unloadScene = function () {
@@ -67,5 +67,5 @@ GameScene.prototype.unloadScene = function () {
     gEngine.Textures.unloadTexture(this.iShortRange);
     gEngine.Textures.unloadTexture(this.iProjectile);
     gEngine.Textures.unloadTexture(this.iHoneypot);
-    gEngine.Textures.unloadTexture(this.iAnt);
+    gEngine.Textures.unloadTexture(this.iMinion);
 };

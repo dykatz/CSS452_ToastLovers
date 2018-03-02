@@ -1,8 +1,9 @@
 "use strict";
 
 function Tower(texture, pos) {
-    this.gridPos = pos;
-    this.towerSize = [1, 1];
+    this.mGridPos = pos;
+    this.mWeight = 100;    
+    this.mSize = [1, 1];
     this.mHitPoints = 100;
     this.mAccumulator = 0;
     this.mFireRate = 2;
