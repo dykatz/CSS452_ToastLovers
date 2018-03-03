@@ -10,7 +10,7 @@ function Minion(pf, gSpawnPos) {
     this.graph = pf.graph;
 
     this.mHealth = 100;
-    this.mSpeed = 5;
+    this.mSpeed = 10;
     this.movementEnabled = true;
 
     this.path = [];
@@ -31,9 +31,22 @@ Minion.prototype.update = function(dt) {
     if(!this.movementEnabled) return;
 
     var pos = this.getXform().getPosition();
-    var targetPos = this.pf.GridIndexToWC(this.path[this.pathIndex].x, this.path[this.pathIndex].y);
-
-    if(Math.round(pos[0]) === Math.round(targetPos[0]) && Math.round(pos[1]) === Math.round(targetPos[1])) {
+    this.curGridPos = this.pf.WCToGridIndex(pos[0], pos[1]);
+    var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
+    var targetPos = this.pf.GridIndexToWC(targetGridPos[0], targetGridPos[1]);
+    
+    var dir = this.getCurrentFrontDir();
+    pos[0] += this.mSpeed * dt * dir[0];
+    pos[1] += this.mSpeed * dt * dir[1];
+    
+    if(dir[0] !== 0 && Math.round(pos[1]) !== Math.round(targetPos[1]) || 
+            dir[1] !== 0 && Math.round(pos[0]) !== Math.round(targetPos[0])) {
+        var adjustedDir = [targetPos[0] - pos[0], targetPos[1] - pos[1]];
+        this.setCurrentFrontDir(adjustedDir);
+    }
+        
+    if(dir[0] !== 0 && Math.round(pos[0]) === Math.round(targetPos[0]) || 
+            dir[1] !== 0 && Math.round(pos[1]) === Math.round(targetPos[1])) {
     	if(this.pathIndex < this.path.length - 1) {
             this.pathIndex++;
             this.getNewDir();
@@ -42,9 +55,6 @@ Minion.prototype.update = function(dt) {
             this.movementEnabled = false;
     	}
     }
-    var dir = this.getCurrentFrontDir();
-    pos[0] += this.mSpeed * dt * dir[0];
-    pos[1] += this.mSpeed * dt * dir[1];
 };
 
 Minion.prototype.draw = function(cam) {
@@ -66,8 +76,6 @@ Minion.prototype.updatePath = function(gPos) {
 };
 
 Minion.prototype.getNewDir = function() {
-    var pos = this.getXform().getPosition();
-    this.curGridPos = this.pf.WCToGridIndex(pos[0], pos[1]);
     var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
     this.setCurrentFrontDir([targetGridPos[0] - this.curGridPos[0], -(targetGridPos[1] - this.curGridPos[1])]);        
 };

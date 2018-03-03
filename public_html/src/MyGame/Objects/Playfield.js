@@ -11,9 +11,8 @@ function Playfield(size, camRef, shop) {
 
     this.toastCords = [Math.floor(this.gWidth/2), Math.floor(this.gHeight/2)];
     this.towers = new GameObjectSet();
-    this.minion = null;
-    this.nodes = [];
-    this.nodesActive = true;
+    this.minions = new GameObjectSet();
+   
     this.selectedTower = null;
     
     var tmpGraph = [];
@@ -22,10 +21,9 @@ function Playfield(size, camRef, shop) {
         tmp.fill(1, 0);        
         tmpGraph.push(tmp);
     }
-
     this.graph = new Graph(tmpGraph);
-    this.path = [];
     this.nodes = [];
+    this.nodesActive = true;
     this.initNodes();
 };
 
@@ -47,22 +45,21 @@ Playfield.prototype.initNodes = function() {
     }
     this.selectedTower = new Toast();
     this.PlaceTower(this.toastCords);
-    this.minion = new Minion(this, [0, 0]);
+    this.minions.addToSet(new Minion(this, [0, 0]));
 };
 
 Playfield.prototype.draw = function(cam, drawGrid = true) {
     if(this.nodesActive && drawGrid)
-        for(var i = 0; i < this.nodes.length; i++)
-            this.nodes[i].draw(cam);
-
+        this.nodes.forEach(node => node.draw(cam));
     this.towers.draw(cam);
-    this.minion.draw(cam);
-    if(this.selectedTower && this.pfState === Playfield.PlayfieldState.placementState && drawGrid)
+    this.minions.draw(cam);
+    if(this.selectedTower && drawGrid && 
+            this.pfState === Playfield.PlayfieldState.placementState)
         this.selectedTower.draw(cam);
 };
 
 Playfield.prototype.update = function(dt) {
-    this.minion.update(dt);
+    this.minions.update(dt);
     this.towers.update(dt);
     
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R))
@@ -176,7 +173,5 @@ Playfield.prototype.GetTowerAtGridPos = function(gPos) {
 };
 
 Playfield.prototype.OnPlayfieldModified = function () {
-    //this.minions.forEach(minion => minion.updatePath(this.toastCords));
-    if(this.minion !== null)
-        this.minion.updatePath(this.toastCords);
+    this.minions.mSet.forEach(minion => minion.updatePath(this.toastCords));
 };
