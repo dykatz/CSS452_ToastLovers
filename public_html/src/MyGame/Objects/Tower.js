@@ -15,7 +15,8 @@ function Tower(texture, pos) {
     this.mRange = 20;
     this.mCost = 1;
     this.mName = "";
-    this.obj = new SpriteAnimateRenderable(texture);     
+    this.obj = new SpriteAnimateRenderable(texture);  
+    this.mProjectiles = null;
     
     GameObject.call(this, this.obj);
 }
@@ -39,18 +40,27 @@ Tower.prototype.update = function(dt) {
 			this.changeAnimationShoot();
 		}
 	}
-}
+};
+
+Tower.prototype.CheckCollisions = function(collidingObject) {
+    if(this.mProjectiles !== null)
+    {
+        this.mProjectiles.forEach(p => { p.TryCollide(collidingObject);});
+    }
+};
 
 Tower.prototype.enableFiring = function() {
 	this.mFiringEnabled = true;
-}
+};
 
 Tower.prototype.disableFiring = function() {
 	this.mFiringEnabled = false;
 	this.mAccumulator = 0;
 	this.changeAnimationNoShoot();
-}
+};
 
-Tower.prototype.spawnProjectile = function() {}
-Tower.prototype.changeAnimationNoShoot = function() {}
-Tower.prototype.changeAnimationShoot = function() {}
+
+
+Tower.prototype.spawnProjectile = function() {};
+Tower.prototype.changeAnimationNoShoot = function() {};
+Tower.prototype.changeAnimationShoot = function() {};

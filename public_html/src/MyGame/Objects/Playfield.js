@@ -101,6 +101,20 @@ Playfield.prototype.update = function(dt) {
                 break;
         }
     }
+    
+    for(var i = 0; i < this.minions.size(); i++)
+    {
+        for(var j = 0; j < this.towers.size(); j++)
+        {
+            this.towers.mSet[j].CheckCollisions(this.minions.mSet[i]);
+        }
+        if(this.minions.mSet[i].markedForDeletion)
+        {
+            this.minions.removeAt(i);
+            i--;
+        }
+    }
+    
 };
 
 Playfield.prototype.WCToGridIndex = function(x, y) {

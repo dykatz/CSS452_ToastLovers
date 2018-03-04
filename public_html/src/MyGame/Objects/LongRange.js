@@ -28,14 +28,14 @@ LongRange.prototype.draw = function(cam) {
 	this.bg.draw(cam);
 	Tower.prototype.draw.call(this, cam);
 	this.mProjectiles.forEach(p => { p.draw(cam); });
-}
+};
 
 LongRange.prototype.update = function(dt) {
 	Tower.prototype.update.call(this, dt);
 
 	if(this.mFiringEnabled) { this.obj.getXform().incRotationByRad(dt); }
 	this.mProjectiles.forEach(p => { p.update(dt); });
-}
+};
 
 LongRange.prototype.spawnProjectile = function() {
 	var d = this.obj.getXform().getRotationInRad() + Math.PI / 2;
@@ -44,16 +44,16 @@ LongRange.prototype.spawnProjectile = function() {
 	x += Math.cos(d) * (s + this.mProjectileSpeed * this.mAccumulator);
 	y += Math.sin(d) * (s + this.mProjectileSpeed * this.mAccumulator);
 	var np = new Projectile(this, x, y, d, this.mRange, this.mProjectileSpeed, this.mDamage);
-}
+};
 
 LongRange.prototype.changeAnimationShoot = function() {
 	this.obj.mTexLeft = 0.5;
 	this.obj.mTexRight = 0.75;
 	this.obj._setTexInfo();
-}
+};
 
 LongRange.prototype.changeAnimationNoShoot = function() {
 	this.obj.mTexLeft = 0.2535;
 	this.obj.mTexRight = 0.5;
 	this.obj._setTexInfo();
-}
+};

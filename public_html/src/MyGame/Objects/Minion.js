@@ -22,6 +22,8 @@ function Minion(pf, gSpawnPos) {
     this.getXform().setSize(this.pf.nW, this.pf.nH);
     this.getXform().setPosition(this.gPos[0] * pf.nW + pf.nW / 2, this.gPos[1] * -pf.nH - pf.nH / 2);
     this.updatePath(this.pf.toastCords);
+    this.markedForDeletion = false;
+    this.bounds = new BoundingBox(this.getXform().getPosition(), this.pf.nW, this.pf.nH);
 }
 gEngine.Core.inheritPrototype(Minion, GameObject);
 
@@ -29,6 +31,7 @@ Minion.prototype.update = function(dt) {
     if(!this.movementEnabled) return;
 
     var pos = this.getXform().getPosition();
+    
     this.gPos = this.pf.WCToGridIndex(pos[0], pos[1]);
     var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
     var targetPos = this.pf.GridIndexToWC(targetGridPos[0], targetGridPos[1]);
@@ -53,6 +56,7 @@ Minion.prototype.update = function(dt) {
             this.movementEnabled = false;
     	}
     }
+    this.bounds.setBounds(this.getXform().getPosition(), this.pf.nW, this.pf.nW);
 };
 
 Minion.prototype.draw = function(cam) {
@@ -90,6 +94,14 @@ Minion.prototype.DrawPath = function() {
         from = this.pf.GridIndexToWC(this.path[i].x, this.path[i].y);
         to = this.pf.GridIndexToWC(this.path[i + 1].x, this.path[i + 1].y);
         this.DrawLine(from, to, [1,0,0,1]);
+    }
+};
+
+Minion.prototype.TakeDamage = function(damageValue) {
+    this.mHealth -= damageValue;
+    if(this.mHealth <= 0)
+    {
+        this.markedForDeletion = true;
     }
 };
 

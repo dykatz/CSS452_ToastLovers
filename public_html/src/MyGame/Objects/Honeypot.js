@@ -12,4 +12,4 @@ gEngine.Core.inheritPrototype(Honeypot, Tower);
 Honeypot.prototype.update = function(dt) {
 	this.obj.updateAnimation(dt);
 	Tower.prototype.update.call(this, dt);
-}
+};
