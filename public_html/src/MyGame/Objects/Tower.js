@@ -42,9 +42,8 @@ Tower.prototype.update = function(dt) {
 	}
 };
 
-Tower.prototype.CheckCollisions = function(collidingObject) {
-    if(this.mProjectiles !== null)
-    {
+Tower.prototype.CheckProjectileCollisions = function(collidingObject) {
+    if(this.mProjectiles !== null){
         this.mProjectiles.forEach(p => { p.TryCollide(collidingObject);});
     }
 };

@@ -22,8 +22,7 @@ function Projectile(parent, x, y, direction, range, speed, damage) {
 }
 
 Projectile.prototype.update = function(dt) {
-        if(!this.collided)
-        {
+        if(!this.collided){
             var direction = this.obj.getXform().getRotationInRad();
             this.obj.getXform().incXPosBy(Math.cos(direction) * dt * this.mSpeed);
             this.obj.getXform().incYPosBy(Math.sin(direction) * dt * this.mSpeed);
@@ -49,8 +48,7 @@ Projectile.prototype.update = function(dt) {
 };
 
 Projectile.prototype.TryCollide = function(minionColliding) {
-    if(!this.collided && this.bounds.intersectsBound(minionColliding.bounds))
-    {
+    if(!this.collided && this.bounds.intersectsBound(minionColliding.bounds)){
         this.collided = true;
         this.mEnabled = false;
         minionColliding.TakeDamage(this.mDamage);
