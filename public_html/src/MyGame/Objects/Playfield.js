@@ -138,7 +138,9 @@ Playfield.prototype.update = function(dt) {
 };
 
 Playfield.prototype.getGridIndexWeight = function(x, y) {
-	return this.graph.grid[x][y].weight;
+	if(x < this.gWidth && y < this.gHeight)
+	    return this.graph.grid[x][y].weight;
+	return 1;
 };
 
 Playfield.prototype.CheckProjectileCollisions = function(collidingObject) {
@@ -155,39 +157,44 @@ Playfield.prototype.GridIndexToWC = function(x, y) {
 };
 
 Playfield.prototype.TowerPlacement = function(gPos) {
-	var wPos = this.GridIndexToWC(gPos[0], gPos[1]);
+	if(gPos[0] < this.gWidth && gPos[1] < this.gHeight){
+	    var wPos = this.GridIndexToWC(gPos[0], gPos[1]);
 
-	if(this.graph.grid[gPos[0]][gPos[1]].weight === 1) {
-		this.selectedTower.getXform().setPosition(wPos[0], wPos[1]);
-		this.selectedTower.getRenderable().setColor([0.4,0.9,0.4,0.4]);
+	    if(this.graph.grid[gPos[0]][gPos[1]].weight === 1) {
+		    this.selectedTower.getXform().setPosition(wPos[0], wPos[1]);
+		    this.selectedTower.getRenderable().setColor([0.4,0.9,0.4,0.4]);
 
-		if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left))
-			this.PlaceTower(gPos);
-	} else {
-		this.selectedTower.getRenderable().setColor([1, 0, 0, 0.5]);
+		    if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left))
+			    this.PlaceTower(gPos);
+	    } else {
+		    this.selectedTower.getRenderable().setColor([1, 0, 0, 0.5]);
+	    }
 	}
 };
 
 Playfield.prototype.PlaceTower = function(gPos) {
-	var t = this.selectedTower;
-	this.selectedTower = null;
-	
-	t.mGridPos = gPos;
-	t.showIndicator = false;
-	t.mFiringEnabled = true;
-	t.getRenderable().setColor([1,1,1,0]);
-	t.getXform().setSize(this.nW * t.mSize[0], this.nH * t.mSize[1]);
-	t.getXform().setPosition(gPos[0] * this.nW + this.nW / 2, -gPos[1] * this.nH - this.nH / 2);
-	
-	this.towers.addToSet(t);    
-	this.shop.completeTransaction(t);
-	this.graph.grid[gPos[0]][gPos[1]].weight = t.mWeight;
-	this.graph.grid[gPos[0]][gPos[1]].object = t;
-	this.pfState = Playfield.State.inactive;
-	this.OnPlayfieldModified();
+	if(gPos[0] < this.gWidth && gPos[1] < this.gHeight){
+	    var t = this.selectedTower;
+	    this.selectedTower = null;
+
+	    t.mGridPos = gPos;
+	    t.showIndicator = false;
+	    t.mFiringEnabled = true;
+	    t.getRenderable().setColor([1,1,1,0]);
+	    t.getXform().setSize(this.nW * t.mSize[0], this.nH * t.mSize[1]);
+	    t.getXform().setPosition(gPos[0] * this.nW + this.nW / 2, -gPos[1] * this.nH - this.nH / 2);
+
+	    this.towers.addToSet(t);    
+	    this.shop.completeTransaction(t);
+	    this.graph.grid[gPos[0]][gPos[1]].weight = t.mWeight;
+	    this.graph.grid[gPos[0]][gPos[1]].object = t;
+	    this.pfState = Playfield.State.inactive;
+	    this.OnPlayfieldModified();
+	}
 };
 
 Playfield.prototype.DeleteTower = function(gPos) {
+    if(gPos[0] < this.gWidth && gPos[1] < this.gHeight){
 	var currentTower = this.GetTowerAtGridPos(gPos);
  
 	if(currentTower !== null && !(currentTower instanceof Toast)) {
@@ -200,10 +207,10 @@ Playfield.prototype.DeleteTower = function(gPos) {
 	}
 
 	this.pfState = Playfield.State.inactive;
+    }
 };
 
 Playfield.prototype.GetTowerAtGridPos = function(gPos) { 
-    
     if(gPos[0] < this.gWidth && gPos[1] < this.gHeight)
 	return this.graph.grid[gPos[0]][gPos[1]].object;
     return null;
@@ -223,15 +230,17 @@ Playfield.prototype.DamageGridSpace = function(gPos, damageNumber) {
 };
 
 Playfield.prototype.GrabTower = function(gPos) {
-	var currentTower = this.GetTowerAtGridPos(gPos);
- 
-	if(currentTower !== null && !(currentTower instanceof Toast)) {
-		this.selectedTower = currentTower;
-		this.selectedTower.mFiringEnabled = false;
-		this.graph.grid[gPos[0]][gPos[1]].weight = 1;
-		this.towers.remove(currentTower);
-		this.pfState = Playfield.State.placement;
-		this.OnPlayfieldModified();
+	if(gPos[0] < this.gWidth && gPos[1] < this.gHeight){
+	    var currentTower = this.GetTowerAtGridPos(gPos);
+
+	    if(currentTower !== null && !(currentTower instanceof Toast)) {
+		    this.selectedTower = currentTower;
+		    this.selectedTower.mFiringEnabled = false;
+		    this.graph.grid[gPos[0]][gPos[1]].weight = 1;
+		    this.towers.remove(currentTower);
+		    this.pfState = Playfield.State.placement;
+		    this.OnPlayfieldModified();
+	    }
 	}
 };
 
