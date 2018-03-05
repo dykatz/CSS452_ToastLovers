@@ -26,6 +26,8 @@ function Tower(texture, pos, playField) {
 	this.showIndicator = false;
 
 	GameObject.call(this, this.obj);
+	this.getXform().setPosition(-100, 100);
+	this.mIndicator.getXform().setPosition(-100, 100);
 }
 gEngine.Core.inheritPrototype(Tower, GameObject);
 

@@ -86,6 +86,7 @@ Shop.prototype.update = function(dt) {
 		if(this.pf.selectedTower) {
 			this.pf.selectedTower.getXform().setPosition(x, y);
 			this.pf.selectedTower.getRenderable().setColor([1, 0, 0, 0.4]);
+			this.pf.selectedTower.update(dt);
 		}
 	}
 

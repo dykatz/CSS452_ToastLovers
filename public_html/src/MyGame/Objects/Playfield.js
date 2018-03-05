@@ -173,6 +173,7 @@ Playfield.prototype.PlaceTower = function(gPos) {
 	this.selectedTower = null;
 	
 	t.mGridPos = gPos;
+	t.showIndicator = false;
 	t.mFiringEnabled = true;
 	t.getRenderable().setColor([1,1,1,0]);
 	t.getXform().setSize(this.nW * t.mSize[0], this.nH * t.mSize[1]);
