@@ -10,7 +10,6 @@ function MinionFactory(pf, mode, paths) {
 	this.spawnWait = 1;
 	this.spawnPoints = [];
 	
-
 	this.waveComposition = [
 		[1, 1, 1, 1, 1],
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -21,7 +20,6 @@ function MinionFactory(pf, mode, paths) {
 
 	this.wave = 0;
 	this.start = false;
-
 	this.timer = 0;
 };
 
@@ -34,19 +32,6 @@ MinionFactory.prototype.update = function(dt) {
 	if(gEngine.Input.isKeyClicked(gEngine.Input.keys.N))
 		this.startWave();
 
-	if(!this.start)
-		return;
-
-	this.timer += dt;
-
-	if (this.timer >= this.spawnWait && this.waveComposition.length > 0 && this.waveComposition.length > this.wave) {
-		if (this.waveComposition[this.wave] !== null && this.waveComposition[this.wave].length > 0) {
-			this.spawn(this.waveComposition[this.wave][0])
-			this.waveComposition[this.wave].shift();
-			this.timer = 0;
-		}
-	}
-
 	if(this.waveComposition.length > 0 && this.waveComposition.length > this.wave) {
 		if(this.waveComposition[this.wave] !== null && this.waveComposition[this.wave].length === 0) {
 			this.wave++;
@@ -55,6 +40,19 @@ MinionFactory.prototype.update = function(dt) {
 	} else {
 		this.pf.allWavesSpawned = true;
 		console.log("All Waves completed");
+	}
+
+	if(!this.start)
+		return;
+
+	this.timer += dt;
+
+	if (this.timer >= this.spawnWait && this.waveComposition.length > 0 && this.waveComposition.length >= this.wave) {
+		if (this.waveComposition[this.wave] !== null && this.waveComposition[this.wave].length > 0) {
+			this.spawn(this.waveComposition[this.wave][0])
+			this.waveComposition[this.wave].shift();
+			this.timer = 0;
+		}
 	}
 };
 

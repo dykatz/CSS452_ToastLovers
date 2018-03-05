@@ -42,9 +42,11 @@ GameScene.prototype.initialize = function() {
 GameScene.prototype.update = function(dt) {
 	this.playfield.update(dt);
 	this.shop.update(dt);
+
 	if(this.playfield.finishedLevel){
 	    if(this.playfield.playerLost || this.playfield.playerWon)
 			this.winner = this.playfield.playerWon;
+
 		gEngine.GameLoop.stop();
 	}
 	
@@ -78,12 +80,12 @@ GameScene.prototype.unloadScene = function() {
 	gEngine.Textures.unloadTexture(this.iHoneypot);
 	gEngine.Textures.unloadTexture(this.iMinion);
 	gEngine.Textures.unloadTexture(this.iRangeIndicator);
+
 	var nextScene;
 	if (!this.winner)
 		nextScene = new LossScreen();
 	else
 		nextScene = new WinScreen();
-	
+
 	gEngine.Core.startScene(nextScene);
-	    
 };

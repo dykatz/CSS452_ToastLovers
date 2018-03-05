@@ -26,15 +26,15 @@ WinScreen.prototype.initialize = function () {
 };
 
 WinScreen.prototype.update = function (dt) {
-    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R)){
-	var nextScene = new GameScene();
-	gEngine.Core.startScene(nextScene);
-    }
+	if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R)) {
+		var nextScene = new GameScene();
+		gEngine.Core.startScene(nextScene);
+	}
 };
 
 WinScreen.prototype.draw = function () {
-    this.mCam.setupViewProjection();
-    this.mRenderable.draw(this.mCam);
+	this.mCam.setupViewProjection();
+	this.mRenderable.draw(this.mCam);
 };
 
 WinScreen.prototype.loadScene = function () {
@@ -45,5 +45,4 @@ WinScreen.prototype.unloadScene = function () {
 	gEngine.Textures.unloadTexture("assets/WinScreen.png");
 	var nextLevel = new GameScene();
 	gEngine.Core.startScene(nextLevel);
-	    
 };

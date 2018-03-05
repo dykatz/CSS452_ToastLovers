@@ -26,15 +26,15 @@ LossScreen.prototype.initialize = function() {
 };
 
 LossScreen.prototype.update = function(dt) {
-    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R)){
-	var nextScene = new GameScene();
-	gEngine.Core.startScene(nextScene);
-    }
+	if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R)) {
+		var nextScene = new GameScene();
+		gEngine.Core.startScene(nextScene);
+	}
 };
 
 LossScreen.prototype.draw = function() {
-    this.mCam.setupViewProjection();
-    this.mRenderable.draw(this.mCam);
+	this.mCam.setupViewProjection();
+	this.mRenderable.draw(this.mCam);
 };
 
 LossScreen.prototype.loadScene = function() {
@@ -45,5 +45,4 @@ LossScreen.prototype.unloadScene = function() {
 	gEngine.Textures.unloadTexture("assets/GameOverScreen.png");
 	var nextLevel = new GameScene();
 	gEngine.Core.startScene(nextLevel);
-	    
 };

@@ -32,77 +32,78 @@ function Minion(pf, gSpawnPos) {
 gEngine.Core.inheritPrototype(Minion, GameObject);
 
 Minion.prototype.update = function(dt) {
-	if(!this.mPhysicsEnabled){
-	    this.mRenderComponent.updateAnimation(dt);
+	if(!this.mPhysicsEnabled) {
+		this.mRenderComponent.updateAnimation(dt);
 
-	    if(!this.movementEnabled)
-		    return;
+		if(!this.movementEnabled)
+			return;
 
-	    var pos = this.getXform().getPosition();
+		var pos = this.getXform().getPosition();
 
-	    this.gPos = this.pf.WCToGridIndex(pos[0], pos[1]);
-	    var weight = this.pf.getGridIndexWeight(this.gPos[0], this.gPos[1]);
-	    this.pf.DamageGridSpace(this.gPos, this.mDamage * dt);
+		this.gPos = this.pf.WCToGridIndex(pos[0], pos[1]);
+		var weight = this.pf.getGridIndexWeight(this.gPos[0], this.gPos[1]);
+		this.pf.DamageGridSpace(this.gPos, this.mDamage * dt);
 
-	    if(this.pathIndex < this.path.length) {
-		var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
-		var targetPos = this.pf.GridIndexToWC(targetGridPos[0], targetGridPos[1]);
+		if(this.pathIndex < this.path.length) {
+			var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
+			var targetPos = this.pf.GridIndexToWC(targetGridPos[0], targetGridPos[1]);
 
-		var dir = this.getCurrentFrontDir();
+			var dir = this.getCurrentFrontDir();
 
-		if(Math.abs(targetPos[0] - pos[0]) < Math.abs(this.mSpeed * dt * dir[0] / weight))
-			pos[0] = targetPos[0];
-		else
-			pos[0] += this.mSpeed * dt * dir[0] / weight;
+			if(Math.abs(targetPos[0] - pos[0]) < Math.abs(this.mSpeed * dt * dir[0] / weight))
+				pos[0] = targetPos[0];
+			else
+				pos[0] += this.mSpeed * dt * dir[0] / weight;
 
-		if (Math.abs(targetPos[1] - pos[1]) < Math.abs(this.mSpeed * dt * dir[1] / weight))
-			pos[1] = targetPos[1];
-		else
-			pos[1] += this.mSpeed * dt * dir[1] / weight;
+			if (Math.abs(targetPos[1] - pos[1]) < Math.abs(this.mSpeed * dt * dir[1] / weight))
+				pos[1] = targetPos[1];
+			else
+				pos[1] += this.mSpeed * dt * dir[1] / weight;
 
-		var xAligned = Math.round(pos[0]) === Math.round(targetPos[0]);
-		var yAligned = Math.round(pos[1]) === Math.round(targetPos[1]);
+			var xAligned = Math.round(pos[0]) === Math.round(targetPos[0]);
+			var yAligned = Math.round(pos[1]) === Math.round(targetPos[1]);
 
-		if(dir[0] !== 0 && !yAligned || dir[1] !== 0 && !xAligned)
-			this.setCurrentFrontDir([targetPos[0] - pos[0], targetPos[1] - pos[1]]);
+			if(dir[0] !== 0 && !yAligned || dir[1] !== 0 && !xAligned)
+				this.setCurrentFrontDir([targetPos[0] - pos[0], targetPos[1] - pos[1]]);
 
-		if(dir[0] !== 0 && xAligned || dir[1] !== 0 && yAligned) {
-			if(this.pathIndex < this.path.length - 1) {
-				this.pathIndex++;
-				this.pathLine.shift();
-				this.getNewDir();
-			} else {
-				console.log("Reached Target location. Do something now.");
-				this.pathLine = [];
-				this.movementEnabled = false;
+			if(dir[0] !== 0 && xAligned || dir[1] !== 0 && yAligned) {
+				if(this.pathIndex < this.path.length - 1) {
+					this.pathIndex++;
+					this.pathLine.shift();
+					this.getNewDir();
+				} else {
+					console.log("Reached Target location. Do something now.");
+					this.pathLine = [];
+					this.movementEnabled = false;
+				}
 			}
 		}
-	    }
-	}
-	else{
-	    this.mRigid.update();
-	    if(this.getXform().getYPos() < -300)
-		this.markedForDeletion = true;
-	    for(var i = 0; i < this.pathLine.length; i++){
-		this.pathLine[i].obj.mRigid.update();
-	    }
+	} else {
+		this.mRigid.update();
+
+		if(this.getXform().getYPos() < -300)
+			this.markedForDeletion = true;
+
+		for(var i = 0; i < this.pathLine.length; i++)
+			this.pathLine[i].obj.mRigid.update();
 	}
 };
 
 Minion.prototype.enablePhysics = function() {
 	if(!this.mPhysicsEnabled){
-	    this.mPhysicsEnabled = true;
-	    this.setRigidBody(this.mRigid);
-	    this.mRigid.setAngularVelocity((Math.random() - 0.5) * 10);
-	    this.mRigid.setVelocity((Math.random() - 0.5) * 40, (Math.random() - 0.5) * 60);
-	    for(var i = 0; i < this.pathLine.length; i++){
-		this.pathLine[i].obj = new GameObject(this.pathLine[i]);
-		this.pathLine[i].update();
-		this.pathLine[i].obj.mRigid = new RigidRectangle(this.pathLine[i].getXform(), this.pf.nW, 0.1);
-		this.pathLine[i].obj.setRigidBody(this.pathLine[i].obj.mRigid);
-		this.pathLine[i].obj.mRigid.setAngularVelocity((Math.random() - 0.5) * 10);
-		this.pathLine[i].obj.mRigid.setVelocity((Math.random() - 0.5) * 40, (Math.random() - 0.5) * 60);
-	    }
+		this.mPhysicsEnabled = true;
+		this.setRigidBody(this.mRigid);
+		this.mRigid.setAngularVelocity((Math.random() - 0.5) * 10);
+		this.mRigid.setVelocity((Math.random() - 0.5) * 40, (Math.random() - 0.5) * 60);
+
+		for(var i = 0; i < this.pathLine.length; i++) {
+			this.pathLine[i].obj = new GameObject(this.pathLine[i]);
+			this.pathLine[i].update();
+			this.pathLine[i].obj.mRigid = new RigidRectangle(this.pathLine[i].getXform(), this.pf.nW, 0.1);
+			this.pathLine[i].obj.setRigidBody(this.pathLine[i].obj.mRigid);
+			this.pathLine[i].obj.mRigid.setAngularVelocity((Math.random() - 0.5) * 10);
+			this.pathLine[i].obj.mRigid.setVelocity((Math.random() - 0.5) * 40, (Math.random() - 0.5) * 60);
+		}
 	}
 };
 
@@ -132,7 +133,7 @@ Minion.prototype.updatePath = function() {
 			shortestPath = paths[i];
 	}
 
-	if (shortestPath) {
+	if(shortestPath) {
 		this.path = shortestPath;
 		this.pathIndex = 0;
 		this.getNewDir();
@@ -180,7 +181,7 @@ Minion.prototype.TakeDamage = function(damageValue) {
 	this.mHealth -= damageValue;
 
 	if(this.mHealth <= 0)
-	    this.markedForDeletion = true;
+		this.markedForDeletion = true;
 };
 
 Minion.prototype.DrawLine = function(from, to, color) {
