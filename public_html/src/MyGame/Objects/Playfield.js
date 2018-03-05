@@ -90,15 +90,15 @@ Playfield.prototype.update = function(dt) {
 		var gPos = this.WCToGridIndex(x, y);
 
 
-		var hoveredIndex = this.GetTowerAtGridPos(gPos);
-		if(hoveredIndex < 0) {
+		var hovered = this.GetTowerAtGridPos(gPos);
+		if(!hovered) {
 			if(this.hoveredTower)
 				this.hoveredTower.showIndicator = false;
 		} else if(!this.selectedTower) {
 			if(this.hoveredTower)
 				this.hoveredTower.showIndicator = false;
 
-			this.hoveredTower = this.towers.getObjectAt(hoveredIndex);
+			this.hoveredTower = hovered
 			this.hoveredTower.showIndicator = true;
 		}
 
@@ -233,7 +233,7 @@ Playfield.prototype.GrabTower = function(gPos) {
 
 Playfield.prototype.CancelPlacement = function() {
 	this.selectedTower.showIndicator = false;
-	
+
 	if(this.selectedTower.mGridPos)
 		this.PlaceTower(this.selectedTower.mGridPos);
 	else
