@@ -1,7 +1,7 @@
 "use strict";
 
 function Minion(pf, gSpawnPos) {
-	this.mRenderComponent = new SpriteRenderable("assets/target.png");
+	this.mRenderComponent = new SpriteAnimateRenderable("assets/ant.png");
 	GameObject.call(this, this.mRenderComponent);
 
 	this.pf = pf;
@@ -22,10 +22,16 @@ function Minion(pf, gSpawnPos) {
 	this.getXform().setPosition(this.gPos[0] * pf.nW + pf.nW / 2, this.gPos[1] * -pf.nH - pf.nH / 2);
 	this.updatePath(this.pf.toastCords);
 	this.markedForDeletion = false;
+
+	this.mRenderComponent.mElmWidth = 0.125;
+	this.mRenderComponent.mNumElems = 6;
+	this.mRenderComponent._initAnimation();
 }
 gEngine.Core.inheritPrototype(Minion, GameObject);
 
 Minion.prototype.update = function(dt) {
+	this.mRenderComponent.updateAnimation(dt);
+
 	if(!this.movementEnabled)
 		return;
 
@@ -34,8 +40,8 @@ Minion.prototype.update = function(dt) {
 	this.gPos = this.pf.WCToGridIndex(pos[0], pos[1]);
 	var weight = this.pf.getGridIndexWeight(this.gPos[0], this.gPos[1]);
 	this.pf.DamageGridSpace(this.gPos, this.mDamage * dt);
-	if(this.pathIndex < this.path.length)
-	{
+
+	if(this.pathIndex < this.path.length) {
 	    var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
 	    var targetPos = this.pf.GridIndexToWC(targetGridPos[0], targetGridPos[1]);
 
@@ -108,7 +114,19 @@ Minion.prototype.updatePath = function() {
 Minion.prototype.getNewDir = function() {
 	if(this.path[this.pathIndex]) {
 		var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
-		this.setCurrentFrontDir([targetGridPos[0] - this.gPos[0], -(targetGridPos[1] - this.gPos[1])]);
+		var newFrontDir = [targetGridPos[0] - this.gPos[0], -(targetGridPos[1] - this.gPos[1])];
+		this.setCurrentFrontDir(newFrontDir);
+
+		if(newFrontDir[0] === 0) {
+			if(newFrontDir[1] === 1)
+				this.getXform().setRotationInRad(0);
+			else if(newFrontDir[1] === -1)
+				this.getXform().setRotationInRad(Math.PI);
+		} else if(newFrontDir[0] === 1) {
+			this.getXform().setRotationInRad(Math.PI * 3 / 2);
+		} else if(newFrontDir[0] === -1) {
+			this.getXform().setRotationInRad(Math.PI / 2);
+		}
 	}
 };
 

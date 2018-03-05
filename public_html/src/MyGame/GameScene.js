@@ -8,7 +8,7 @@ function GameScene() {
 	this.iShortRange = "assets/short_range.png";
 	this.iProjectile = "assets/projectile.png";
 	this.iHoneypot = "assets/honeypot.png";
-	this.iMinion = "assets/target.png";
+	this.iMinion = "assets/ant.png";
 	this.iRangeIndicator = "assets/indicator.png";
 
 	this.playfield = null;
