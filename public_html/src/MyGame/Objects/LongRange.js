@@ -2,7 +2,7 @@
 
 function LongRange(pos, playField) {
 	Tower.call(this, "assets/long_range.png", pos, playField);
-        
+
 	this.obj.mTexRight = 0.25;
 	this.obj._setTexInfo();
 	this.obj.setTextureMode(gEngine.Textures.textureModes.Nearest);
@@ -19,7 +19,7 @@ function LongRange(pos, playField) {
 
 	this.mProjectiles = new Set();
 	this.mName = "Long Range";
-        this.mPlayField = playField;
+	this.mPlayField = playField;
 	this.changeAnimationNoShoot();
 }
 gEngine.Core.inheritPrototype(LongRange, Tower);
@@ -33,7 +33,9 @@ LongRange.prototype.draw = function(cam) {
 LongRange.prototype.update = function(dt) {
 	Tower.prototype.update.call(this, dt);
 
-	if(this.mFiringEnabled) { this.obj.getXform().incRotationByRad(dt); }
+	if(this.mFiringEnabled)
+		this.obj.getXform().incRotationByRad(dt);
+
 	this.mProjectiles.forEach(p => { p.update(dt); });
 };
 

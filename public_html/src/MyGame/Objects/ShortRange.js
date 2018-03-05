@@ -8,10 +8,9 @@ function ShortRange(pos, playField) {
 	this.mRange = 15;
 	this.mFireRate = 3;
 	this.mDamage = 5;
-        this.mPlayField = playField;
+	this.mPlayField = playField;
 }
 gEngine.Core.inheritPrototype(ShortRange, Tower);
-
 
 ShortRange.prototype.draw = function(cam) {
 	Tower.prototype.draw.call(this, cam);
