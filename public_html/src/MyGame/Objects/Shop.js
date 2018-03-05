@@ -132,6 +132,6 @@ Shop.prototype.completeTransaction = function(tower) {
 };
 
 Shop.prototype.sellTower = function(tower) {
-	this.playerCurrency += tower.mCost * 0.8;
+	this.playerCurrency += tower.mCost * 0.8 * tower.mHealth / tower.baseHealth;
 	this.playerCurrencyText.setText("$" + this.playerCurrency);
 };

@@ -19,6 +19,7 @@ function Tower(texture, pos, playField) {
 	this.mProjectiles = null;
 	this.mFiringPriority = Tower.firingPriority.targetClosest;
 	this.mHealth = 1;
+	this.baseHealth = 1;
 	this.markedForDeletion = false;
 
 	GameObject.call(this, this.obj);
@@ -151,8 +152,8 @@ Tower.prototype.CheckProjectileCollisions = function(collidingObject) {
 
 Tower.prototype.takeDamage = function(damageNumber) {
 	this.mHealth -= damageNumber;
-	if(this.mHealth <= 0)
-	{
+	if(this.mHealth <= 0){
+	    this.mHealth = 0;
 	    this.markedForDeletion = true;
 	}
 };
