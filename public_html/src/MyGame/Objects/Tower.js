@@ -2,7 +2,7 @@
 
 function Tower(texture, pos, playField) {
 	this.mGridPos = pos;
-	this.mWeight = 100;    
+	this.mWeight = 10;    
 	this.mSize = [1, 1];
 	this.mHitPoints = 100;
 	this.mAccumulator = 0;
@@ -18,6 +18,8 @@ function Tower(texture, pos, playField) {
 	this.obj = new SpriteAnimateRenderable(texture);  
 	this.mProjectiles = null;
 	this.mFiringPriority = Tower.firingPriority.targetClosest;
+	this.mHealth = 1;
+	this.markedForDeletion = false;
 
 	GameObject.call(this, this.obj);
 }
@@ -121,7 +123,6 @@ Tower.prototype.getBestMinion = function(minionSet) {
 				bestMinion = minion;
 
 			break;
-
 		case Tower.firingPriority.targetLeastAdv:
 			if (minion.path.length - minion.pathIndex > bestMinion.path.length - bestMinion.pathIndex)
 				bestMinion = minion;
@@ -146,6 +147,14 @@ Tower.prototype.getDirectionFromMinion = function(minion) {
 Tower.prototype.CheckProjectileCollisions = function(collidingObject) {
 	if(this.mProjectiles !== null)
 		this.mProjectiles.forEach(p => { p.TryCollide(collidingObject); });
+};
+
+Tower.prototype.takeDamage = function(damageNumber) {
+	this.mHealth -= damageNumber;
+	if(this.mHealth <= 0)
+	{
+	    this.markedForDeletion = true;
+	}
 };
 
 Tower.prototype.enableFiring = function() {
