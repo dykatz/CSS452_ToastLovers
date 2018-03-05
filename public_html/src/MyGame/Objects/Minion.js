@@ -2,9 +2,9 @@
 
 // TODO:: MinionFactory that spawns at some gPos and destroy function. Also, behavior once at target position
 function Minion(pf, gSpawnPos) {
-    this.img = new SpriteRenderable("assets/target.png");
-    GameObject.call(this, this.img);
-
+    this.mRenderComponent = new SpriteRenderable("assets/target.png");
+    GameObject.call(this, this.mRenderComponent);
+    
     this.pf = pf;
     this.graph = pf.graph;
     this.gPos = gSpawnPos;
@@ -22,7 +22,6 @@ function Minion(pf, gSpawnPos) {
     this.getXform().setPosition(this.gPos[0] * pf.nW + pf.nW / 2, this.gPos[1] * -pf.nH - pf.nH / 2);
     this.updatePath(this.pf.toastCords);
     this.markedForDeletion = false;
-    this.bounds = new BoundingBox(this.getXform().getPosition(), this.pf.nW, this.pf.nH);
 }
 gEngine.Core.inheritPrototype(Minion, GameObject);
 
