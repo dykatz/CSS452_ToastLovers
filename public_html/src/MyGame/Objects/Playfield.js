@@ -173,6 +173,7 @@ Playfield.prototype.PlaceTower = function(gPos) {
 	this.selectedTower = null;
 	
 	t.mGridPos = gPos;
+	t.showIndicator = false;
 	t.mFiringEnabled = true;
 	t.getRenderable().setColor([1,1,1,0]);
 	t.getXform().setSize(this.nW * t.mSize[0], this.nH * t.mSize[1]);
@@ -202,7 +203,9 @@ Playfield.prototype.DeleteTower = function(gPos) {
 };
 
 Playfield.prototype.GetTowerAtGridPos = function(gPos) { 
-    return this.graph.grid[gPos[0]][gPos[1]].object;
+    if(gPos[0] < this.nW && gPos[1] < this.nH)
+	return this.graph.grid[gPos[0]][gPos[1]].object;
+    return null;
 };
 
 Playfield.prototype.DamageGridSpace = function(gPos, damageNumber) {
