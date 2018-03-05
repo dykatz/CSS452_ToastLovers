@@ -17,10 +17,20 @@ function Tower(texture, pos, playField) {
 	this.mName = "";
 	this.obj = new SpriteAnimateRenderable(texture);  
 	this.mProjectiles = null;
+	this.mFiringPriority = Tower.firingPriority.targetClosest;
 
 	GameObject.call(this, this.obj);
 }
 gEngine.Core.inheritPrototype(Tower, GameObject);
+
+Tower.firingPriority = Object.freeze({
+	targetClosest: 0,   /* Close to _this_ tower */
+	targetFurthest: 1,  /* Far from _this_ tower */
+	targetWeakest: 2,   /* Has little health */
+	targetStrongest: 3, /* Has a lot of health */
+	targetMostAdv: 4,   /* Close to _its target_ tower */
+	targetLeastAdv: 5   /* Far from _its target_ tower */
+});
 
 Tower.prototype.update = function(dt) {
 	if (!this.mFiringEnabled) return;
@@ -48,7 +58,7 @@ Tower.prototype.checkMinionsInRange = function(minionSet) {
 	if(!minionSet)
 		return;
 
-	for(var i = 0; i < minionSet.size(); i++){
+	for(var i = 0; i < minionSet.size(); ++i) {
 		var otherSize = minionSet.mSet[i].getXform().getSize();
 		var otherR = Math.sqrt(0.5*otherSize[0]*0.5*otherSize[0] + 0.5*otherSize[1]*0.5*otherSize[1]);
 		var d = [];
@@ -60,6 +70,76 @@ Tower.prototype.checkMinionsInRange = function(minionSet) {
 		}
 	}
 };
+
+Tower.prototype.getBestMinion = function(minionSet) {
+	var bestMinion = null;
+
+	if(!minionSet)
+		return bestMinion;
+
+	for(var i = 0; i < minionSet.size(); ++i) {
+		var minion = minionSet.mSet[i];
+
+		if(!bestMinion) {
+			bestMinion = minion;
+			continue;
+		}
+
+		var towerP = this.obj.getXform().getPosition();
+		var minionP = minion.getXform().getPosition();
+		var bMinionP = bestMinion.getXform().getPosition();
+
+		switch(this.mFiringPriority) {
+		case Tower.firingPriority.targetClosest:
+			if (Math.pow(minionP[0]-towerP[0],2)+Math.pow(minionP[1]-towerP[1],2) <
+				Math.pow(bMinionP[0]-towerP[0],2)+Math.pow(bMinionP[1]-towerP[1],2))
+				bestMinion = minion;
+
+			break;
+
+		case Tower.firingPriority.targetFurthest:
+			if (Math.pow(minionP[0]-towerP[0],2)+Math.pow(minionP[1]-towerP[1],2) >
+				Math.pow(bMinionP[0]-towerP[0],2)+Math.pow(bMinionP[1]-towerP[1],2))
+				bestMinion = minion;
+
+			break;
+
+		case Tower.firingPriority.targetWeakest:
+			if (minion.mHealth < bestMinion.mHealth)
+				bestMinion = minion;
+
+			break;
+
+		case Tower.firingPriority.targetStrongest:
+			if (minion.mHealth > bestMinion.mHealth)
+				bestMinion = minion;
+
+			break;
+
+		case Tower.firingPriority.targetMostAdv:
+			if (minion.path.length - minion.pathIndex < bestMinion.path.length - bestMinion.pathIndex)
+				bestMinion = minion;
+
+			break;
+
+		case Tower.firingPriority.targetLeastAdv:
+			if (minion.path.length - minion.pathIndex > bestMinion.path.length - bestMinion.pathIndex)
+				bestMinion = minion;
+
+			break;
+		}
+	}
+
+	return bestMinion;
+}
+
+Tower.prototype.getDirectionFromMinion = function(minion) {
+	var Mp = minion.getXform().getPosition();
+	var Tp = this.obj.getXform().getPosition();
+	var Md = minion.getCurrentFrontDir() * minion.mSpeed / this.mProjectileSpeed;
+	var D = Mp - Tp + Md;
+	return Math.atan2(D[1], D[0]);
+}
 
 Tower.prototype.CheckProjectileCollisions = function(collidingObject) {
 	if(this.mProjectiles !== null)

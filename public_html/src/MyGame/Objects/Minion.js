@@ -79,16 +79,16 @@ Minion.prototype.updatePath = function() {
 	}
 
 	for(var i = 0; i < paths.length; ++i) {
-		if(shortestPath === null || shortestPath.length > paths[i].length)
+		if(shortestPath === null || (shortestPath.length > paths[i].length && paths[i].length > 0))
 			shortestPath = paths[i];
 	}
 
-	this.path = shortestPath;
-	this.pathIndex = 0;
-	this.getNewDir();
-
-	if(this.drawPath && this.path.length > 0)
+	if (shortestPath) {
+		this.path = shortestPath;
+		this.pathIndex = 0;
+		this.getNewDir();
 		this.DrawPath();
+	}
 };
 
 Minion.prototype.getNewDir = function() {
