@@ -54,8 +54,6 @@ Minion.prototype.update = function(dt) {
             this.movementEnabled = false;
     	}
     }
-
-    this.bounds.setBounds(this.getXform().getPosition(), this.pf.nW, this.pf.nW);
 };
 
 Minion.prototype.draw = function(cam) {
