@@ -202,7 +202,9 @@ Playfield.prototype.DeleteTower = function(gPos) {
 };
 
 Playfield.prototype.GetTowerAtGridPos = function(gPos) { 
-    return this.graph.grid[gPos[0]][gPos[1]].object;
+    if(gPos[0] < this.nW && gPos[1] < this.nH)
+	return this.graph.grid[gPos[0]][gPos[1]].object;
+    return null;
 };
 
 Playfield.prototype.DamageGridSpace = function(gPos, damageNumber) {
