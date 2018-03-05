@@ -1,6 +1,5 @@
 "use strict";
 
-
 // TODO:: MinionFactory that spawns at some gPos and destroy function. Also, behavior once at target position
 function Minion(pf, gSpawnPos) {
     this.img = new SpriteRenderable("assets/target.png");
@@ -31,21 +30,21 @@ Minion.prototype.update = function(dt) {
     if(!this.movementEnabled) return;
 
     var pos = this.getXform().getPosition();
-    
+
     this.gPos = this.pf.WCToGridIndex(pos[0], pos[1]);
     var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
     var targetPos = this.pf.GridIndexToWC(targetGridPos[0], targetGridPos[1]);
-    
+
     var dir = this.getCurrentFrontDir();
     pos[0] += this.mSpeed * dt * dir[0];
     pos[1] += this.mSpeed * dt * dir[1];
-    
+
     var xAligned = Math.round(pos[0]) === Math.round(targetPos[0]);
     var yAligned = Math.round(pos[1]) === Math.round(targetPos[1]);
-    
+
     if(dir[0] !== 0 && !yAligned || dir[1] !== 0 && !xAligned)
         this.setCurrentFrontDir([targetPos[0] - pos[0], targetPos[1] - pos[1]]);
-        
+
     if(dir[0] !== 0 && xAligned || dir[1] !== 0 && yAligned) {
     	if(this.pathIndex < this.path.length - 1) {
             this.pathIndex++;
@@ -56,6 +55,7 @@ Minion.prototype.update = function(dt) {
             this.movementEnabled = false;
     	}
     }
+
     this.bounds.setBounds(this.getXform().getPosition(), this.pf.nW, this.pf.nW);
 };
 
@@ -66,14 +66,29 @@ Minion.prototype.draw = function(cam) {
         this.pathLine.forEach(line => line.draw(cam));
 };
 
-Minion.prototype.updatePath = function(gPos) { 
-    this.path = astar.search(this.graph,
-        this.graph.grid[this.gPos[0]][this.gPos[1]],
-        this.graph.grid[gPos[0]][gPos[1]], null);
-        
+Minion.prototype.updatePath = function() {
+    var paths = [];
+    var shortestPath = null;
+
+    for(var i = 0; i < this.pf.towers.objectCount(); ++i) {
+        var tower = this.pf.towers.getObjectAt(i);
+
+        if(tower.mName === "Honeypot" || tower.mName === "Toast") {
+            paths.push(astar.search(this.graph,
+                this.graph.grid[this.gPos[0]][this.gPos[1]],
+                this.graph.grid[tower.mGridPos[0]][tower.mGridPos[1]]));
+        }
+    }
+
+    for(var i = 0; i < paths.length; ++i) {
+        if(shortestPath === null || shortestPath.length > paths[i].length)
+            shortestPath = paths[i];
+    }
+
+    this.path = shortestPath;
     this.pathIndex = 0;
     this.getNewDir();
-    
+
     if(this.drawPath && this.path.length > 0)
         this.DrawPath();
 };
@@ -85,11 +100,11 @@ Minion.prototype.getNewDir = function() {
 
 Minion.prototype.DrawPath = function() {
     this.pathLine = [];
-    
+
     var from = this.pf.GridIndexToWC(this.gPos[0], this.gPos[1]);
     var to = this.pf.GridIndexToWC(this.path[0].x, this.path[0].y);
     this.DrawLine(from, to, [1,0,0,1]);
-    
+
     for(var i = 0; i < this.path.length - 1; i++) {
         from = this.pf.GridIndexToWC(this.path[i].x, this.path[i].y);
         to = this.pf.GridIndexToWC(this.path[i + 1].x, this.path[i + 1].y);
@@ -99,10 +114,9 @@ Minion.prototype.DrawPath = function() {
 
 Minion.prototype.TakeDamage = function(damageValue) {
     this.mHealth -= damageValue;
+
     if(this.mHealth <= 0)
-    {
         this.markedForDeletion = true;
-    }
 };
 
 Minion.prototype.DrawLine = function(from, to, color) {

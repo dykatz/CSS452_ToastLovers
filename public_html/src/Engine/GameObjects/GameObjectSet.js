@@ -104,3 +104,7 @@ GameObjectSet.prototype.draw = function (aCamera) {
         this.mSet[i].draw(aCamera);
     }
 };
+
+GameObjectSet.prototype.objectCount = function () {
+    return this.mSet.length;
+}
