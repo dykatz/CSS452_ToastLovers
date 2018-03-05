@@ -15,7 +15,7 @@ function Playfield(size, camRef, shop) {
 	this.minions = new GameObjectSet();
 	this.selectedTower = null;
 	this.hoveredTower = null;
-	this.minionFactory = new MinionFactory(this, MinionFactory.SpawnMode.entireBorder, 3);
+	this.minionFactory = new MinionFactory(this, 3);
 	this.allWavesSpawned = false;
 	
 	this.mPhysicsEnabled = false;

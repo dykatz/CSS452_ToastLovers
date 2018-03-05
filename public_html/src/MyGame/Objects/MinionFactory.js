@@ -1,11 +1,11 @@
 "use strict";
 
-function MinionFactory(pf, mode, paths) {
+function MinionFactory(pf, paths) {
 	this.pf = pf;
 	this.graph = pf.graph;
 	this.minions = pf.minions;
 
-	this.spawnMode = mode;
+	this.spawnMode = MinionFactory.SpawnMode.entireBorder;
 	this.spawnPointCount = paths;
 	this.spawnWait = 1;
 	this.spawnPoints = [];
@@ -27,6 +27,11 @@ MinionFactory.SpawnMode = Object.freeze({
 	entireBorder: 0,
 	specificPoints: 1
 });
+
+MinionFactory.prototype.reduceSpawnPossibilities = function(args) {
+	this.spawnMode = MinionFactory.SpawnMode.specificPoints;
+	this.spawnPointPossibilities = args;
+};
 
 MinionFactory.prototype.update = function(dt) {
 	if(gEngine.Input.isKeyClicked(gEngine.Input.keys.N))
@@ -59,10 +64,9 @@ MinionFactory.prototype.update = function(dt) {
 MinionFactory.prototype.startWave = function() {
 	this.start = true;
 	this.spawnPoints = [];
+	var holeNumbers = [];
 
 	if(this.spawnMode == MinionFactory.SpawnMode.entireBorder) {
-		var holeNumbers = [];
-
 		for(var i = 0; i < this.spawnPointCount; ++i) {
 			var n = Math.floor(Math.random() * ((this.pf.gWidth + this.pf.gHeight - 2) * 2 - i));
 
@@ -99,10 +103,22 @@ MinionFactory.prototype.startWave = function() {
 			n -= this.pf.gHeight - 2;
 			this.spawnPoints.push([this.pf.gWidth - 1, n + 1]);
 		}
-	} else if (this.spawnMode == MinionFactory.SpawnMode.specificPoints) {
-		// TODO - implement this
+	} else if(this.spawnMode == MinionFactory.SpawnMode.specificPoints) {
+		for(var i = 0; i < this.spawnPointCount; ++i) {
+			var n = Math.floor(Math.random() * (this.spawnPointPossibilities.length - i));
+
+			for(var j = 0; j < i; ++j) {
+				if(n >= holeNumbers[j])
+					++n;
+			}
+
+			holeNumbers.push(n);
+		}
+
+		for(var i = 0; i < holeNumbers.length; ++i)
+			this.spawnPoints.push(this.spawnPointPossibilities[holeNumbers[i]]);
 	}
-}
+};
 
 MinionFactory.prototype.spawn = function(type) {
 	var newMinion = new Minion(this.pf, this.spawnPoints[Math.floor(Math.random() * this.spawnPointCount)]);
