@@ -1,6 +1,5 @@
 "use strict";
 
-// TODO:: MinionFactory that spawns at some gPos and destroy function. Also, behavior once at target position
 function Minion(pf, gSpawnPos) {
 	this.mRenderComponent = new SpriteRenderable("assets/target.png");
 	GameObject.call(this, this.mRenderComponent);
