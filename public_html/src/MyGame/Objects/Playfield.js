@@ -14,6 +14,7 @@ function Playfield(size, camRef, shop) {
 	this.towers = new GameObjectSet();
 	this.minions = new GameObjectSet();
 	this.selectedTower = null;
+	this.hoveredTower = null;
 	this.minionFactory = new MinionFactory(this, MinionFactory.SpawnMode.entireBorder, 3);
 
 	var tmpGraph = [];
@@ -87,6 +88,20 @@ Playfield.prototype.update = function(dt) {
 	if(this.cam.isMouseInViewport()) {
 		var x = this.cam.mouseWCX(), y = this.cam.mouseWCY();
 		var gPos = this.WCToGridIndex(x, y);
+
+
+		var hoveredIndex = this.GetTowerAtGridPos(gPos);
+		if(hoveredIndex < 0) {
+			if(this.hoveredTower)
+				this.hoveredTower.showIndicator = false;
+		} else if(!this.selectedTower) {
+			if(this.hoveredTower)
+				this.hoveredTower.showIndicator = false;
+
+			this.hoveredTower = this.towers.getObjectAt(hoveredIndex);
+			this.hoveredTower.showIndicator = true;
+		}
+
 
 		switch(this.pfState) {
 			case Playfield.State.placement:
@@ -217,6 +232,8 @@ Playfield.prototype.GrabTower = function(gPos) {
 };
 
 Playfield.prototype.CancelPlacement = function() {
+	this.selectedTower.showIndicator = false;
+	
 	if(this.selectedTower.mGridPos)
 		this.PlaceTower(this.selectedTower.mGridPos);
 	else
