@@ -90,7 +90,7 @@ RigidShape.prototype.travel = function() {
 
 RigidShape.prototype.adjustPositionBy = function(v, delta) {
     var p = this.mXform.getPosition();
-    vec2.scaleAndAdd(p, p, v, delta)
+    vec2.scaleAndAdd(p, p, v, delta);
 };
 
 var kRigidShapeDelta = 0.01;

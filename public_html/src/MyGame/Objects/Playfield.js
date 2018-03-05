@@ -16,6 +16,7 @@ function Playfield(size, camRef, shop) {
 	this.selectedTower = null;
 	this.hoveredTower = null;
 	this.minionFactory = new MinionFactory(this, MinionFactory.SpawnMode.entireBorder, 3);
+	this.mPhysicsEnabled = false;
 
 	var tmpGraph = [];
 	for(var i = 0; i < this.gWidth; i++) {
@@ -29,6 +30,7 @@ function Playfield(size, camRef, shop) {
 	this.nodesActive = true;
 	this.initNodes();
 	this.playerLost = false;
+	this.playerWon = false;
 };
 
 Playfield.State = Object.freeze({
@@ -65,76 +67,140 @@ Playfield.prototype.draw = function(cam, drawGrid = true) {
 };
 
 Playfield.prototype.update = function(dt) {
-	for(var i = 0; i < this.towers.size(); i++)
-		this.towers.mSet[i].checkMinionsInRange(this.minions);
+	if(!this.playerLost && !this.playerWon){
+	    for(var i = 0; i < this.towers.size(); i++)
+		    this.towers.mSet[i].checkMinionsInRange(this.minions);
 
-	this.towers.update(dt);
-	this.minions.update(dt);
-	this.minionFactory.update(dt);
-	this.mProjectiles.forEach(p => { p.update(dt); });
+	    this.towers.update(dt);
+	    this.minions.update(dt);
+	    this.minionFactory.update(dt);
+	    this.mProjectiles.forEach(p => { p.update(dt); });
 
-	if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R))
-		this.pfState = Playfield.State.deletion;
+	    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R))
+		    this.pfState = Playfield.State.deletion;
 
-	if(gEngine.Input.isKeyClicked(gEngine.Input.keys.W) && this.pfState === Playfield.State.inactive)
-		this.pfState = Playfield.State.grab;
+	    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.W) && this.pfState === Playfield.State.inactive)
+		    this.pfState = Playfield.State.grab;
 
-	if(gEngine.Input.isKeyClicked(gEngine.Input.keys.G))
-		this.nodesActive = !this.nodesActive;
+	    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.G))
+		    this.nodesActive = !this.nodesActive;
 
-	if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Escape) && this.pfState === Playfield.State.placement)
-		this.CancelPlacement();
+	    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Escape) && this.pfState === Playfield.State.placement)
+		    this.CancelPlacement();
 
-	if(this.cam.isMouseInViewport()) {
-		var x = this.cam.mouseWCX(), y = this.cam.mouseWCY();
-		var gPos = this.WCToGridIndex(x, y);
-
-
-		var hovered = this.GetTowerAtGridPos(gPos);
-		if(!hovered) {
-			if(this.hoveredTower)
-				this.hoveredTower.showIndicator = false;
-		} else if(!this.selectedTower) {
-			if(this.hoveredTower)
-				this.hoveredTower.showIndicator = false;
-
-			this.hoveredTower = hovered
-			this.hoveredTower.showIndicator = true;
-		}
+	    if(this.cam.isMouseInViewport()) {
+		    var x = this.cam.mouseWCX(), y = this.cam.mouseWCY();
+		    var gPos = this.WCToGridIndex(x, y);
 
 
-		switch(this.pfState) {
-			case Playfield.State.placement:
-				if(this.selectedTower) {
-					this.selectedTower.update(dt);
-					this.TowerPlacement(gPos);
-				}
+		    var hovered = this.GetTowerAtGridPos(gPos);
+		    if(!hovered) {
+			    if(this.hoveredTower)
+				    this.hoveredTower.showIndicator = false;
+		    } else if(!this.selectedTower) {
+			    if(this.hoveredTower)
+				    this.hoveredTower.showIndicator = false;
 
-				break;
+			    this.hoveredTower = hovered
+			    this.hoveredTower.showIndicator = true;
+		    }
 
-			case Playfield.State.deletion:
-				if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left))
-					this.DeleteTower(gPos);
 
-				break;
+		    switch(this.pfState) {
+			    case Playfield.State.placement:
+				    if(this.selectedTower) {
+					    this.selectedTower.update(dt);
+					    this.TowerPlacement(gPos);
+				    }
 
-			case Playfield.State.grab:
-				if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left))
-					this.GrabTower(gPos);
+				    break;
 
-				break;
-		}
-	}
+			    case Playfield.State.deletion:
+				    if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left))
+					    this.DeleteTower(gPos);
 
-	for(var i = 0; i < this.minions.size(); ++i){
+				    break;
+
+			    case Playfield.State.grab:
+				    if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left))
+					    this.GrabTower(gPos);
+
+				    break;
+		    }
+	    }
+
+	    for(var i = 0; i < this.minions.size(); ++i){
 		this.CheckProjectileCollisions(this.minions.mSet[i]);
 
 		if(this.minions.mSet[i].markedForDeletion){
 			this.minions.removeAt(i);
 			--i;
 		}
+	    }
 	}
+	else if (this.mPhysicsEnabled){
+	    this.updatePhysics(dt);
+	    var reset = true;
+	    for(var i = 0; i < this.minions.size(); ++i){
+		reset = false;
+		if(this.minions.mSet[i].markedForDeletion){
+		    this.minions.removeAt(i);
+		    --i;
+		}
+	    }
+	    for(var i = 0; i < this.towers.size(); ++i){
+		reset = false;
+		if(this.towers.mSet[i].markedForDeletion){
+		    this.towers.removeAt(i);
+		    --i;
+		}
+	    }
+	    this.mProjectiles.forEach(p => {
+		reset = false;
+		if(p.mRenderComponent.getXform().getYPos() < -200)
+		    p.destroy(p);
+	    });
+	    var offset = this.shake.mShake.getShakeResults();
+	    this.cam.setWCCenter(this.cameraPosition[0] + offset[0], this.cameraPosition[1] + offset[1]);
+	    this.cam.mCameraState.updateCameraState();
+	    if(reset)
+		this.finishedLevel = true;
+	}
+};
 
+Playfield.prototype.playerLose = function() {
+	this.mPhysicsEnabled = true;
+	this.playerLost = true;
+	this.shake = new CameraShake(this.cam.mCameraState, -20, -20, 20, 10);
+	this.cameraPosition = this.cam.getWCCenter();
+};
+
+Playfield.prototype.updatePhysics = function(dt) {
+	this.enablePhysicsOnSet(this.towers);
+	this.enablePhysicsOnSet(this.minions);
+	for(var i = 0; i < this.nodes.length; i++){
+	    if(!this.nodes[i].mPhysicsEnabled)
+		this.nodes[i].startPhysics();
+	    else
+		break;
+	}
+	this.towers.update(dt);
+	this.minions.update(dt);
+	this.mProjectiles.forEach(p => { 
+	    p.enablePhysics();
+	    p.update(dt); 
+	});
+	for(var i = 0; i < this.nodes.length; i++)
+	    this.nodes[i].update();
+};
+
+Playfield.prototype.enablePhysicsOnSet = function(objects) {
+	for(var i = 0; i < objects.size(); i++){
+	    if(!objects.mSet[i].mPhysicsEnabled)
+		objects.mSet[i].enablePhysics();
+	    else
+		break;
+	}
 };
 
 Playfield.prototype.getGridIndexWeight = function(x, y) {
@@ -224,7 +290,7 @@ Playfield.prototype.DamageGridSpace = function(gPos, damageNumber) {
 		if(!(towerRef instanceof Toast))
 		    this.DeleteTower(gPos);
 		else
-		    this.playerLost = true;
+		    this.playerLose();
 	    }
 	}
 };

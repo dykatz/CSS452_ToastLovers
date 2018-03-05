@@ -21,13 +21,15 @@ function Tower(texture, pos, playField) {
 	this.mHealth = 1;
 	this.baseHealth = 1;
 	this.markedForDeletion = false;
-	this.mIndicator = new TextureRenderable("assets/indicator.png");
-	this.mIndicator.setColor([0, 1, 0, 1]);
+	this.mRenderComponent = new TextureRenderable("assets/indicator.png");
+	this.mRenderComponent.setColor([0, 1, 0, 1]);
 	this.showIndicator = false;
 
 	GameObject.call(this, this.obj);
 	this.getXform().setPosition(-100, 100);
-	this.mIndicator.getXform().setPosition(-100, 100);
+	this.mRenderComponent.getXform().setPosition(-100, 100);
+	this.mPhysicsEnabled = false;
+	this.mRigid = new RigidRectangle(this.getXform(), 1, 1);
 }
 gEngine.Core.inheritPrototype(Tower, GameObject);
 
@@ -41,8 +43,9 @@ Tower.firingPriority = Object.freeze({
 });
 
 Tower.prototype.update = function(dt) {
+    if(!this.mPhysicsEnabled){
 	if(this.showIndicator)
-		this.mIndicator.getXform().setPosition(this.getXform().getXPos(), this.getXform().getYPos());
+		this.mRenderComponent.getXform().setPosition(this.getXform().getXPos(), this.getXform().getYPos());
 
 	if (!this.mFiringEnabled) return;
 
@@ -61,12 +64,37 @@ Tower.prototype.update = function(dt) {
 			this.changeAnimationShoot();
 		}
 	}
+    }
+    else{
+	this.mRigid.update();
+	if(this.obj.getXform().getYPos() < -300)
+	    this.markedForDeletion = true;
+    }
+};
+
+Tower.prototype.TryCollide = function(minionColliding) {
+	var pos = [0, 0];
+
+	if(!this.mCollided && this.pixelTouches(minionColliding, pos)) {
+		this.mCollided = true;
+		this.mEnabled = false;
+		minionColliding.TakeDamage(this.mDamage);
+	}
 };
 
 Tower.prototype.draw = function(cam) {
 	GameObject.prototype.draw.call(this, cam);
 	if(this.showIndicator) 
-		this.mIndicator.draw(cam);
+		this.mRenderComponent.draw(cam);
+};
+
+Tower.prototype.enablePhysics = function() {
+	if(!this.mPhysicsEnabled){
+	    this.mPhysicsEnabled = true;
+	    this.setRigidBody(this.mRigid);
+	    this.mRigid.setAngularVelocity((Math.random() - 0.5) * 10);
+	    this.mRigid.setVelocity((Math.random() - 0.5) * 40, (Math.random() - 0.5) * 60);
+	}
 };
 
 Tower.prototype.checkMinionsInRange = function(minionSet) {

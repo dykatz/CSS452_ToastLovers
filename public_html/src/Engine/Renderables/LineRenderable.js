@@ -33,6 +33,8 @@ function LineRenderable(x1, y1, x2, y2) {
 
     this.mP1 = vec2.fromValues(0, 0);
     this.mP2 = vec2.fromValues(0, 0);
+    this.oldPosition = [0, 0];
+    this.enableUpdate = false;
 
     if (x1 !== "undefined") {
         this.setVertices(x1, y1, x2, y2);
@@ -56,14 +58,9 @@ LineRenderable.prototype.draw = function (aCamera) {
     var gl = gEngine.Core.getGL();
     this.mShader.activateShader(this.mColor, aCamera);  // always activate the shader first!
 
-    var sx = this.mP1[0] - this.mP2[0];
-    var sy = this.mP1[1] - this.mP2[1];
-    var cx = this.mP1[0] - sx / 2;
-    var cy = this.mP1[1] - sy / 2;
-    var xf = this.getXform();
-    xf.setSize(sx, sy);
-    xf.setPosition(cx, cy);
-
+    if(!this.enableUpdate)
+	this.updatePosition();
+    
     this.mShader.loadObjectTransform(this.mXform.getXform());
     if (this.mShowLine) {
         gl.drawArrays(gl.LINE_STRIP, 0, 2);
@@ -71,6 +68,20 @@ LineRenderable.prototype.draw = function (aCamera) {
     if (!this.mShowLine || this.mDrawVertices) {
         gl.drawArrays(gl.POINTS, 0, 2);
     }
+};
+
+LineRenderable.prototype.update = function(){
+    this.enableUpdate = true;
+};
+
+LineRenderable.prototype.updatePosition = function(){
+    var sx = this.mP1[0] - this.mP2[0];
+    var sy = this.mP1[1] - this.mP2[1];
+    var cx = this.mP1[0] - sx / 2;
+    var cy = this.mP1[1] - sy / 2;
+    var xf = this.getXform();
+    xf.setSize(sx, sy);
+    xf.setPosition(cx, cy);
 };
 
 /**

@@ -16,7 +16,7 @@ function LongRange(pos, playField) {
 	this.mRange = 40;
 	this.mDamage = 50;
 	this.mProjectileSpeed = 50;
-	this.mIndicator.getXform().setSize(this.mRange * 2, this.mRange * 2);
+	this.mRenderComponent.getXform().setSize(this.mRange * 2, this.mRange * 2);
 
 	this.mProjectiles = new Set();
 	this.mName = "Long Range";
@@ -33,11 +33,12 @@ LongRange.prototype.draw = function(cam) {
 
 LongRange.prototype.update = function(dt) {
 	Tower.prototype.update.call(this, dt);
+	if(!this.mPhysicsEnabled){
+	    if(this.mFiringEnabled)
+		    this.obj.getXform().incRotationByRad(dt);
 
-	if(this.mFiringEnabled)
-		this.obj.getXform().incRotationByRad(dt);
-
-	this.mProjectiles.forEach(p => { p.update(dt); });
+	    this.mProjectiles.forEach(p => { p.update(dt); });
+	}
 };
 
 LongRange.prototype.checkMinionsInRange = function(minionSet) {

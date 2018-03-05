@@ -9,7 +9,7 @@ function ShortRange(pos, playField) {
 	this.mFireRate = 3;
 	this.mDamage = 5;
 	this.mPlayField = playField;
-	this.mIndicator.getXform().setSize(this.mRange * 2, this.mRange * 2);
+	this.mRenderComponent.getXform().setSize(this.mRange * 2, this.mRange * 2);
 }
 gEngine.Core.inheritPrototype(ShortRange, Tower);
 
@@ -20,7 +20,9 @@ ShortRange.prototype.draw = function(cam) {
 
 ShortRange.prototype.update = function(dt) {
 	Tower.prototype.update.call(this, dt);
-	this.mProjectiles.forEach(p => { p.update(dt); });
+	if(!this.mPhysicsEnabled){
+	    this.mProjectiles.forEach(p => { p.update(dt); });
+	}
 };
 
 ShortRange.prototype.changeAnimationNoShoot = function() {
