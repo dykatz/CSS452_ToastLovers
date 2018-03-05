@@ -35,13 +35,10 @@ Minion.prototype.update = function(dt) {
 	var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
 	var targetPos = this.pf.GridIndexToWC(targetGridPos[0], targetGridPos[1]);
 
-	var xAligned = Math.round(pos[0]) === Math.round(targetPos[0]);
-	var yAligned = Math.round(pos[1]) === Math.round(targetPos[1]);
-
 	var dir = this.getCurrentFrontDir();
 	
 	if(Math.abs(targetPos[0] - pos[0]) < Math.abs(this.mSpeed * dt * dir[0]))
-		pos[0] = targetPos[0]
+		pos[0] = targetPos[0];
 	else
 		pos[0] += this.mSpeed * dt * dir[0];
 
@@ -49,6 +46,9 @@ Minion.prototype.update = function(dt) {
 		pos[1] = targetPos[1];
 	else
 		pos[1] += this.mSpeed * dt * dir[1];
+
+	var xAligned = Math.round(pos[0]) === Math.round(targetPos[0]);
+	var yAligned = Math.round(pos[1]) === Math.round(targetPos[1]);
 
 	if(dir[0] !== 0 && !yAligned || dir[1] !== 0 && !xAligned)
 		this.setCurrentFrontDir([targetPos[0] - pos[0], targetPos[1] - pos[1]]);
