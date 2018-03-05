@@ -1,6 +1,5 @@
 "use strict";
 
-// TODO:: MinionFactory that spawns at some gPos and destroy function. Also, behavior once at target position
 function Minion(pf, gSpawnPos) {
 	this.mRenderComponent = new SpriteRenderable("assets/target.png");
 	GameObject.call(this, this.mRenderComponent);
@@ -11,6 +10,7 @@ function Minion(pf, gSpawnPos) {
 
 	this.mHealth = 100;
 	this.mSpeed = 10;
+	this.mDamage = 10;
 	this.movementEnabled = true;
 
 	this.path = [];
@@ -30,39 +30,44 @@ Minion.prototype.update = function(dt) {
 		return;
 
 	var pos = this.getXform().getPosition();
-
-	this.gPos = this.pf.WCToGridIndex(pos[0], pos[1]);
-	var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
-	var targetPos = this.pf.GridIndexToWC(targetGridPos[0], targetGridPos[1]);
-
-	var dir = this.getCurrentFrontDir();
 	
-	if(Math.abs(targetPos[0] - pos[0]) < Math.abs(this.mSpeed * dt * dir[0]))
-		pos[0] = targetPos[0];
-	else
-		pos[0] += this.mSpeed * dt * dir[0];
+	this.gPos = this.pf.WCToGridIndex(pos[0], pos[1]);
+	var weight = this.pf.getGridIndexWeight(this.gPos[0], this.gPos[1]);
+	this.pf.DamageGridSpace(this.gPos, this.mDamage * dt);
+	if(this.pathIndex < this.path.length)
+	{
+	    var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
+	    var targetPos = this.pf.GridIndexToWC(targetGridPos[0], targetGridPos[1]);
 
-	if (Math.abs(targetPos[1] - pos[1]) < Math.abs(this.mSpeed * dt * dir[1]))
-		pos[1] = targetPos[1];
-	else
-		pos[1] += this.mSpeed * dt * dir[1];
+	    var dir = this.getCurrentFrontDir();
 
-	var xAligned = Math.round(pos[0]) === Math.round(targetPos[0]);
-	var yAligned = Math.round(pos[1]) === Math.round(targetPos[1]);
+	    if(Math.abs(targetPos[0] - pos[0]) < Math.abs(this.mSpeed * dt * dir[0] / weight))
+		    pos[0] = targetPos[0];
+	    else
+		    pos[0] += this.mSpeed * dt * dir[0] / weight;
 
-	if(dir[0] !== 0 && !yAligned || dir[1] !== 0 && !xAligned)
-		this.setCurrentFrontDir([targetPos[0] - pos[0], targetPos[1] - pos[1]]);
+	    if (Math.abs(targetPos[1] - pos[1]) < Math.abs(this.mSpeed * dt * dir[1] / weight))
+		    pos[1] = targetPos[1];
+	    else
+		    pos[1] += this.mSpeed * dt * dir[1] / weight;
 
-	if(dir[0] !== 0 && xAligned || dir[1] !== 0 && yAligned) {
-		if(this.pathIndex < this.path.length - 1) {
-			this.pathIndex++;
-			this.pathLine.shift();
-			this.getNewDir();
-		} else {
-			console.log("Reached Target location. Do something now.");
-			this.pathLine = [];
-			this.movementEnabled = false;
-		}
+	    var xAligned = Math.round(pos[0]) === Math.round(targetPos[0]);
+	    var yAligned = Math.round(pos[1]) === Math.round(targetPos[1]);
+
+	    if(dir[0] !== 0 && !yAligned || dir[1] !== 0 && !xAligned)
+		    this.setCurrentFrontDir([targetPos[0] - pos[0], targetPos[1] - pos[1]]);
+
+	    if(dir[0] !== 0 && xAligned || dir[1] !== 0 && yAligned) {
+		    if(this.pathIndex < this.path.length - 1) {
+			    this.pathIndex++;
+			    this.pathLine.shift();
+			    this.getNewDir();
+		    } else {
+			    console.log("Reached Target location. Do something now.");
+			    this.pathLine = [];
+			    this.movementEnabled = false;
+		    }
+	    }
 	}
 };
 

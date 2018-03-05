@@ -258,6 +258,7 @@ function GridNode(x, y, weight) {
   this.x = x;
   this.y = y;
   this.weight = weight;
+  this.object = null;
 }
 
 GridNode.prototype.toString = function() {

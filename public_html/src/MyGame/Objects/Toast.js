@@ -6,6 +6,6 @@ function Toast(pos) {
 	this.obj._setTexInfo();
 	this.mName = "Toast";
 	this.mCost = 0;
-	this.healthRemaining = 100;
+	this.mHealth = 100;
 }
 gEngine.Core.inheritPrototype(Toast, Tower);

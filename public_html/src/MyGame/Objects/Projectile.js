@@ -22,17 +22,17 @@ function Projectile(parent, x, y, direction, range, speed, damage) {
 gEngine.Core.inheritPrototype(Projectile, GameObject);
 
 Projectile.prototype.update = function(dt) {
-		if(!this.mCollided){
-			var direction = this.mRenderComponent.getXform().getRotationInRad();
-			this.mRenderComponent.getXform().incXPosBy(Math.cos(direction) * dt * this.mSpeed);
-			this.mRenderComponent.getXform().incYPosBy(Math.sin(direction) * dt * this.mSpeed);
-			this.mAccumulator += dt * this.mSpeed;
+	if(!this.mCollided){
+		var direction = this.mRenderComponent.getXform().getRotationInRad();
+		this.mRenderComponent.getXform().incXPosBy(Math.cos(direction) * dt * this.mSpeed);
+		this.mRenderComponent.getXform().incYPosBy(Math.sin(direction) * dt * this.mSpeed);
+		this.mAccumulator += dt * this.mSpeed;
 
-			if (this.mEnabled && this.mAccumulator > this.mRange)
-					this.mEnabled = false;
+		if (this.mEnabled && this.mAccumulator > this.mRange)
+				this.mEnabled = false;
 
-			this.mRenderComponent.updateAnimation(dt);
-		}
+		this.mRenderComponent.updateAnimation(dt);
+	}
 
 	if (!this.mEnabled) {
 		var c = this.mRenderComponent.mColor;

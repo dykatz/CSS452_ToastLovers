@@ -14,8 +14,7 @@ function Playfield(size, camRef, shop) {
 	this.towers = new GameObjectSet();
 	this.minions = new GameObjectSet();
 	this.selectedTower = null;
-	this.hoveredTower = null;
-	this.minionFactory = new MinionFactory(this, [0, 0]);
+	this.minionFactory = new MinionFactory(this, MinionFactory.SpawnMode.entireBorder, 3);
 
 	var tmpGraph = [];
 	for(var i = 0; i < this.gWidth; i++) {
@@ -28,6 +27,7 @@ function Playfield(size, camRef, shop) {
 	this.nodes = [];
 	this.nodesActive = true;
 	this.initNodes();
+	this.playerLost = false;
 };
 
 Playfield.State = Object.freeze({
@@ -88,19 +88,6 @@ Playfield.prototype.update = function(dt) {
 		var x = this.cam.mouseWCX(), y = this.cam.mouseWCY();
 		var gPos = this.WCToGridIndex(x, y);
 
-		var hoveredIndex = this.GetTowerAtGridPos(gPos);
-
-		if(hoveredIndex < 0) {
-			if(this.hoveredTower)
-				this.hoveredTower.showIndicator = false;
-		} else if(!this.selectedTower) {
-			if(this.hoveredTower)
-				this.hoveredTower.showIndicator = false;
-
-			this.hoveredTower = this.towers.getObjectAt(hoveredIndex);
-			this.hoveredTower.showIndicator = true;
-		}
-
 		switch(this.pfState) {
 			case Playfield.State.placement:
 				if(this.selectedTower) {
@@ -123,7 +110,7 @@ Playfield.prototype.update = function(dt) {
 				break;
 		}
 	}
-	
+
 	for(var i = 0; i < this.minions.size(); ++i){
 		this.CheckProjectileCollisions(this.minions.mSet[i]);
 
@@ -132,7 +119,11 @@ Playfield.prototype.update = function(dt) {
 			--i;
 		}
 	}
-	
+
+};
+
+Playfield.prototype.getGridIndexWeight = function(x, y) {
+	return this.graph.grid[x][y].weight;
 };
 
 Playfield.prototype.CheckProjectileCollisions = function(collidingObject) {
@@ -168,7 +159,6 @@ Playfield.prototype.PlaceTower = function(gPos) {
 	
 	t.mGridPos = gPos;
 	t.mFiringEnabled = true;
-	t.showIndicator = false;
 	t.getRenderable().setColor([1,1,1,0]);
 	t.getXform().setSize(this.nW * t.mSize[0], this.nH * t.mSize[1]);
 	t.getXform().setPosition(gPos[0] * this.nW + this.nW / 2, -gPos[1] * this.nH - this.nH / 2);
@@ -176,50 +166,63 @@ Playfield.prototype.PlaceTower = function(gPos) {
 	this.towers.addToSet(t);    
 	this.shop.completeTransaction(t);
 	this.graph.grid[gPos[0]][gPos[1]].weight = t.mWeight;
+	this.graph.grid[gPos[0]][gPos[1]].object = t;
 	this.pfState = Playfield.State.inactive;
 	this.OnPlayfieldModified();
 };
 
 Playfield.prototype.DeleteTower = function(gPos) {
-	var i = this.GetTowerAtGridPos(gPos);
+	var currentTower = this.GetTowerAtGridPos(gPos);
  
-	if(i >= 0) {
-		this.shop.sellTower(this.towers.mSet[i]);
-		this.towers.removeAt(i);
+	if(currentTower !== null && !(currentTower instanceof Toast)) {
+		this.shop.sellTower(currentTower);
+		this.towers.removeAt(this.towers.mSet.findIndex(tower => tower.mGridPos[0] === gPos[0] && 
+		    tower.mGridPos[1] === gPos[1]));
 		this.graph.grid[gPos[0]][gPos[1]].weight = 1;
+		this.graph.grid[gPos[0]][gPos[1]].object = null;
 		this.OnPlayfieldModified();
 	}
 
 	this.pfState = Playfield.State.inactive;
 };
 
+Playfield.prototype.GetTowerAtGridPos = function(gPos) { 
+    return this.graph.grid[gPos[0]][gPos[1]].object;
+};
+
+Playfield.prototype.DamageGridSpace = function(gPos, damageNumber) {
+	var towerRef = this.GetTowerAtGridPos(gPos);
+	if(towerRef !== null){
+	    towerRef.takeDamage(damageNumber);
+	    if(towerRef.markedForDeletion){
+		if(!(towerRef instanceof Toast))
+		    this.DeleteTower(gPos);
+		else
+		    this.playerLost = true;
+	    }
+	}
+};
+
 Playfield.prototype.GrabTower = function(gPos) {
-	var i = this.GetTowerAtGridPos(gPos);
+	var currentTower = this.GetTowerAtGridPos(gPos);
  
-	if(i >= 0) {
-		this.selectedTower = this.towers.getObjectAt(i);
+	if(currentTower !== null && !(currentTower instanceof Toast)) {
+		this.selectedTower = currentTower;
 		this.selectedTower.mFiringEnabled = false;
 		this.graph.grid[gPos[0]][gPos[1]].weight = 1;
-		this.towers.removeAt(i);
+		this.towers.remove(currentTower);
 		this.pfState = Playfield.State.placement;
 		this.OnPlayfieldModified();
 	}
 };
 
 Playfield.prototype.CancelPlacement = function() {
-	this.selectedTower.showIndicator = false;
-
 	if(this.selectedTower.mGridPos)
 		this.PlaceTower(this.selectedTower.mGridPos);
 	else
 		this.selectedTower = null;
 
 	this.pfState = Playfield.State.inactive;
-};
-
-Playfield.prototype.GetTowerAtGridPos = function(gPos) { 
-	return this.towers.mSet.findIndex(tower => tower.mGridPos[0] === gPos[0] && 
-		tower.mGridPos[1] === gPos[1] && !(tower instanceof Toast));
 };
 
 Playfield.prototype.OnPlayfieldModified = function () {
