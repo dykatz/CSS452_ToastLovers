@@ -39,6 +39,16 @@ LongRange.prototype.update = function(dt) {
 	this.mProjectiles.forEach(p => { p.update(dt); });
 };
 
+LongRange.prototype.checkMinionsInRange = function(minionSet) {
+	Tower.prototype.checkMinionsInRange.call(this, minionSet);
+
+	if(this.mFiringEnabled) {
+		var target = this.getBestMinion(minionSet);
+		var direction = this.getDirectionFromMinion(target);
+		this.obj.getXform().setRotationInRad(direction);
+	}
+}
+
 LongRange.prototype.spawnProjectile = function() {
 	var d = this.obj.getXform().getRotationInRad() + Math.PI / 2;
 	var x = this.obj.getXform().getXPos(), y = this.obj.getXform().getYPos();

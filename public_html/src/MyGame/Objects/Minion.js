@@ -48,6 +48,7 @@ Minion.prototype.update = function(dt) {
 	if(dir[0] !== 0 && xAligned || dir[1] !== 0 && yAligned) {
 		if(this.pathIndex < this.path.length - 1) {
 			this.pathIndex++;
+			this.pathLine.shift();
 			this.getNewDir();
 		} else {
 			console.log("Reached Target location. Do something now.");
@@ -79,7 +80,7 @@ Minion.prototype.updatePath = function() {
 	}
 
 	for(var i = 0; i < paths.length; ++i) {
-		if(shortestPath === null || (shortestPath.length > paths[i].length && paths[i].length > 0))
+		if(shortestPath === null || shortestPath.length > paths[i].length)
 			shortestPath = paths[i];
 	}
 
@@ -92,12 +93,17 @@ Minion.prototype.updatePath = function() {
 };
 
 Minion.prototype.getNewDir = function() {
-	var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
-	this.setCurrentFrontDir([targetGridPos[0] - this.gPos[0], -(targetGridPos[1] - this.gPos[1])]);
+	if(this.path[this.pathIndex]) {
+		var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
+		this.setCurrentFrontDir([targetGridPos[0] - this.gPos[0], -(targetGridPos[1] - this.gPos[1])]);
+	}
 };
 
 Minion.prototype.DrawPath = function() {
 	this.pathLine = [];
+
+	if(this.path.length < 1)
+		return;
 
 	var from = this.pf.GridIndexToWC(this.gPos[0], this.gPos[1]);
 	var to = this.pf.GridIndexToWC(this.path[0].x, this.path[0].y);
