@@ -16,7 +16,7 @@ function LongRange(pos, playField) {
 	this.mRange = 40;
 	this.mDamage = 50;
 	this.mProjectileSpeed = 50;
-	this.mRenderComponent.getXform().setSize(this.mRange * 2, this.mRange * 2);
+	this.mIndicator.getXform().setSize(this.mRange * 2, this.mRange * 2);
 
 	this.mProjectiles = new Set();
 	this.mName = "Long Range";

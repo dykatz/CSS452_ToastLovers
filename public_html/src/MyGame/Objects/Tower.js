@@ -21,13 +21,13 @@ function Tower(texture, pos, playField) {
 	this.mHealth = 1;
 	this.baseHealth = 1;
 	this.markedForDeletion = false;
-	this.mRenderComponent = new TextureRenderable("assets/indicator.png");
-	this.mRenderComponent.setColor([0, 1, 0, 1]);
+	this.mIndicator = new TextureRenderable("assets/indicator.png");
+	this.mIndicator.setColor([0, 1, 0, 1]);
 	this.showIndicator = false;
 
 	GameObject.call(this, this.obj);
 	this.getXform().setPosition(-100, 100);
-	this.mRenderComponent.getXform().setPosition(-100, 100);
+	this.mIndicator.getXform().setPosition(-100, 100);
 	this.mPhysicsEnabled = false;
 	this.mRigid = new RigidRectangle(this.getXform(), 1, 1);
 }
@@ -45,7 +45,7 @@ Tower.firingPriority = Object.freeze({
 Tower.prototype.update = function(dt) {
     if(!this.mPhysicsEnabled){
 	if(this.showIndicator)
-		this.mRenderComponent.getXform().setPosition(this.getXform().getXPos(), this.getXform().getYPos());
+		this.mIndicator.getXform().setPosition(this.getXform().getXPos(), this.getXform().getYPos());
 
 	if (!this.mFiringEnabled) return;
 
@@ -85,7 +85,7 @@ Tower.prototype.TryCollide = function(minionColliding) {
 Tower.prototype.draw = function(cam) {
 	GameObject.prototype.draw.call(this, cam);
 	if(this.showIndicator) 
-		this.mRenderComponent.draw(cam);
+		this.mIndicator.draw(cam);
 };
 
 Tower.prototype.enablePhysics = function() {
