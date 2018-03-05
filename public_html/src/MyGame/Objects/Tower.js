@@ -138,8 +138,8 @@ Tower.prototype.getDirectionFromMinion = function(minion) {
 	var Mp = minion.getXform().getPosition();
 	var Tp = this.obj.getXform().getPosition();
 	var Md = [], Mv = [], D = [];
-	vec2.scale(Md, minion.getCurrentFrontDir(), minion.mSpeed / this.mProjectileSpeed);
 	vec2.sub(Mv, Mp, Tp);
+	vec2.scale(Md, minion.getCurrentFrontDir(), vec2.len(Mv) * minion.mSpeed / this.mProjectileSpeed);
 	vec2.add(D, Mv, Md);
 	return Math.atan2(D[1], D[0]) - Math.PI/2;
 }
