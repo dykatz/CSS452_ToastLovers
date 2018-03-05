@@ -16,6 +16,8 @@ function Playfield(size, camRef, shop) {
 	this.selectedTower = null;
 	this.hoveredTower = null;
 	this.minionFactory = new MinionFactory(this, MinionFactory.SpawnMode.entireBorder, 3);
+	this.allWavesSpawned = false;
+	
 	this.mPhysicsEnabled = false;
 
 	var tmpGraph = [];
@@ -68,6 +70,10 @@ Playfield.prototype.draw = function(cam, drawGrid = true) {
 
 Playfield.prototype.update = function(dt) {
 	if(!this.playerLost && !this.playerWon){
+		if(this.allWavesSpawned && this.minions.size() === 0){
+			this.playerWin();
+			return null;
+		}
 	    for(var i = 0; i < this.towers.size(); i++)
 		    this.towers.mSet[i].checkMinionsInRange(this.minions);
 
@@ -166,6 +172,11 @@ Playfield.prototype.update = function(dt) {
 	    if(reset)
 		this.finishedLevel = true;
 	}
+};
+
+Playfield.prototype.playerWin = function() {
+	this.playerWon = true;
+	this.finishedLevel = true;
 };
 
 Playfield.prototype.playerLose = function() {

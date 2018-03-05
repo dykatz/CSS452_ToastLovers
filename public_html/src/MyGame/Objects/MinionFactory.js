@@ -9,6 +9,7 @@ function MinionFactory(pf, mode, paths) {
 	this.spawnPointCount = paths;
 	this.spawnWait = 1;
 	this.spawnPoints = [];
+	
 
 	this.waveComposition = [
 		[1, 1, 1, 1, 1],
@@ -38,20 +39,21 @@ MinionFactory.prototype.update = function(dt) {
 
 	this.timer += dt;
 
-	if(this.timer >= this.spawnWait && this.waveComposition.length > 0) {
-		if(this.waveComposition[this.wave].length > 0) {
+	if (this.timer >= this.spawnWait && this.waveComposition.length > 0 && this.waveComposition.length > this.wave) {
+		if (this.waveComposition[this.wave] !== null && this.waveComposition[this.wave].length > 0) {
 			this.spawn(this.waveComposition[this.wave][0])
 			this.waveComposition[this.wave].shift();
 			this.timer = 0;
 		}
 	}
 
-	if(this.waveComposition.length > 0) {
-		if(this.waveComposition[this.wave].length === 0) {
+	if(this.waveComposition.length > 0 && this.waveComposition.length > this.wave) {
+		if(this.waveComposition[this.wave] !== null && this.waveComposition[this.wave].length === 0) {
 			this.wave++;
 			this.start = false;
 		}
 	} else {
+		this.pf.allWavesSpawned = true;
 		console.log("All Waves completed");
 	}
 };
