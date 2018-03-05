@@ -17,7 +17,6 @@ function Tower(texture, pos, playField) {
     this.mName = "";
     this.obj = new SpriteAnimateRenderable(texture);  
     this.mProjectiles = null;
-    this.mPlayField = playField;
     
     GameObject.call(this, this.obj);
 }
@@ -41,6 +40,24 @@ Tower.prototype.update = function(dt) {
 			this.changeAnimationShoot();
 		}
 	}
+};
+
+Tower.prototype.checkMinionsInRange = function(minionSet) {
+    if(minionSet !== null){
+        for(var i = 0; i < minionSet.size(); i++){
+            var otherSize = minionSet.mSet[i].getXform().getSize();
+            var otherR = Math.sqrt(0.5*otherSize[0]*0.5*otherSize[0] + 0.5*otherSize[1]*0.5*otherSize[1]);
+            var d = [];
+            vec2.sub(d, this.getXform().getPosition(), minionSet.mSet[i].getXform().getPosition());
+            if (vec2.length(d) < (this.mRange + otherR)) {
+                this.mFiringEnabled = true;
+                break;
+            }
+            else{
+                this.mFiringEnabled = false;
+            }
+        }
+    }
 };
 
 Tower.prototype.CheckProjectileCollisions = function(collidingObject) {

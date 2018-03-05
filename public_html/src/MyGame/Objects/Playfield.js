@@ -68,6 +68,10 @@ Playfield.prototype.draw = function(cam, drawGrid = true) {
 };
 
 Playfield.prototype.update = function(dt) {
+    for(var i = 0; i < this.towers.size(); i++){
+        this.towers.mSet[i].checkMinionsInRange(this.minions);
+    }
+    
     this.towers.update(dt);
     this.minions.update(dt);
     this.mProjectiles.forEach(p => { p.update(dt); });
