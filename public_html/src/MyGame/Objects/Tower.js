@@ -147,7 +147,7 @@ Tower.prototype.getBestMinion = function(minionSet) {
 	}
 
 	return bestMinion;
-}
+};
 
 Tower.prototype.getDirectionFromMinion = function(minion) {
 	var Mp = minion.getXform().getPosition();
@@ -157,7 +157,7 @@ Tower.prototype.getDirectionFromMinion = function(minion) {
 	vec2.scale(Md, minion.getCurrentFrontDir(), vec2.len(Mv) * minion.mSpeed / this.mProjectileSpeed);
 	vec2.add(D, Mv, Md);
 	return Math.atan2(D[1], D[0]) - Math.PI/2;
-}
+};
 
 Tower.prototype.CheckProjectileCollisions = function(collidingObject) {
 	if(this.mProjectiles !== null)
