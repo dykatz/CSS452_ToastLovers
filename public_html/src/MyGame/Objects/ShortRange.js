@@ -9,6 +9,7 @@ function ShortRange(pos, playField) {
 	this.mFireRate = 3;
 	this.mDamage = 5;
 	this.mPlayField = playField;
+	this.mIndicator.getXform().setSize(this.mRange * 2, this.mRange * 2);
 }
 gEngine.Core.inheritPrototype(ShortRange, Tower);
 

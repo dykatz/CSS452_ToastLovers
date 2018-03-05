@@ -18,6 +18,9 @@ function Tower(texture, pos, playField) {
 	this.obj = new SpriteAnimateRenderable(texture);  
 	this.mProjectiles = null;
 	this.mFiringPriority = Tower.firingPriority.targetClosest;
+	this.mIndicator = new TextureRenderable("assets/indicator.png");
+	this.mIndicator.setColor([0, 1, 0, 1]);
+	this.showIndicator = false;
 
 	GameObject.call(this, this.obj);
 }
@@ -33,6 +36,9 @@ Tower.firingPriority = Object.freeze({
 });
 
 Tower.prototype.update = function(dt) {
+	if(this.showIndicator)
+		this.mIndicator.getXform().setPosition(this.getXform().getXPos(), this.getXform().getYPos());
+
 	if (!this.mFiringEnabled) return;
 
 	var haveAlreadyChanged = false;
@@ -50,6 +56,12 @@ Tower.prototype.update = function(dt) {
 			this.changeAnimationShoot();
 		}
 	}
+};
+
+Tower.prototype.draw = function(cam) {
+	GameObject.prototype.draw.call(this, cam);
+	if(this.showIndicator) 
+		this.mIndicator.draw(cam);
 };
 
 Tower.prototype.checkMinionsInRange = function(minionSet) {
