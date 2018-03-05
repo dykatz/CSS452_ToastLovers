@@ -21,6 +21,9 @@ function Tower(texture, pos, playField) {
 	this.mHealth = 1;
 	this.baseHealth = 1;
 	this.markedForDeletion = false;
+	this.mIndicator = new TextureRenderable("assets/indicator.png");
+	this.mIndicator.setColor([0, 1, 0, 1]);
+	this.showIndicator = false;
 
 	GameObject.call(this, this.obj);
 }
@@ -36,6 +39,9 @@ Tower.firingPriority = Object.freeze({
 });
 
 Tower.prototype.update = function(dt) {
+	if(this.showIndicator)
+		this.mIndicator.getXform().setPosition(this.getXform().getXPos(), this.getXform().getYPos());
+
 	if (!this.mFiringEnabled) return;
 
 	var haveAlreadyChanged = false;
@@ -53,6 +59,12 @@ Tower.prototype.update = function(dt) {
 			this.changeAnimationShoot();
 		}
 	}
+};
+
+Tower.prototype.draw = function(cam) {
+	GameObject.prototype.draw.call(this, cam);
+	if(this.showIndicator) 
+		this.mIndicator.draw(cam);
 };
 
 Tower.prototype.checkMinionsInRange = function(minionSet) {
@@ -139,8 +151,8 @@ Tower.prototype.getDirectionFromMinion = function(minion) {
 	var Mp = minion.getXform().getPosition();
 	var Tp = this.obj.getXform().getPosition();
 	var Md = [], Mv = [], D = [];
-	vec2.scale(Md, minion.getCurrentFrontDir(), minion.mSpeed / this.mProjectileSpeed);
 	vec2.sub(Mv, Mp, Tp);
+	vec2.scale(Md, minion.getCurrentFrontDir(), vec2.len(Mv) * minion.mSpeed / this.mProjectileSpeed);
 	vec2.add(D, Mv, Md);
 	return Math.atan2(D[1], D[0]) - Math.PI/2;
 }

@@ -73,6 +73,7 @@ Shop.prototype.purchaseTower = function(index) {
 				this.pf.pfState = Playfield.State.placement;
 			}
 		}
+		this.pf.selectedTower.showIndicator = true;
 	}
 };
 
