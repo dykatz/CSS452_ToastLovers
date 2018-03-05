@@ -1,3 +1,4 @@
+"use strict";
 
 function MinionFactory(pf, gPos) {
 	this.pf = pf;
@@ -17,11 +18,11 @@ function MinionFactory(pf, gPos) {
 };
 
 MinionFactory.prototype.update = function(dt) {
-
 	if(gEngine.Input.isKeyClicked(gEngine.Input.keys.N))
 		this.start = true;
 
-	if(!this.start) return;
+	if(!this.start)
+		return;
 
 	this.timer += dt;
 
@@ -47,10 +48,17 @@ MinionFactory.prototype.spawn = function(type) {
 	var newMinion = new Minion(this.pf, this.spawnPoint);
 	console.log("type: " + type);
 
-	if(type === 2)
+	switch(type) {
+	case 2:
 		newMinion.mSpeed = 20;
-	if(type === 3)
+		newMinion.mHealth = 75;
+		break;
+
+	case 3:
 		newMinion.mSpeed = 5;
+		newMinion.mHealth = 150;
+		break;
+	}
 
 	this.minions.addToSet(newMinion);
 };
