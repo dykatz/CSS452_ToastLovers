@@ -14,6 +14,7 @@ function Playfield(size, camRef, shop) {
 	this.towers = new GameObjectSet();
 	this.minions = new GameObjectSet();
 	this.selectedTower = null;
+	this.minionFactory = new MinionFactory(this, [0, 0]);
 
 	var tmpGraph = [];
 	for(var i = 0; i < this.gWidth; i++) {
@@ -45,15 +46,8 @@ Playfield.prototype.initNodes = function() {
 		}
 	}
 
-	console.log(this.graph.toString());
 	this.selectedTower = new Toast();
 	this.PlaceTower(this.toastCords);
-	this.minions.addToSet(new Minion(this, [0, 0]));
-	this.minions.addToSet(new Minion(this, [30, 0]));
-	this.minions.addToSet(new Minion(this, [0, 20]));
-	this.minions.addToSet(new Minion(this, [30, 20]));
-	this.minions.addToSet(new Minion(this, [0, 10]));
-	this.minions.addToSet(new Minion(this, [30, 10]));
 };
 
 Playfield.prototype.draw = function(cam, drawGrid = true) {
@@ -74,6 +68,7 @@ Playfield.prototype.update = function(dt) {
 
 	this.towers.update(dt);
 	this.minions.update(dt);
+	this.minionFactory.update(dt);
 	this.mProjectiles.forEach(p => { p.update(dt); });
 
 	if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R))
