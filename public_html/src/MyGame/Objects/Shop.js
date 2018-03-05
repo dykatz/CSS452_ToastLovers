@@ -52,7 +52,6 @@ Shop.prototype.initializeShop = function(towers, padding) {
 };
 
 Shop.prototype.getTowers = function() {
-    console.log(this.pf);
     return [new LongRange(null, this.pf), new ShortRange(null, this.pf), new Honeypot()];
 };
 

@@ -43,6 +43,7 @@ Tower.prototype.update = function(dt) {
 };
 
 Tower.prototype.checkMinionsInRange = function(minionSet) {
+    this.mFiringEnabled = false;
     if(minionSet !== null){
         for(var i = 0; i < minionSet.size(); i++){
             var otherSize = minionSet.mSet[i].getXform().getSize();
