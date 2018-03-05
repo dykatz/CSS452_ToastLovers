@@ -1,7 +1,7 @@
 "use strict";
 
-function LongRange(pos) {
-	Tower.call(this, "assets/long_range.png", pos);
+function LongRange(pos, playField) {
+	Tower.call(this, "assets/long_range.png", pos, playField);
         
 	this.obj.mTexRight = 0.25;
 	this.obj._setTexInfo();
@@ -19,7 +19,7 @@ function LongRange(pos) {
 
 	this.mProjectiles = new Set();
 	this.mName = "Long Range";
-
+        this.mPlayField = playField;
 	this.changeAnimationNoShoot();
 }
 gEngine.Core.inheritPrototype(LongRange, Tower);
@@ -43,7 +43,7 @@ LongRange.prototype.spawnProjectile = function() {
 	var s = this.obj.getXform().getWidth() / 2;
 	x += Math.cos(d) * (s + this.mProjectileSpeed * this.mAccumulator);
 	y += Math.sin(d) * (s + this.mProjectileSpeed * this.mAccumulator);
-	var np = new Projectile(this, x, y, d, this.mRange, this.mProjectileSpeed, this.mDamage);
+	new Projectile(this.mPlayField, x, y, d, this.mRange, this.mProjectileSpeed, this.mDamage);
 };
 
 LongRange.prototype.changeAnimationShoot = function() {

@@ -8,6 +8,7 @@ function Playfield(size, camRef, shop) {
     this.nH = this.cam.getWCHeight() / this.gHeight;
     this.pfState = Playfield.State.inactive;
     this.shop = shop;
+    this.mProjectiles = new Set();
 
     this.toastCords = [Math.floor(this.gWidth/2), Math.floor(this.gHeight/2)];
     this.towers = new GameObjectSet();
@@ -57,6 +58,7 @@ Playfield.prototype.initNodes = function() {
 Playfield.prototype.draw = function(cam, drawGrid = true) {
     this.towers.draw(cam);
     this.minions.draw(cam);
+    this.mProjectiles.forEach(p => { p.draw(cam); });
     
     if(this.nodesActive && drawGrid)
         this.nodes.forEach(node => node.draw(cam));
@@ -68,7 +70,7 @@ Playfield.prototype.draw = function(cam, drawGrid = true) {
 Playfield.prototype.update = function(dt) {
     this.towers.update(dt);
     this.minions.update(dt);
-    
+    this.mProjectiles.forEach(p => { p.update(dt); });
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R))
         this.pfState = Playfield.State.deletion;
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.W) && this.pfState === Playfield.State.inactive)
@@ -103,15 +105,19 @@ Playfield.prototype.update = function(dt) {
     }
     
     for(var i = 0; i < this.minions.size(); i++){
-        for(var j = 0; j < this.towers.size(); j++){
-            this.towers.mSet[j].CheckProjectileCollisions(this.minions.mSet[i]);
-        }
+        this.CheckProjectileCollisions(this.minions.mSet[i]);
         if(this.minions.mSet[i].markedForDeletion){
             this.minions.removeAt(i);
             i--;
         }
     }
     
+};
+
+Playfield.prototype.CheckProjectileCollisions = function(collidingObject) {
+    if(this.mProjectiles !== null){
+        this.mProjectiles.forEach(p => { p.TryCollide(collidingObject);});
+    }
 };
 
 Playfield.prototype.WCToGridIndex = function(x, y) {
@@ -157,6 +163,7 @@ Playfield.prototype.DeleteTower = function(gPos) {
     var i = this.GetTowerAtGridPos(gPos);
  
     if(i >= 0) {
+        this.shop.sellTower(this.towers.mSet[i]);
         this.towers.removeAt(i);
         this.graph.grid[gPos[0]][gPos[1]].weight = 1;
         this.OnPlayfieldModified();

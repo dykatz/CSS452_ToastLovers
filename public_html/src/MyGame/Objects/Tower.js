@@ -1,6 +1,6 @@
 "use strict";
 
-function Tower(texture, pos) {
+function Tower(texture, pos, playField) {
     this.mGridPos = pos;
     this.mWeight = 100;    
     this.mSize = [1, 1];
@@ -17,6 +17,7 @@ function Tower(texture, pos) {
     this.mName = "";
     this.obj = new SpriteAnimateRenderable(texture);  
     this.mProjectiles = null;
+    this.mPlayField = playField;
     
     GameObject.call(this, this.obj);
 }

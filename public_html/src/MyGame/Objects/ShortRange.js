@@ -1,13 +1,14 @@
 "use strict";
 
-function ShortRange(pos) {
-	Tower.call(this, "assets/short_range.png", pos);
+function ShortRange(pos, playField) {
+	Tower.call(this, "assets/short_range.png", pos, playField);
 	this.changeAnimationNoShoot();
 	this.mProjectiles = new Set();
 	this.mName = "Short Range";
 	this.mRange = 15;
 	this.mFireRate = 3;
 	this.mDamage = 5;
+        this.mPlayField = playField;
 }
 gEngine.Core.inheritPrototype(ShortRange, Tower);
 
@@ -41,6 +42,6 @@ ShortRange.prototype.spawnProjectile = function() {
 		var s = this.obj.getXform().getWidth() / 2;
 		x += Math.cos(d) * (s + this.mProjectileSpeed * this.mAccumulator);
 		y += Math.sin(d) * (s + this.mProjectileSpeed * this.mAccumulator);
-		new Projectile(this, x, y, d, this.mRange, this.mProjectileSpeed, this.mDamage);
+		new Projectile(this.mPlayField, x, y, d, this.mRange, this.mProjectileSpeed, this.mDamage);
 	}
 };

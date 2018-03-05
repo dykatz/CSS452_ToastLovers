@@ -52,7 +52,8 @@ Shop.prototype.initializeShop = function(towers, padding) {
 };
 
 Shop.prototype.getTowers = function() {
-    return [new LongRange(), new ShortRange(), new Honeypot()];
+    console.log(this.pf);
+    return [new LongRange(null, this.pf), new ShortRange(null, this.pf), new Honeypot()];
 };
 
 Shop.prototype.purchaseTower = function(index) {
@@ -61,10 +62,10 @@ Shop.prototype.purchaseTower = function(index) {
     newTower.mFiringEnabled = false;
 
     if(this.playerCurrency - newTower.mCost >= 0) {
-        if(this.pf.selectedTower == null) {
+        if(this.pf.selectedTower === null) {
             this.pf.selectedTower = newTower;
             this.pf.pfState = Playfield.State.placement;
-        } else if(this.pf.selectedTower.gridPos == null) {
+        } else if(this.pf.selectedTower.gridPos === null) {
             if(newTower instanceof this.pf.selectedTower.constructor) {
                 this.pf.selectedTower = null;
                 this.pf.pfState = Playfield.State.inactive;
@@ -128,5 +129,10 @@ Shop.prototype.draw = function() {
 
 Shop.prototype.completeTransaction = function(tower) {
     this.playerCurrency -= tower.mCost;
+    this.playerCurrencyText.setText("$" + this.playerCurrency);
+};
+
+Shop.prototype.sellTower = function(tower) {
+    this.playerCurrency += tower.mCost * 0.8;
     this.playerCurrencyText.setText("$" + this.playerCurrency);
 };

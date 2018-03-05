@@ -15,14 +15,13 @@ function Projectile(parent, x, y, direction, range, speed, damage) {
 	this.mRenderComponent.mElmWidth = 0.25;
 	this.mRenderComponent.mNumElems = 4;
 	this.mRenderComponent._initAnimation();
-        this.collided = false;
-        //this.bounds = new BoundingBox([x, y], 5, 5);
+        this.mCollided = false;
 
 	this.mParent.mProjectiles.add(this);
 }gEngine.Core.inheritPrototype(Projectile, GameObject);
 
 Projectile.prototype.update = function(dt) {
-        if(!this.collided){
+        if(!this.mCollided){
             var direction = this.mRenderComponent.getXform().getRotationInRad();
             this.mRenderComponent.getXform().incXPosBy(Math.cos(direction) * dt * this.mSpeed);
             this.mRenderComponent.getXform().incYPosBy(Math.sin(direction) * dt * this.mSpeed);
@@ -47,8 +46,8 @@ Projectile.prototype.update = function(dt) {
 
 Projectile.prototype.TryCollide = function(minionColliding) {
     var pos = [0, 0];
-    if(!this.collided && this.pixelTouches(minionColliding, pos)){
-        this.collided = true;
+    if(!this.mCollided && this.pixelTouches(minionColliding, pos)){
+        this.mCollided = true;
         this.mEnabled = false;
         minionColliding.TakeDamage(this.mDamage);
     }
