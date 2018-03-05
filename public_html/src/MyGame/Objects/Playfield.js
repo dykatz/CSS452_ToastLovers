@@ -14,7 +14,7 @@ function Playfield(size, camRef, shop) {
 	this.towers = new GameObjectSet();
 	this.minions = new GameObjectSet();
 	this.selectedTower = null;
-	this.minionFactory = new MinionFactory(this, [0, 0]);
+	this.minionFactory = new MinionFactory(this, MinionFactory.SpawnMode.entireBorder, 3);
 
 	var tmpGraph = [];
 	for(var i = 0; i < this.gWidth; i++) {
