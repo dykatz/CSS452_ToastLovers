@@ -58,6 +58,53 @@ function Playfield(size, camRef, shop, difficulty) {
 	this.initNodes();
 	this.playerLost = false;
 	this.playerWon = false;
+
+	if(difficulty === 0) {
+		var args = [];
+		var holeNumbers = [];
+
+		for(var i = 0; i < 5; ++i) {
+			var n = Math.floor(Math.random() * ((this.gWidth + this.gHeight - 2) * 2 - i));
+
+			for(var j = 0; j < i; ++j) {
+				if(n >= holeNumbers[j])
+					++n;
+			}
+
+			holeNumbers.push(n);
+		}
+
+		for(var i = 0; i < holeNumbers.length; ++i) {
+			var n = holeNumbers[i];
+
+			if(n < this.gWidth) {
+				args.push([n, 0]);
+				continue;
+			}
+
+			n -= this.gWidth;
+
+			if(n < this.gWidth) {
+				args.push([n, this.gHeight - 1]);
+				continue;
+			}
+
+			n -= this.gWidth;
+
+			if(n < this.gHeight - 2) {
+				args.push([0, n + 1]);
+				continue;
+			}
+
+			n -= this.gHeight - 2;
+			args.push([this.gWidth - 1, n + 1]);
+		}
+
+		this.minionFactory.reduceSpawnPossibilities(args);
+
+		for(var i = 0; i < args.length; ++i)
+			this.nodes[args[i][0] * this.gHeight + args[i][1]].tile.setColor([0, 0, 0, 0.2]);
+	}
 };
 
 Playfield.State = Object.freeze({
