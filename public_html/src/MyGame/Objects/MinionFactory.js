@@ -136,5 +136,6 @@ MinionFactory.prototype.spawn = function(type) {
 		break;
 	}
 
+	newMinion.mHealth *= Math.pow(1.2, this.wave);
 	this.minions.addToSet(newMinion);
 };
