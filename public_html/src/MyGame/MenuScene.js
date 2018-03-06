@@ -188,7 +188,7 @@ MenuScene.prototype.update = function(dt) {
 				console.log("you are here forever");
 			} else if(this.mSegment === MenuScene.currentState.confirmEasy
 				|| this.mSegment === MenuScene.currentState.confirmMed
-				|| this.mSegment === Menu.currentState.confirmHard) {
+				|| this.mSegment === MenuScene.currentState.confirmHard) {
 				gEngine.GameLoop.stop();
 			}
 		}
