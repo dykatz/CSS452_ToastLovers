@@ -1,7 +1,7 @@
 /* global gEngine, Scene, vec2 */
 "use strict";
 
-function GameScene() {
+function GameScene(difficulty) {
 	this.iToast = "assets/toast.png";
 	this.iWall = "assets/boulder.png";
 	this.iLongRange = "assets/long_range.png";
@@ -44,7 +44,7 @@ GameScene.prototype.update = function(dt) {
 	this.playfield.update(dt);
 	this.shop.update(dt);
 
-	if(this.playfield.finishedLevel){
+	if(this.playfield.finishedLevel) {
 	    if(this.playfield.playerLost || this.playfield.playerWon)
 			this.winner = this.playfield.playerWon;
 
