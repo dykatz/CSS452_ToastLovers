@@ -3,13 +3,14 @@
 
 function GameScene() {
 	this.iToast = "assets/toast.png";
-	this.iWall = "assets/wall.png";
+	this.iWall = "assets/boulder.png";
 	this.iLongRange = "assets/long_range.png";
 	this.iShortRange = "assets/short_range.png";
 	this.iProjectile = "assets/projectile.png";
 	this.iHoneypot = "assets/honeypot.png";
 	this.iMinion = "assets/ant.png";
 	this.iRangeIndicator = "assets/indicator.png";
+    this.iCursors = "assets/tools.png";
 
 	this.playfield = null;
 	this.mCam = null;
@@ -69,6 +70,7 @@ GameScene.prototype.loadScene = function() {
 	gEngine.Textures.loadTexture(this.iHoneypot);
 	gEngine.Textures.loadTexture(this.iMinion);
 	gEngine.Textures.loadTexture(this.iRangeIndicator);
+    gEngine.Textures.loadTexture(this.iCursors);
 };
 
 GameScene.prototype.unloadScene = function() {
@@ -80,6 +82,7 @@ GameScene.prototype.unloadScene = function() {
 	gEngine.Textures.unloadTexture(this.iHoneypot);
 	gEngine.Textures.unloadTexture(this.iMinion);
 	gEngine.Textures.unloadTexture(this.iRangeIndicator);
+    gEngine.Textures.unloadTexture(this.iCursors);
 
 	var nextScene;
 	if (!this.winner)

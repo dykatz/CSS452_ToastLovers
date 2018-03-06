@@ -10,6 +10,14 @@ function Playfield(size, camRef, shop) {
 	this.shop = shop;
 	this.mProjectiles = new Set();
 
+	this.removeTool = new SpriteRenderable("assets/tools.png");
+	this.removeTool.setElementUVCoordinate(0, 0.5, 0, 1);
+	this.removeTool.getXform().setSize(this.nW, this.nH);
+
+	this.grabTool = new SpriteRenderable("assets/tools.png");
+	this.grabTool.setElementUVCoordinate(0.55, 1, 0, 1);
+	this.grabTool.getXform().setSize(this.nW, this.nH);
+
 	this.toastCords = [Math.floor(this.gWidth/2), Math.floor(this.gHeight/2)];
 	this.towers = new GameObjectSet();
 	this.minions = new GameObjectSet();
@@ -52,14 +60,33 @@ Playfield.prototype.initNodes = function() {
 		}
 	}
 
-	this.selectedTower = new Toast();
-	this.PlaceTower(this.toastCords);
+	this.PlaceTower(this.toastCords, new Toast());
+	this.spawnObstacles(15);
+};
+
+Playfield.prototype.spawnObstacles = function(numObstacles) {
+	for(var i = 0; i < numObstacles; i++) {
+		var spawnPos = [Math.floor(Math.random() * (this.gWidth - 2)) + 1, 
+						Math.floor(Math.random() * (this.gHeight - 2)) + 1];
+
+		if (this.graph.grid[spawnPos[0]][spawnPos[1]].weight > 1)
+			i--;
+		else 
+			this.PlaceTower(spawnPos, new Obstacle());
+	}
 };
 
 Playfield.prototype.draw = function(cam, drawGrid = true) {
 	this.towers.draw(cam);
 	this.minions.draw(cam);
 	this.mProjectiles.forEach(p => { p.draw(cam); });
+
+	if(this.pfState === Playfield.State.grab)
+		this.grabTool.draw(cam);
+
+	if(this.pfState === Playfield.State.deletion)
+		this.removeTool.draw(cam);
+
 
 	if(this.nodesActive && drawGrid)
 		this.nodes.forEach(node => node.draw(cam));
@@ -83,10 +110,10 @@ Playfield.prototype.update = function(dt) {
 		this.minionFactory.update(dt);
 		this.mProjectiles.forEach(p => { p.update(dt); });
 
-		if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R))
+		if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R) && !this.selectedTower)
 			this.pfState = Playfield.State.deletion;
 
-		if(gEngine.Input.isKeyClicked(gEngine.Input.keys.W) && this.pfState === Playfield.State.inactive)
+		if(gEngine.Input.isKeyClicked(gEngine.Input.keys.W) && !this.selectedTower)
 			this.pfState = Playfield.State.grab;
 
 		if(gEngine.Input.isKeyClicked(gEngine.Input.keys.G))
@@ -94,6 +121,9 @@ Playfield.prototype.update = function(dt) {
 
 		if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Escape) && this.pfState === Playfield.State.placement)
 			this.CancelPlacement();
+
+		if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Escape))
+			this.pfState = Playfield.State.inactive;
 
 		if(this.cam.isMouseInViewport()) {
 			var x = this.cam.mouseWCX(), y = this.cam.mouseWCY();
@@ -122,13 +152,15 @@ Playfield.prototype.update = function(dt) {
 					break;
 
 				case Playfield.State.deletion:
-					if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left))
+					this.removeTool.getXform().setPosition(x, y - 2);
+					if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left))
 						this.DeleteTower(gPos);
 
 					break;
 
 				case Playfield.State.grab:
-					if(gEngine.Input.isButtonPressed(gEngine.Input.mouseButton.Left))
+					this.grabTool.getXform().setPosition(x, y + 2);
+					if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left))
 						this.GrabTower(gPos);
 
 					break;
@@ -253,17 +285,18 @@ Playfield.prototype.TowerPlacement = function(gPos) {
 			this.selectedTower.getRenderable().setColor([0.4,0.9,0.4,0.4]);
 
 			if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left))
-				this.PlaceTower(gPos);
+				this.PlaceTower(gPos, this.selectedTower);
 		} else {
 			this.selectedTower.getRenderable().setColor([1, 0, 0, 0.5]);
 		}
 	}
 };
 
-Playfield.prototype.PlaceTower = function(gPos) {
+Playfield.prototype.PlaceTower = function(gPos, tower) {
 	if(gPos[0] < this.gWidth && gPos[1] < this.gHeight) {
-		var t = this.selectedTower;
-		this.selectedTower = null;
+		var t = tower
+		if(tower === this.selectedTower)
+			this.selectedTower = null;
 
 		t.mGridPos = gPos;
 		t.showIndicator = false;
@@ -300,7 +333,7 @@ Playfield.prototype.DeleteTower = function(gPos) {
 
 Playfield.prototype.GetTowerAtGridPos = function(gPos) { 
 	if(gPos[0] < this.gWidth && gPos[1] < this.gHeight)
-	return this.graph.grid[gPos[0]][gPos[1]].object;
+		return this.graph.grid[gPos[0]][gPos[1]].object;
 	return null;
 };
 
@@ -320,17 +353,14 @@ Playfield.prototype.DamageGridSpace = function(gPos, damageNumber) {
 };
 
 Playfield.prototype.GrabTower = function(gPos) {
-	if(gPos[0] < this.gWidth && gPos[1] < this.gHeight) {
-		var currentTower = this.GetTowerAtGridPos(gPos);
-
-		if(currentTower !== null && !(currentTower instanceof Toast)) {
-			this.selectedTower = currentTower;
-			this.selectedTower.mFiringEnabled = false;
-			this.graph.grid[gPos[0]][gPos[1]].weight = 1;
-			this.towers.remove(currentTower);
-			this.pfState = Playfield.State.placement;
-			this.OnPlayfieldModified();
-		}
+	var currentTower = this.GetTowerAtGridPos(gPos);
+	if(currentTower && !(currentTower instanceof Toast) && !(currentTower instanceof Obstacle)) {
+		this.selectedTower = currentTower;
+		this.selectedTower.mFiringEnabled = false;
+		this.graph.grid[gPos[0]][gPos[1]].weight = 1;
+		this.towers.removeAt(currentTower);
+		this.pfState = Playfield.State.placement;
+		this.OnPlayfieldModified();
 	}
 };
 
@@ -338,7 +368,7 @@ Playfield.prototype.CancelPlacement = function() {
 	this.selectedTower.showIndicator = false;
 
 	if(this.selectedTower.mGridPos)
-		this.PlaceTower(this.selectedTower.mGridPos);
+		this.PlaceTower(this.selectedTower.mGridPos, this.selectedTower);
 	else
 		this.selectedTower = null;
 
