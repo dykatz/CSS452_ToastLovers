@@ -417,7 +417,8 @@ Playfield.prototype.DamageGridSpace = function(gPos, damageNumber) {
 
 Playfield.prototype.GrabTower = function(gPos) {
 	var currentTower = this.GetTowerAtGridPos(gPos);
-	if(currentTower && !(currentTower instanceof Toast) && !(currentTower instanceof Obstacle)) {
+	if(currentTower && !(currentTower instanceof Toast) && !(currentTower instanceof Obstacle)
+		&& !(currentTower instanceof Honeypot)) {
 		this.selectedTower = currentTower;
 		this.selectedTower.mFiringEnabled = false;
 		this.graph.grid[gPos[0]][gPos[1]].weight = 1;
