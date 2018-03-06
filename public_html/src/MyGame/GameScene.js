@@ -10,13 +10,15 @@ function GameScene(difficulty) {
 	this.iHoneypot = "assets/honeypot.png";
 	this.iMinion = "assets/ant.png";
 	this.iRangeIndicator = "assets/indicator.png";
-    this.iCursors = "assets/tools.png";
+	this.iCursors = "assets/tools.png";
+	this.iTile = "assets/WoodTile.png";
 
 	this.playfield = null;
 	this.mCam = null;
 	this.shop = null;
 	this.minimap = null;
 	this.winner = false;
+	this.difficulty = difficulty;
 }
 gEngine.Core.inheritPrototype(GameScene, Scene);
 
@@ -29,7 +31,7 @@ GameScene.prototype.initialize = function() {
 	this.mCam.setBackgroundColor([0.8, 0.8, 0.8, 1]);
 
 	this.shop = new Shop();
-	this.playfield = new Playfield([31, 21], this.mCam, this.shop);
+	this.playfield = new Playfield([31, 21], this.mCam, this.shop, this.difficulty);
 	this.minimap = new Minimap(this.mCam);
 	this.shop.pf = this.playfield;
 
@@ -45,7 +47,7 @@ GameScene.prototype.update = function(dt) {
 	this.shop.update(dt);
 
 	if(this.playfield.finishedLevel) {
-	    if(this.playfield.playerLost || this.playfield.playerWon)
+		if(this.playfield.playerLost || this.playfield.playerWon)
 			this.winner = this.playfield.playerWon;
 
 		gEngine.GameLoop.stop();
@@ -70,7 +72,8 @@ GameScene.prototype.loadScene = function() {
 	gEngine.Textures.loadTexture(this.iHoneypot);
 	gEngine.Textures.loadTexture(this.iMinion);
 	gEngine.Textures.loadTexture(this.iRangeIndicator);
-    gEngine.Textures.loadTexture(this.iCursors);
+	gEngine.Textures.loadTexture(this.iCursors);
+	gEngine.Textures.loadTexture(this.iTile);
 };
 
 GameScene.prototype.unloadScene = function() {
@@ -82,7 +85,8 @@ GameScene.prototype.unloadScene = function() {
 	gEngine.Textures.unloadTexture(this.iHoneypot);
 	gEngine.Textures.unloadTexture(this.iMinion);
 	gEngine.Textures.unloadTexture(this.iRangeIndicator);
-    gEngine.Textures.unloadTexture(this.iCursors);
+	gEngine.Textures.unloadTexture(this.iCursors);
+	gEngine.Textures.unloadTexture(this.iTile);
 
 	var nextScene;
 	if (!this.winner)

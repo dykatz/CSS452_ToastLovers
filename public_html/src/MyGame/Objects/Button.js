@@ -3,6 +3,7 @@
 function Button(center, w, h, renderable, hotkey, outlined = true) {  
 	Node.call(this, center, w, h);
 	this.drawOutline = outlined;
+	this.drawBg = false;
 	this.image = renderable;
 	this.image.getXform().setPosition(center[0], center[1]);
 	this.image.getXform().setSize(w, h);
@@ -21,8 +22,6 @@ Button.prototype.checkButton = function(mouseWCX, mouseWCY) {
 };
 
 Button.prototype.draw = function(cam) {
+	Node.prototype.draw.call(this, cam);
 	this.image.draw(cam);
-
-	if(this.drawOutline)
-		Node.prototype.draw.call(this, cam);
 };

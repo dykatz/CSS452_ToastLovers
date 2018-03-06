@@ -1,6 +1,6 @@
 "use strict";
 
-function Playfield(size, camRef, shop) {
+function Playfield(size, camRef, shop, difficulty) {
 	this.cam = camRef;
 	this.gWidth = size[0];
 	this.gHeight = size[1];
@@ -23,7 +23,24 @@ function Playfield(size, camRef, shop) {
 	this.minions = new GameObjectSet();
 	this.selectedTower = null;
 	this.hoveredTower = null;
-	this.minionFactory = new MinionFactory(this, 3);
+
+	this.numObstacles = 15;
+	this.numFactories = 3;
+	this.tileSet = "assets/WoodTile.png";
+	if(difficulty === 0) {
+		this.numObstacles = 15;
+		this.numFactories = 3;
+		this.tileSet = "assets/WoodTile.png";
+	} else if (difficulty === 1) {
+		this.numObstacles = 10;
+		this.numFactories = 6;
+		this.tileSet = "assets/WoodTile.png";
+	} else if (difficulty === 2) {
+		this.numObstacles = 5;
+		this.numFactories = 9;
+		this.tileSet = "assets/WoodTile.png";
+	}
+	this.minionFactory = new MinionFactory(this, this.numFactories);
 	this.allWavesSpawned = false;
 	
 	this.mPhysicsEnabled = false;
@@ -55,13 +72,13 @@ Playfield.prototype.initNodes = function() {
 		for(var j = 0; j < this.gHeight; j++) {
 			var x = i * this.nW + this.nW / 2;
 			var y = -j * this.nH - this.nH / 2;
-			var tmpRend = new Node([x, y], this.nW, this.nH);
+			var tmpRend = new Node([x, y], this.nW, this.nH, this.tileSet);
 			this.nodes.push(tmpRend);
 		}
 	}
 
 	this.PlaceTower(this.toastCords, new Toast());
-	this.spawnObstacles(15);
+	this.spawnObstacles(this.numObstacles);
 };
 
 Playfield.prototype.spawnObstacles = function(numObstacles) {
@@ -77,6 +94,9 @@ Playfield.prototype.spawnObstacles = function(numObstacles) {
 };
 
 Playfield.prototype.draw = function(cam, drawGrid = true) {
+	if(this.nodesActive && drawGrid)
+		this.nodes.forEach(node => node.draw(cam));
+	
 	this.towers.draw(cam);
 	this.minions.draw(cam);
 	this.mProjectiles.forEach(p => { p.draw(cam); });
@@ -86,10 +106,6 @@ Playfield.prototype.draw = function(cam, drawGrid = true) {
 
 	if(this.pfState === Playfield.State.deletion)
 		this.removeTool.draw(cam);
-
-
-	if(this.nodesActive && drawGrid)
-		this.nodes.forEach(node => node.draw(cam));
 
 	if(this.selectedTower && drawGrid && this.pfState === Playfield.State.placement)
 		this.selectedTower.draw(cam);
