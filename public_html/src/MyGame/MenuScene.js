@@ -191,15 +191,15 @@ MenuScene.prototype.loadScene = function() {
 
 MenuScene.prototype.unloadScene = function() {
 	switch(this.mSegment) {
-	case Menu.currentState.confirmEasy:
+	case MenuScene.currentState.confirmEasy:
 		gEngine.Core.startScene(new GameScene(0));
 		break;
 
-	case Menu.currentState.confirmMed:
+	case MenuScene.currentState.confirmMed:
 		gEngine.Core.startScene(new GameScene(1));
 		break;
 
-	case Menu.currentState.confirmHard:
+	case MenuScene.currentState.confirmHard:
 		gEngine.Core.startScene(new GameScene(2));
 		break;
 	}
