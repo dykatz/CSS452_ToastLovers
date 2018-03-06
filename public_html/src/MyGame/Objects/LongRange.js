@@ -14,6 +14,7 @@ function LongRange(pos, playField) {
 	this.bg.getXform().mScale = this.obj.getXform().mScale;
 	this.bg.mColor = this.obj.mColor;
 	this.mRange = 40;
+	this.mCost = 3;
 	this.mDamage = 10;
 	this.mProjectileSpeed = 50;
 	this.mIndicator.getXform().setSize(this.mRange * 2, this.mRange * 2);
