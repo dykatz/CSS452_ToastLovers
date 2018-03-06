@@ -113,6 +113,26 @@ MenuScene.prototype.initialize = function() {
 	_back_from_exit.getXform().setPosition(MenuScene.currentState.confirmExit.x, MenuScene.currentState.confirmExit.y + (45 - 3 - 4/2 - 1));
 	_back_from_exit.getXform().setSize(10, 4);
 	this.mTexts.push(_back_from_exit);
+
+	var _back_from_hard = new FontRenderable("< Back");
+	_back_from_hard.getXform().setPosition(MenuScene.currentState.confirmHard.x - (45 - 12/2 - 1), MenuScene.currentState.confirmHard.y);
+	_back_from_hard.getXform().setSize(12, 4);
+	this.mTexts.push(_back_from_hard);
+
+	var _back_from_easy = new FontRenderable("Back >");
+	_back_from_easy.getXform().setPosition(MenuScene.currentState.confirmEasy.x + (45 - 12/2 - 1), MenuScene.currentState.confirmEasy.y);
+	_back_from_easy.getXform().setSize(12, 4);
+	this.mTexts.push(_back_from_easy);
+
+	var _back_from_credits = new FontRenderable("< Back");
+	_back_from_credits.getXform().setPosition(MenuScene.currentState.credits.x - (45 - 12/2 - 1), MenuScene.currentState.credits.y);
+	_back_from_credits.getXform().setSize(12, 4);
+	this.mTexts.push(_back_from_credits);
+
+	var _back_from_help = new FontRenderable("Back >");
+	_back_from_help.getXform().setPosition(MenuScene.currentState.help.x + (45 - 12/2 - 1), MenuScene.currentState.help.y);
+	_back_from_help.getXform().setSize(12, 4);
+	this.mTexts.push(_back_from_help);
 };
 
 MenuScene.prototype.update = function(dt) {
