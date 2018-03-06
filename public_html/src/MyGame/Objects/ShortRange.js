@@ -7,7 +7,7 @@ function ShortRange(pos, playField) {
 	this.mName = "Short Range";
 	this.mRange = 15;
 	this.mFireRate = 3;
-	this.mDamage = 5;
+	this.mDamage = 7;
 	this.mPlayField = playField;
 	this.mIndicator.getXform().setSize(this.mRange * 2, this.mRange * 2);
 }

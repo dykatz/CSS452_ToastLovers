@@ -394,3 +394,7 @@ Playfield.prototype.CancelPlacement = function() {
 Playfield.prototype.OnPlayfieldModified = function() {
 	this.minions.mSet.forEach(minion => minion.updatePath(this.toastCords));
 };
+
+Playfield.prototype.onWaveCompleted = function(wave) {
+	this.shop.setPlayerCurrency(this.shop.playerCurrency + Math.ceil(10 + Math.pow(1.1, wave)));
+}

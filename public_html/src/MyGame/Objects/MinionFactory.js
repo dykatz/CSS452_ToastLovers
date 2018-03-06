@@ -15,11 +15,16 @@ function MinionFactory(pf, paths) {
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 1, 1, 3, 3, 3, 3, 3],
 		[1, 1, 1, 3, 3, 3, 2, 2, 2],
-		[2, 3, 2, 3, 2, 3, 2, 3, 2, 3]
+		[2, 3, 2, 3, 2, 3, 2, 3, 2, 3],
+		[1, 1, 1, 1, 4, 4],
+		[2, 2, 3, 3, 2, 3, 4, 3, 2, 2, 3],
+		[4, 4, 4, 4, 4],
+		[2, 2, 3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 3, 3, 2, 2, 3, 3, 2, 2, 2, 2, 4]
 	];
 
 	this.wave = 0;
 	this.start = false;
+	this.waveCompleted = true;
 	this.timer = 0;
 };
 
@@ -39,16 +44,22 @@ MinionFactory.prototype.update = function(dt) {
 
 	if(this.waveComposition.length > 0 && this.waveComposition.length > this.wave) {
 		if(this.waveComposition[this.wave] !== null && this.waveComposition[this.wave].length === 0) {
-			this.wave++;
 			this.start = false;
+			++this.wave;
 		}
 	} else {
 		this.pf.allWavesSpawned = true;
 		console.log("All Waves completed");
 	}
 
-	if(!this.start)
+	if(!this.start) {
+		if(!this.waveCompleted && this.minions.size() === 0) {
+			this.waveCompleted = true;
+			this.pf.onWaveCompleted(this.wave);
+		}
+
 		return;
+	}
 
 	this.timer += dt;
 
@@ -63,6 +74,7 @@ MinionFactory.prototype.update = function(dt) {
 
 MinionFactory.prototype.startWave = function() {
 	this.start = true;
+	this.waveCompleted = false;
 	this.spawnPoints = [];
 	var holeNumbers = [];
 
@@ -134,7 +146,13 @@ MinionFactory.prototype.spawn = function(type) {
 		newMinion.mSpeed = 5;
 		newMinion.mHealth = 150;
 		break;
+
+	case 4:
+		newMinion.mSpeed = 18;
+		newMinion.mHealth = 150;
+		break;
 	}
 
+	newMinion.mHealth *= Math.pow(1.2, this.wave);
 	this.minions.addToSet(newMinion);
 };

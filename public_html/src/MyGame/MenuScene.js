@@ -113,6 +113,26 @@ MenuScene.prototype.initialize = function() {
 	_back_from_exit.getXform().setPosition(MenuScene.currentState.confirmExit.x, MenuScene.currentState.confirmExit.y + (45 - 3 - 4/2 - 1));
 	_back_from_exit.getXform().setSize(10, 4);
 	this.mTexts.push(_back_from_exit);
+
+	var _back_from_hard = new FontRenderable("< Back");
+	_back_from_hard.getXform().setPosition(MenuScene.currentState.confirmHard.x - (45 - 12/2 - 1), MenuScene.currentState.confirmHard.y);
+	_back_from_hard.getXform().setSize(12, 4);
+	this.mTexts.push(_back_from_hard);
+
+	var _back_from_easy = new FontRenderable("Back >");
+	_back_from_easy.getXform().setPosition(MenuScene.currentState.confirmEasy.x + (45 - 12/2 - 1), MenuScene.currentState.confirmEasy.y);
+	_back_from_easy.getXform().setSize(12, 4);
+	this.mTexts.push(_back_from_easy);
+
+	var _back_from_credits = new FontRenderable("< Back");
+	_back_from_credits.getXform().setPosition(MenuScene.currentState.credits.x - (45 - 12/2 - 1), MenuScene.currentState.credits.y);
+	_back_from_credits.getXform().setSize(12, 4);
+	this.mTexts.push(_back_from_credits);
+
+	var _back_from_help = new FontRenderable("Back >");
+	_back_from_help.getXform().setPosition(MenuScene.currentState.help.x + (45 - 12/2 - 1), MenuScene.currentState.help.y);
+	_back_from_help.getXform().setSize(12, 4);
+	this.mTexts.push(_back_from_help);
 };
 
 MenuScene.prototype.update = function(dt) {
@@ -131,7 +151,7 @@ MenuScene.prototype.update = function(dt) {
 				this.mPreviousSegment.y + this.mTimer * (this.mSegment.y - this.mPreviousSegment.y));
 		}
 	} else {
-		if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Left)) {
+		if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Left) || gEngine.Input.isKeyClicked(gEngine.Input.keys.A)) {
 			if(this.mSegment === MenuScene.currentState.splash)
 				this.mSegment = MenuScene.currentState.help;
 			else if(this.mSegment === MenuScene.currentState.credits)
@@ -140,7 +160,7 @@ MenuScene.prototype.update = function(dt) {
 				this.mSegment = MenuScene.currentState.confirmEasy;
 			else if(this.mSegment === MenuScene.currentState.confirmHard)
 				this.mSegment = MenuScene.currentState.levelSelect;
-		} else if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Right)) {
+		} else if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Right) || gEngine.Input.isKeyClicked(gEngine.Input.keys.D)) {
 			if(this.mSegment === MenuScene.currentState.help)
 				this.mSegment = MenuScene.currentState.splash;
 			else if(this.mSegment === MenuScene.currentState.splash)
@@ -149,21 +169,21 @@ MenuScene.prototype.update = function(dt) {
 				this.mSegment = MenuScene.currentState.levelSelect;
 			else if(this.mSegment === MenuScene.currentState.levelSelect)
 				this.mSegment = MenuScene.currentState.confirmHard;
-		} else if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Up)) {
+		} else if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Up) || gEngine.Input.isKeyClicked(gEngine.Input.keys.W)) {
 			if(this.mSegment === MenuScene.currentState.confirmExit)
 				this.mSegment = MenuScene.currentState.splash;
 			else if(this.mSegment === MenuScene.currentState.splash)
 				this.mSegment = MenuScene.currentState.levelSelect;
 			else if(this.mSegment === MenuScene.currentState.levelSelect)
 				this.mSegment = MenuScene.currentState.confirmMed;
-		} else if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Down)) {
+		} else if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Down) || gEngine.Input.isKeyClicked(gEngine.Input.keys.S)) {
 			if(this.mSegment === MenuScene.currentState.confirmMed)
 				this.mSegment = MenuScene.currentState.levelSelect;
 			else if(this.mSegment === MenuScene.currentState.levelSelect)
 				this.mSegment = MenuScene.currentState.splash;
 			else if(this.mSegment === MenuScene.currentState.splash)
 				this.mSegment = MenuScene.currentState.confirmExit;
-		} else if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Enter)) {
+		} else if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Enter) || gEngine.Input.isKeyClicked(gEngine.Input.keys.Space)) {
 			if(this.mSegment === MenuScene.currentState.confirmExit) {
 				console.log("you are here forever");
 			} else if(this.mSegment === MenuScene.currentState.confirmEasy
