@@ -1,7 +1,7 @@
 "use strict";
 
-function Honeypot(pos) {
-	Tower.call(this, "assets/honeypot.png", pos);
+function Honeypot(pf, pos) {
+	Tower.call(this, pf, "assets/honeypot.png", pos);
 	this.mName = "Honeypot";
 	this.mCost = 2;
 	this.obj.mElmWidth = 0.25;

@@ -1,7 +1,7 @@
 "use strict";
 
-function Obstacle(pos) {
-	Tower.call(this, "assets/boulder.png", pos);
+function Obstacle(pf, pos) {
+	Tower.call(this, pf, "assets/boulder.png", pos);
 	this.mName = "Obstacle";
 	this.mWeight = 20;
 	this.mCost = 0;

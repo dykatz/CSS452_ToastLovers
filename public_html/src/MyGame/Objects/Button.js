@@ -1,9 +1,8 @@
 "use strict";
 
-function Button(center, w, h, renderable, hotkey, outlined = true) {  
-	Node.call(this, center, w, h);
+function Button(pf, center, w, h, renderable, hotkey, outlined = true) {  
+	Node.call(this, pf, center, w, h);
 	this.drawOutline = outlined;
-	this.drawBg = false;
 	this.image = renderable;
 	this.image.getXform().setPosition(center[0], center[1]);
 	this.image.getXform().setSize(w, h);

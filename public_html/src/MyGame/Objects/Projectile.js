@@ -1,14 +1,14 @@
 "use strict";
 
-function Projectile(parent, x, y, direction, range, speed, damage) {
-	this.mRenderComponent = new SpriteAnimateRenderable("assets/projectile.png");
+function Projectile(pf, x, y, direction, range, speed, damage) {
+	this.mRenderComponent = new LightRenderable("assets/projectile.png");
 	this.mRenderComponent.getXform().setRotationInRad(direction);
 	this.mRenderComponent.getXform().setPosition(x, y);
 	this.mRenderComponent.getXform().setSize(5, 5);
 
 	this.mSpeed = speed;
 	this.mRange = range;
-	this.mParent = parent;
+	this.pf = pf;
 	this.mAccumulator = 0;
 	this.mDamage = damage;
 	this.mEnabled = true;
@@ -19,7 +19,10 @@ function Projectile(parent, x, y, direction, range, speed, damage) {
 	this.mPhysicsEnabled = false;
 	this.mRigid = new RigidRectangle(this.getXform(), 5, 5);
 
-	this.mParent.mProjectiles.add(this);
+	pf.mProjectiles.add(this);
+
+	for(var i = 0; i < pf.mLights.length; ++i)
+		this.mRenderComponent.addLight(pf.mLights[i]);
 }
 gEngine.Core.inheritPrototype(Projectile, GameObject);
 
@@ -76,5 +79,5 @@ Projectile.prototype.draw = function(cam) {
 };
 
 Projectile.prototype.destroy = function() {
-	this.mParent.mProjectiles.delete(this);
+	this.pf.mProjectiles.delete(this);
 };

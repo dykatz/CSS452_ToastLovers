@@ -8,7 +8,7 @@ function Shop() {
 	);
 	this.cam.setBackgroundColor([0.3, 0.4, 0.8, 1]);
 
-	this.pf;
+	this.pf = null;
 	this.shopState = Shop.shopState.towerShop;
 	this.playerCurrency = 10;
 	this.playerCurrencyText = new FontRenderable("$10");
@@ -16,7 +16,6 @@ function Shop() {
 	this.towerButtons = [];
 	this.towerButtonTitles = [];
 	this.towerButtonCosts = [];
-	this.initializeShop(this.getTowers(), 1);
 };
 
 Shop.shopState = Object.freeze({
@@ -33,7 +32,7 @@ Shop.prototype.initializeShop = function(towers, padding) {
 		var tower = towers[i].getRenderable();
 		var x = bSz * (i + 0.5) + padding * (i + 1);
 
-		var newButton = new Button([x, 37.5], bSz, bSz, tower, i + 49);
+		var newButton = new Button(this.pf, [x, 37.5], bSz, bSz, tower, i + 49);
 		var newTitle = new FontRenderable(towers[i].mName);
 		var newCost = new FontRenderable("$" + towers[i].mCost.toString());
 
@@ -52,7 +51,7 @@ Shop.prototype.initializeShop = function(towers, padding) {
 };
 
 Shop.prototype.getTowers = function() {
-	return [new LongRange(null, this.pf), new ShortRange(null, this.pf), new Honeypot()];
+	return [new LongRange(this.pf, null), new ShortRange(this.pf, null), new Honeypot(this.pf, null)];
 };
 
 Shop.prototype.purchaseTower = function(index) {

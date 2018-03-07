@@ -1,6 +1,7 @@
 "use strict";
 
-function Tower(texture, pos, playField) {
+function Tower(playfield, texture, pos) {
+	this.pf = playfield;
 	this.mGridPos = pos;
 	this.mWeight = 10;    
 	this.mSize = [1, 1];
@@ -15,7 +16,7 @@ function Tower(texture, pos, playField) {
 	this.mRange = 20;
 	this.mCost = 1;
 	this.mName = "";
-	this.obj = new SpriteAnimateRenderable(texture);  
+	this.obj = new LightRenderable(texture);  
 	this.mProjectiles = null;
 	this.mFiringPriority = Tower.firingPriority.targetClosest;
 	this.mHealth = 1;
@@ -30,6 +31,9 @@ function Tower(texture, pos, playField) {
 	this.mIndicator.getXform().setPosition(-100, 100);
 	this.mPhysicsEnabled = false;
 	this.mRigid = new RigidRectangle(this.getXform(), 1, 1);
+
+	for(var i = 0; i < playfield.mLights.length; ++i)
+		this.obj.addLight(playfield.mLights[i]);
 }
 gEngine.Core.inheritPrototype(Tower, GameObject);
 

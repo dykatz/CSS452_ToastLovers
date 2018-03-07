@@ -1,40 +1,47 @@
 "use strict";
 
-function Node(center, w, h, tileSet) {
+function Node(pf, center, w, h, tileSet) {
 	this.w = w;
 	this.h = h;
+	this.pf = pf;
 
 	this.br = [center[0] - w / 2, center[1] - h / 2];
-	this.drawBg = true;
 	this.drawOutline = true;
 
-	this.tile = new TextureRenderable("assets/WoodTile.png");
+	if(tileSet) {
+		this.tile = new LightRenderable(tileSet);
+		this.tile.getXform().setSize(this.w, this.h);
+		this.tile.getXform().setPosition(center[0], center[1]);
+		this.tile.obj = new GameObject(this.tile);
+		this.tile.obj.mRigid = new RigidRectangle(this.tile.getXform(), this.w, this.h);
+
+		for(var i = 0; i < pf.mLights.length; ++i)
+			this.tile.addLight(pf.mLights[i]);
+	}
+
 	this.top = new LineRenderable();
 	this.bottom = new LineRenderable();
 	this.left = new LineRenderable();
 	this.right = new LineRenderable();
 
-	this.tile.getXform().setSize(this.w, this.h);
-	this.tile.getXform().setPosition(center[0], center[1]);
 	this.top.setVertices(this.minX(), this.maxY(), this.maxX(), this.maxY());
 	this.bottom.setVertices(this.minX(), this.minY(), this.maxX(), this.minY());
 	this.left.setVertices(this.minX(), this.minY(), this.minX(), this.maxY());
 	this.right.setVertices(this.maxX(), this.minY(), this.maxX(), this.maxY());
 
-	this.tile.obj = new GameObject(this.tile);
 	this.top.obj = new GameObject(this.top);
 	this.bottom.obj = new GameObject(this.bottom);
 	this.left.obj = new GameObject(this.left);
 	this.right.obj = new GameObject(this.right);
 
-	this.tile.obj.mRigid = new RigidRectangle(this.tile.getXform(), this.w, this.h);
 	this.top.obj.mRigid = new RigidRectangle(this.top.getXform(), this.w, 0.1);
 	this.bottom.obj.mRigid = new RigidRectangle(this.bottom.getXform(), this.w, 0.1);
 	this.left.obj.mRigid = new RigidRectangle(this.left.getXform(), 0.1, this.h);
 	this.right.obj.mRigid = new RigidRectangle(this.right.getXform(), 0.1, this.h);
-	
+
 	this.mPhysicsEnabled = false;
-}gEngine.Core.inheritPrototype(Node, GameObject);
+}
+gEngine.Core.inheritPrototype(Node, GameObject);
 
 /*
  * 	this.w = w;
@@ -65,7 +72,7 @@ function Node(center, w, h, tileSet) {
  */
 
 Node.prototype.draw = function(cam) {
-	if(this.drawBg)
+	if(this.tile)
 		this.tile.draw(cam);
 
 	if(this.drawOutline) {
@@ -77,12 +84,15 @@ Node.prototype.draw = function(cam) {
 };
 
 Node.prototype.update = function() {
-	this.tile.update();
+	if(this.tile) {
+		this.tile.update();
+		this.tile.obj.mRigid.update();
+	}
+
 	this.top.update();
 	this.bottom.update();
 	this.left.update();
 	this.right.update();
-	this.tile.obj.mRigid.update();
 	this.top.obj.mRigid.update();
 	this.bottom.obj.mRigid.update();
 	this.left.obj.mRigid.update();
@@ -91,7 +101,10 @@ Node.prototype.update = function() {
 
 Node.prototype.startPhysics = function() {
 	this.mPhysicsEnabled = true;
-	this.startPhysicsOnObject(this.tile.obj);
+
+	if(this.tile)
+		this.startPhysicsOnObject(this.tile.obj);
+
 	this.startPhysicsOnObject(this.top.obj);
 	this.startPhysicsOnObject(this.bottom.obj);
 	this.startPhysicsOnObject(this.left.obj);

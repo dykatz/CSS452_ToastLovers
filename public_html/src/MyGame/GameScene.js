@@ -34,12 +34,13 @@ GameScene.prototype.initialize = function() {
 	this.playfield = new Playfield([31, 21], this.mCam, this.shop, this.difficulty);
 	this.minimap = new Minimap(this.mCam);
 	this.shop.pf = this.playfield;
+	this.shop.initializeShop(this.shop.getTowers(), 1);
 
 	var c = gEngine.DefaultResources.getGlobalAmbientColor();
-	c[0] = 1.0;
-	c[1] = 1.0;
-	c[2] = 1.0;
-	c[3] = 1.0;
+	c[0] = 0.2;
+	c[1] = 0.2;
+	c[2] = 0.2;
+	c[3] = 0.2;
 };
 
 GameScene.prototype.update = function(dt) {
@@ -52,7 +53,6 @@ GameScene.prototype.update = function(dt) {
 
 		gEngine.GameLoop.stop();
 	}
-	
 };
 
 GameScene.prototype.draw = function() {

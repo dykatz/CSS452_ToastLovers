@@ -133,6 +133,12 @@ MenuScene.prototype.initialize = function() {
 	_back_from_help.getXform().setPosition(MenuScene.currentState.help.x + (45 - 12/2 - 1), MenuScene.currentState.help.y);
 	_back_from_help.getXform().setSize(12, 4);
 	this.mTexts.push(_back_from_help);
+
+	var c = gEngine.DefaultResources.getGlobalAmbientColor();
+	c[0] = 1.0;
+	c[1] = 1.0;
+	c[2] = 1.0;
+	c[3] = 1.0;
 };
 
 MenuScene.prototype.update = function(dt) {

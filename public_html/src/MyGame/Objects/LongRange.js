@@ -1,13 +1,13 @@
 "use strict";
 
-function LongRange(pos, playField) {
-	Tower.call(this, "assets/long_range.png", pos, playField);
+function LongRange(pf, pos) {
+	Tower.call(this, pf, "assets/long_range.png", pos);
 
 	this.obj.mTexRight = 0.25;
 	this.obj._setTexInfo();
 	this.obj.setTextureMode(gEngine.Textures.textureModes.Nearest);
 
-	this.bg = new SpriteRenderable("assets/long_range.png");
+	this.bg = new LightRenderable("assets/long_range.png");
 	this.bg.mTexRight = 0.25;
 	this.bg._setTexInfo();
 	this.bg.getXform().mPosition = this.obj.getXform().mPosition;
@@ -21,8 +21,10 @@ function LongRange(pos, playField) {
 
 	this.mProjectiles = new Set();
 	this.mName = "Long Range";
-	this.mPlayField = playField;
 	this.changeAnimationNoShoot();
+
+	for(var i = 0; i < pf.mLights.length; ++i)
+		this.bg.addLight(pf.mLights[i]);
 }
 gEngine.Core.inheritPrototype(LongRange, Tower);
 
@@ -34,11 +36,11 @@ LongRange.prototype.draw = function(cam) {
 
 LongRange.prototype.update = function(dt) {
 	Tower.prototype.update.call(this, dt);
-	if(!this.mPhysicsEnabled){
-	    if(this.mFiringEnabled)
-		    this.obj.getXform().incRotationByRad(dt);
+	if(!this.mPhysicsEnabled) {
+		if(this.mFiringEnabled)
+			this.obj.getXform().incRotationByRad(dt);
 
-	    this.mProjectiles.forEach(p => { p.update(dt); });
+		this.mProjectiles.forEach(p => { p.update(dt); });
 	}
 };
 
@@ -58,7 +60,7 @@ LongRange.prototype.spawnProjectile = function() {
 	var s = this.obj.getXform().getWidth() / 2;
 	x += Math.cos(d) * (s + this.mProjectileSpeed * this.mAccumulator);
 	y += Math.sin(d) * (s + this.mProjectileSpeed * this.mAccumulator);
-	new Projectile(this.mPlayField, x, y, d, this.mRange, this.mProjectileSpeed, this.mDamage);
+	new Projectile(this.pf, x, y, d, this.mRange, this.mProjectileSpeed, this.mDamage);
 };
 
 LongRange.prototype.changeAnimationShoot = function() {

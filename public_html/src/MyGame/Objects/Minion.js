@@ -1,7 +1,7 @@
 "use strict";
 
 function Minion(pf, gSpawnPos) {
-	this.mRenderComponent = new SpriteAnimateRenderable("assets/ant.png");
+	this.mRenderComponent = new LightRenderable("assets/ant.png");
 	GameObject.call(this, this.mRenderComponent);
 
 	this.pf = pf;
@@ -28,6 +28,9 @@ function Minion(pf, gSpawnPos) {
 	this.mRenderComponent._initAnimation();
 	this.mPhysicsEnabled = false;
 	this.mRigid = new RigidRectangle(this.getXform(), this.pf.nW, this.pf.nH);
+
+	for(var i = 0; i < pf.mLights.length; ++i)
+		this.mRenderComponent.addLight(pf.mLights[i]);
 }
 gEngine.Core.inheritPrototype(Minion, GameObject);
 
