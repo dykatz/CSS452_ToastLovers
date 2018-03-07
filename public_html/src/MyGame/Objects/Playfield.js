@@ -78,6 +78,9 @@ function Playfield(size, camRef, shop, difficulty) {
 		this.mLights[3].set2DPosition([
 			this.cam.getWCCenter()[0] - this.cam.getWCWidth() / 4,
 			this.cam.getWCCenter()[1] - this.cam.getWCHeight() / 4]);
+	} else {
+		this.mLights.push(new Light());
+		this.mLights[0].setLightType(Light.eLightType.eDirectionalLight);
 	}
 
 	this.initNodes();
