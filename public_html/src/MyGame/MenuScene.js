@@ -6,8 +6,15 @@ function MenuScene() {
 	this.mCam = null;
 	this.mTimer = 0;
 
-	this.mLines = [];
-	this.mTexts = [];
+	this.mImageNames = [];
+	this.mImageNames.push("assets/MenuSplash.png");
+	this.mImageNames.push("assets/MenuLevelSelect.png");
+	this.mImageNames.push("assets/MenuHelp.png");
+	this.mImageNames.push("assets/MenuCredits.png");
+	this.mImageNames.push("assets/MenuExit.png");
+	this.mImageNames.push("assets/MenuEasy.png");
+	this.mImageNames.push("assets/MenuHard.png");
+	this.mImageNames.push("assets/MenuMed.png");
 }
 gEngine.Core.inheritPrototype(MenuScene, Scene);
 
@@ -26,113 +33,37 @@ MenuScene.prototype.initialize = function() {
 	this.mCam = new Camera(vec2.fromValues(0, 0), 100, [0, 0, 800, 800]);
 	this.mCam.mCameraState.configInterpolation(1, 1);
 
-	for(var i in MenuScene.currentState) {
-		var v = MenuScene.currentState[i];
-		this.mLines.push(new LineRenderable(v.x - 45, v.y - 45, v.x - 45, v.y + 45));
-		this.mLines.push(new LineRenderable(v.x - 45, v.y - 45, v.x + 45, v.y - 45));
-		this.mLines.push(new LineRenderable(v.x + 45, v.y - 45, v.x + 45, v.y + 45));
-		this.mLines.push(new LineRenderable(v.x - 45, v.y + 45, v.x + 45, v.y + 45));
-	}
+	this.mSplashMenu = new TextureRenderable("assets/MenuSplash.png");
+	this.mSplashMenu.getXform().setSize(90, 90);
+	this.mSplashMenu.getXform().setPosition(MenuScene.currentState.splash.x, MenuScene.currentState.splash.y);
 
-	var _to_help = new FontRenderable("< Help");
-	_to_help.getXform().setPosition(MenuScene.currentState.splash.x - (45 - 15/2 - 1), MenuScene.currentState.splash.y);
-	_to_help.getXform().setSize(15, 4);
-	this.mTexts.push(_to_help);
+	this.mLevelSelectMenu = new TextureRenderable("assets/MenuLevelSelect.png");
+	this.mLevelSelectMenu.getXform().setSize(90, 90);
+	this.mLevelSelectMenu.getXform().setPosition(MenuScene.currentState.levelSelect.x, MenuScene.currentState.levelSelect.y);
 
-	var _to_credits = new FontRenderable("Credits >");
-	_to_credits.getXform().setPosition(MenuScene.currentState.splash.x + (45 - 20/2 - 1), MenuScene.currentState.splash.y);
-	_to_credits.getXform().setSize(20, 4);
-	this.mTexts.push(_to_credits);
+	this.mHelpMenu = new TextureRenderable("assets/MenuHelp.png");
+	this.mHelpMenu.getXform().setSize(90, 90);
+	this.mHelpMenu.getXform().setPosition(MenuScene.currentState.help.x, MenuScene.currentState.help.y);
 
-	var _to_exit_v = new FontRenderable("V");
-	_to_exit_v.getXform().setPosition(MenuScene.currentState.splash.x, MenuScene.currentState.splash.y - (45 - 3/2 - 1));
-	_to_exit_v.getXform().setSize(2, 3);
-	this.mTexts.push(_to_exit_v);
+	this.mCreditsMenu = new TextureRenderable("assets/MenuCredits.png");
+	this.mCreditsMenu.getXform().setSize(90, 90);
+	this.mCreditsMenu.getXform().setPosition(MenuScene.currentState.credits.x, MenuScene.currentState.credits.y);
 
-	var _to_exit = new FontRenderable("Exit");
-	_to_exit.getXform().setPosition(MenuScene.currentState.splash.x, MenuScene.currentState.splash.y - (45 - 3 - 4/2 - 1));
-	_to_exit.getXform().setSize(10, 4);
-	this.mTexts.push(_to_exit);
+	this.mExitMenu = new TextureRenderable("assets/MenuExit.png");
+	this.mExitMenu.getXform().setSize(90, 90);
+	this.mExitMenu.getXform().setPosition(MenuScene.currentState.confirmExit.x, MenuScene.currentState.confirmExit.y);
 
-	var _to_levels_v = new FontRenderable("^");
-	_to_levels_v.getXform().setPosition(MenuScene.currentState.splash.x, MenuScene.currentState.splash.y + (47 - 7/2));
-	_to_levels_v.getXform().setSize(2.5, 7);
-	this.mTexts.push(_to_levels_v);
+	this.mEasyMenu = new TextureRenderable("assets/MenuEasy.png");
+	this.mEasyMenu.getXform().setSize(90, 90);
+	this.mEasyMenu.getXform().setPosition(MenuScene.currentState.confirmEasy.x, MenuScene.currentState.confirmEasy.y);
 
-	var _to_levels = new FontRenderable("Level Select");
-	_to_levels.getXform().setPosition(MenuScene.currentState.splash.x, MenuScene.currentState.splash.y + (45 - 3 - 4/2 - 1));
-	_to_levels.getXform().setSize(25, 4);
-	this.mTexts.push(_to_levels);
+	this.mHardMenu = new TextureRenderable("assets/MenuHard.png");
+	this.mHardMenu.getXform().setSize(90, 90);
+	this.mHardMenu.getXform().setPosition(MenuScene.currentState.confirmHard.x, MenuScene.currentState.confirmHard.y);
 
-	var _to_easy = new FontRenderable("< Easy");
-	_to_easy.getXform().setPosition(MenuScene.currentState.levelSelect.x - (45 - 12/2 - 1), MenuScene.currentState.levelSelect.y);
-	_to_easy.getXform().setSize(12, 4);
-	this.mTexts.push(_to_easy);
-
-	var _to_hard = new FontRenderable("Hard >");
-	_to_hard.getXform().setPosition(MenuScene.currentState.levelSelect.x + (45 - 12/2 - 1), MenuScene.currentState.levelSelect.y);
-	_to_hard.getXform().setSize(12, 4);
-	this.mTexts.push(_to_hard);
-
-	var _back_from_lvl_v = new FontRenderable("V");
-	_back_from_lvl_v.getXform().setPosition(MenuScene.currentState.levelSelect.x, MenuScene.currentState.levelSelect.y - (45 - 3/2 - 1));
-	_back_from_lvl_v.getXform().setSize(2, 3);
-	this.mTexts.push(_back_from_lvl_v);
-
-	var _back_from_lvl = new FontRenderable("Back");
-	_back_from_lvl.getXform().setPosition(MenuScene.currentState.levelSelect.x, MenuScene.currentState.levelSelect.y - (45 - 3 - 4/2 - 1));
-	_back_from_lvl.getXform().setSize(10, 4);
-	this.mTexts.push(_back_from_lvl);
-
-	var _to_med_v = new FontRenderable("^");
-	_to_med_v.getXform().setPosition(MenuScene.currentState.levelSelect.x, MenuScene.currentState.levelSelect.y + (47 - 7/2));
-	_to_med_v.getXform().setSize(2.5, 7);
-	this.mTexts.push(_to_med_v);
-
-	var _to_med = new FontRenderable("Medium");
-	_to_med.getXform().setPosition(MenuScene.currentState.levelSelect.x, MenuScene.currentState.levelSelect.y + (45 - 3 - 4/2 - 1));
-	_to_med.getXform().setSize(15, 4);
-	this.mTexts.push(_to_med);
-
-	var _back_from_med_v = new FontRenderable("V");
-	_back_from_med_v.getXform().setPosition(MenuScene.currentState.confirmMed.x, MenuScene.currentState.confirmMed.y - (45 - 3/2 - 1));
-	_back_from_med_v.getXform().setSize(2, 3);
-	this.mTexts.push(_back_from_med_v);
-
-	var _back_from_med = new FontRenderable("Back");
-	_back_from_med.getXform().setPosition(MenuScene.currentState.confirmMed.x, MenuScene.currentState.confirmMed.y - (45 - 3 - 4/2 - 1));
-	_back_from_med.getXform().setSize(10, 4);
-	this.mTexts.push(_back_from_med);
-
-	var _back_from_exit_v = new FontRenderable("^");
-	_back_from_exit_v.getXform().setPosition(MenuScene.currentState.confirmExit.x, MenuScene.currentState.confirmExit.y + (47 - 7/2));
-	_back_from_exit_v.getXform().setSize(2.5, 7);
-	this.mTexts.push(_back_from_exit_v);
-
-	var _back_from_exit = new FontRenderable("Back");
-	_back_from_exit.getXform().setPosition(MenuScene.currentState.confirmExit.x, MenuScene.currentState.confirmExit.y + (45 - 3 - 4/2 - 1));
-	_back_from_exit.getXform().setSize(10, 4);
-	this.mTexts.push(_back_from_exit);
-
-	var _back_from_hard = new FontRenderable("< Back");
-	_back_from_hard.getXform().setPosition(MenuScene.currentState.confirmHard.x - (45 - 12/2 - 1), MenuScene.currentState.confirmHard.y);
-	_back_from_hard.getXform().setSize(12, 4);
-	this.mTexts.push(_back_from_hard);
-
-	var _back_from_easy = new FontRenderable("Back >");
-	_back_from_easy.getXform().setPosition(MenuScene.currentState.confirmEasy.x + (45 - 12/2 - 1), MenuScene.currentState.confirmEasy.y);
-	_back_from_easy.getXform().setSize(12, 4);
-	this.mTexts.push(_back_from_easy);
-
-	var _back_from_credits = new FontRenderable("< Back");
-	_back_from_credits.getXform().setPosition(MenuScene.currentState.credits.x - (45 - 12/2 - 1), MenuScene.currentState.credits.y);
-	_back_from_credits.getXform().setSize(12, 4);
-	this.mTexts.push(_back_from_credits);
-
-	var _back_from_help = new FontRenderable("Back >");
-	_back_from_help.getXform().setPosition(MenuScene.currentState.help.x + (45 - 12/2 - 1), MenuScene.currentState.help.y);
-	_back_from_help.getXform().setSize(12, 4);
-	this.mTexts.push(_back_from_help);
+	this.mMedMenu = new TextureRenderable("assets/MenuMed.png");
+	this.mMedMenu.getXform().setSize(90, 90);
+	this.mMedMenu.getXform().setPosition(MenuScene.currentState.confirmMed.x, MenuScene.currentState.confirmMed.y);
 
 	var c = gEngine.DefaultResources.getGlobalAmbientColor();
 	c[0] = 1.0;
@@ -282,18 +213,40 @@ MenuScene.prototype.update = function(dt) {
 MenuScene.prototype.draw = function() {
 	this.mCam.setupViewProjection();
 
-	for(var i = 0; i < this.mLines.length; ++i)
-		this.mLines[i].draw(this.mCam);
+	if(this.mSegment === MenuScene.currentState.splash || this.mPreviousSegment === MenuScene.currentState.splash)
+		this.mSplashMenu.draw(this.mCam);
 
-	for(var i = 0; i < this.mTexts.length; ++i)
-		this.mTexts[i].draw(this.mCam);
+	if(this.mSegment === MenuScene.currentState.levelSelect || this.mPreviousSegment === MenuScene.currentState.levelSelect)
+		this.mLevelSelectMenu.draw(this.mCam);
+
+	if(this.mSegment === MenuScene.currentState.help || this.mPreviousSegment === MenuScene.currentState.help)
+		this.mHelpMenu.draw(this.mCam);
+
+	if(this.mSegment === MenuScene.currentState.credits || this.mPreviousSegment === MenuScene.currentState.credits)
+		this.mCreditsMenu.draw(this.mCam);
+
+	if(this.mSegment === MenuScene.currentState.confirmExit || this.mPreviousSegment === MenuScene.currentState.confirmExit)
+		this.mExitMenu.draw(this.mCam);
+
+	if(this.mSegment === MenuScene.currentState.confirmEasy || this.mPreviousSegment === MenuScene.currentState.confirmEasy)
+		this.mEasyMenu.draw(this.mCam);
+
+	if(this.mSegment === MenuScene.currentState.confirmHard || this.mPreviousSegment === MenuScene.currentState.confirmHard)
+		this.mHardMenu.draw(this.mCam);
+
+	if(this.mSegment === MenuScene.currentState.confirmMed || this.mPreviousSegment === MenuScene.currentState.confirmMed)
+		this.mMedMenu.draw(this.mCam);
 };
 
 MenuScene.prototype.loadScene = function() {
-	// TODO
+	for(var i = 0; i < this.mImageNames.length; ++i)
+		gEngine.Textures.loadTexture(this.mImageNames[i]);
 };
 
 MenuScene.prototype.unloadScene = function() {
+	for(var i = 0; i < this.mImageNames.length; ++i)
+		gEngine.Textures.unloadTexture(this.mImageNames[i]);
+
 	switch(this.mSegment) {
 	case MenuScene.currentState.confirmEasy:
 		gEngine.Core.startScene(new GameScene(0));
