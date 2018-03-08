@@ -11,6 +11,7 @@ function Playfield(size, camRef, shop, difficulty) {
 	this.mProjectiles = new Set();
 	this.tileSet = "assets/WoodTile.png";
 	this.mLights = [];
+	this.mDifficulty = difficulty;
 
 	this.removeTool = new SpriteRenderable("assets/tools.png");
 	this.removeTool.setElementUVCoordinate(0, 0.5, 0, 1);
@@ -62,10 +63,13 @@ function Playfield(size, camRef, shop, difficulty) {
 	this.playerWon = false;
 
 	if (difficulty !== 1) {
+		this.mLightsSecretValues = [];
+
 		for (var i = 0; i < 4; ++i) {
 			this.mLights.push(new Light());
 			this.mLights[i].setNear(20);
 			this.mLights[i].setFar(70);
+			this.mLightsSecretValues.push(0);
 		}
 
 		this.mLights[0].set2DPosition([
@@ -87,67 +91,53 @@ function Playfield(size, camRef, shop, difficulty) {
 
 	this.initNodes();
 
-	switch (difficulty) {
-		case 0:
-			var args = [];
-			var holeNumbers = [];
+	if(difficulty === 0) {
+		var args = [];
+		var holeNumbers = [];
 
-			for (var i = 0; i < 5; ++i) {
-				var n = Math.floor(Math.random() * ((this.gWidth + this.gHeight - 2) * 2 - i));
+		for (var i = 0; i < 5; ++i) {
+			var n = Math.floor(Math.random() * ((this.gWidth + this.gHeight - 2) * 2 - i));
 
-				for (var j = 0; j < i; ++j) {
-					if (n >= holeNumbers[j])
-						++n;
-				}
-
-				holeNumbers.push(n);
+			for (var j = 0; j < i; ++j) {
+				if (n >= holeNumbers[j])
+					++n;
 			}
 
-			for (var i = 0; i < holeNumbers.length; ++i) {
-				var n = holeNumbers[i];
+			holeNumbers.push(n);
+		}
 
-				if (n < this.gWidth) {
-					args.push([n, 0]);
-					continue;
-				}
+		for (var i = 0; i < holeNumbers.length; ++i) {
+			var n = holeNumbers[i];
 
-				n -= this.gWidth;
-
-				if (n < this.gWidth) {
-					args.push([n, this.gHeight - 1]);
-					continue;
-				}
-
-				n -= this.gWidth;
-
-				if (n < this.gHeight - 2) {
-					args.push([0, n + 1]);
-					continue;
-				}
-
-				n -= this.gHeight - 2;
-				args.push([this.gWidth - 1, n + 1]);
+			if (n < this.gWidth) {
+				args.push([n, 0]);
+				continue;
 			}
 
-			this.minionFactory.reduceSpawnPossibilities(args);
+			n -= this.gWidth;
 
-			for (var i = 0; i < args.length; ++i)
-				this.nodes[args[i][0] * this.gHeight + args[i][1]].tile.setColor([0, 0, 0, 0.2]);
+			if (n < this.gWidth) {
+				args.push([n, this.gHeight - 1]);
+				continue;
+			}
 
-			break;
+			n -= this.gWidth;
 
-		case 1:
-			var _light1_0 = new Light();
+			if (n < this.gHeight - 2) {
+				args.push([0, n + 1]);
+				continue;
+			}
 
-			break;
+			n -= this.gHeight - 2;
+			args.push([this.gWidth - 1, n + 1]);
+		}
 
-		case 2:
-			var _light2_0 = new Light();
+		this.minionFactory.reduceSpawnPossibilities(args);
 
-			break;
+		for (var i = 0; i < args.length; ++i)
+			this.nodes[args[i][0] * this.gHeight + args[i][1]].tile.setColor([0, 0, 0, 0.2]);
 	}
-}
-;
+};
 
 Playfield.State = Object.freeze({
 	inactive: 0,
@@ -285,6 +275,29 @@ Playfield.prototype.update = function (dt) {
 				this.minions.removeAt(i);
 				--i;
 			}
+		}
+
+		if(this.mDifficulty !== 1) {
+			for(var i = 0; i < 4; ++i) {
+				if(this.mLightsSecretValues[i] > 0) {
+					var l = this.mLights[i];
+					var x = this.mLightsSecretValues[i] - 5*dt;
+					this.mLightsSecretValues[i] = x;
+
+					if(this.mLightsSecretValues[i] <= 0) {
+						this.mLightsSecretValues[i] = 0;
+						l.setIntensity(1);
+						continue;
+					}
+
+					l.setIntensity(0.5*x*(x-1)+0.1*Math.cos(6*Math.PI*x)+0.9);
+				} else {
+					if(Math.random() * 1000 < 1)
+						this.mLightsSecretValues[i] = 1;
+				}
+			}
+		} else {
+			// TODO -- make the directional camera rotate
 		}
 	} else if (this.mPhysicsEnabled) {
 		this.updatePhysics(dt);
