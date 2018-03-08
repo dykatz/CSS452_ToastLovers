@@ -55,6 +55,7 @@ LongRange.prototype.checkMinionsInRange = function(minionSet) {
 }
 
 LongRange.prototype.spawnProjectile = function() {
+	gEngine.AudioClips.playACue("assets/audio/click.ogg");
 	var d = this.obj.getXform().getRotationInRad() + Math.PI / 2;
 	var x = this.obj.getXform().getXPos(), y = this.obj.getXform().getYPos();
 	var s = this.obj.getXform().getWidth() / 2;

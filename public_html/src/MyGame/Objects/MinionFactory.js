@@ -54,6 +54,7 @@ MinionFactory.prototype.update = function(dt) {
 
 	if(!this.start) {
 		if(!this.waveCompleted && this.minions.size() === 0) {
+			gEngine.AudioClips.playACue("assets/audio/gem.ogg");
 			this.waveCompleted = true;
 			this.pf.onWaveCompleted(this.wave);
 		}

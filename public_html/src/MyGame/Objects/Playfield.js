@@ -269,12 +269,17 @@ Playfield.prototype.update = function (dt) {
 		}
 
 		for (var i = 0; i < this.minions.size(); ++i) {
+			var _do_play_audio = false;
 			this.CheckProjectileCollisions(this.minions.mSet[i]);
 
 			if (this.minions.mSet[i].markedForDeletion) {
+				_do_play_audio = true;
 				this.minions.removeAt(i);
 				--i;
 			}
+
+			if(_do_play_audio)
+				gEngine.AudioClips.playACue("assets/audio/key.ogg");
 		}
 
 		if(this.mDifficulty !== 1) {

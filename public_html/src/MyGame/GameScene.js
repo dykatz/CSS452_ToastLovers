@@ -16,6 +16,9 @@ function GameScene(difficulty) {
 	this.iGrassTile = "assets/grass.png";
 
 	this.aBgMusic = "assets/audio/Ove Melaa - Dark Loop.ogg";
+	this.aShotFired = "assets/audio/click.ogg";
+	this.aWaveCompleted = "assets/audio/gem.ogg";
+	this.aEnemyDeath = "assets/audio/key.ogg";
 
 	this.playfield = null;
 	this.mCam = null;
@@ -83,6 +86,9 @@ GameScene.prototype.loadScene = function() {
 	gEngine.Textures.loadTexture(this.iDirtTile);
 	gEngine.Textures.loadTexture(this.iGrassTile);
 	gEngine.AudioClips.loadAudio(this.aBgMusic);
+	gEngine.AudioClips.loadAudio(this.aShotFired);
+	gEngine.AudioClips.loadAudio(this.aWaveCompleted);
+	gEngine.AudioClips.loadAudio(this.aEnemyDeath);
 };
 
 GameScene.prototype.unloadScene = function() {
@@ -98,6 +104,9 @@ GameScene.prototype.unloadScene = function() {
 	gEngine.Textures.unloadTexture(this.iWoodTile);
 	gEngine.Textures.unloadTexture(this.iDirtTile);
 	gEngine.Textures.unloadTexture(this.iGrassTile);
+	gEngine.Textures.unloadAudio(this.aShotFired);
+	gEngine.Textures.unloadAudio(this.aWaveCompleted);
+	gEngine.Textures.unloadAudio(this.aEnemyDeath);
 	gEngine.AudioClips.stopBackgroundAudio();
 
 	var nextScene;

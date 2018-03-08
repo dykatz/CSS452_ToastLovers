@@ -37,6 +37,8 @@ ShortRange.prototype.changeAnimationShoot = function() {
 };
 
 ShortRange.prototype.spawnProjectile = function() {
+	gEngine.AudioClips.playACue("assets/audio/click.ogg");
+
 	for (var i = 0; i < 8; ++i) {
 		var d = Math.PI * i / 4;
 		var x = this.obj.getXform().getXPos(), y = this.obj.getXform().getYPos();
