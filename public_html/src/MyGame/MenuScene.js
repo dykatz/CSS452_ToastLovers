@@ -15,6 +15,8 @@ function MenuScene() {
 	this.mImageNames.push("assets/MenuEasy.png");
 	this.mImageNames.push("assets/MenuHard.png");
 	this.mImageNames.push("assets/MenuMed.png");
+
+	this.mBgMusic = "assets/audio/Ove - Earth Is All We Have .ogg";
 }
 gEngine.Core.inheritPrototype(MenuScene, Scene);
 
@@ -70,6 +72,8 @@ MenuScene.prototype.initialize = function() {
 	c[1] = 1.0;
 	c[2] = 1.0;
 	c[3] = 1.0;
+
+	gEngine.AudioClips.playBackgroundAudio(this.mBgMusic);
 };
 
 MenuScene.prototype.update = function(dt) {
@@ -239,11 +243,15 @@ MenuScene.prototype.draw = function() {
 };
 
 MenuScene.prototype.loadScene = function() {
+	gEngine.AudioClips.loadAudio(this.mBgMusic);
+
 	for(var i = 0; i < this.mImageNames.length; ++i)
 		gEngine.Textures.loadTexture(this.mImageNames[i]);
 };
 
 MenuScene.prototype.unloadScene = function() {
+	gEngine.AudioClips.stopBackgroundAudio();
+
 	for(var i = 0; i < this.mImageNames.length; ++i)
 		gEngine.Textures.unloadTexture(this.mImageNames[i]);
 
