@@ -424,6 +424,8 @@ Playfield.prototype.PlaceTower = function (gPos, tower) {
 		if (tower === this.selectedTower)
 			this.selectedTower = null;
 
+		if(!t.mGridPos)
+			this.shop.completeTransaction(t);
 		t.mGridPos = gPos;
 		t.showIndicator = false;
 		t.mFiringEnabled = true;
@@ -432,7 +434,6 @@ Playfield.prototype.PlaceTower = function (gPos, tower) {
 		t.getXform().setPosition(gPos[0] * this.nW + this.nW / 2, -gPos[1] * this.nH - this.nH / 2);
 
 		this.towers.addToSet(t);
-		this.shop.completeTransaction(t);
 		this.graph.grid[gPos[0]][gPos[1]].weight = t.mWeight;
 		this.graph.grid[gPos[0]][gPos[1]].object = t;
 		this.pfState = Playfield.State.inactive;
