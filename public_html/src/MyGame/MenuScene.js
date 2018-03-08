@@ -17,6 +17,7 @@ function MenuScene() {
 	this.mImageNames.push("assets/MenuMed.png");
 
 	this.mBgMusic = "assets/audio/Ove - Earth Is All We Have .ogg";
+	this.aScreenChange = "assets/audio/potpickup.ogg";
 }
 gEngine.Core.inheritPrototype(MenuScene, Scene);
 
@@ -80,6 +81,9 @@ MenuScene.prototype.update = function(dt) {
 	this.mCam.mCameraState.updateCameraState();
 	
 	if(this.mPreviousSegment !== this.mSegment) {
+		if(this.mTimer === 0)
+			gEngine.AudioClips.playACue(this.aScreenChange);
+
 		this.mTimer += 1.5 * dt;
 
 		if(this.mTimer >= 1) {
@@ -244,12 +248,14 @@ MenuScene.prototype.draw = function() {
 
 MenuScene.prototype.loadScene = function() {
 	gEngine.AudioClips.loadAudio(this.mBgMusic);
+	gEngine.AudioClips.loadAudio(this.aScreenChange);
 
 	for(var i = 0; i < this.mImageNames.length; ++i)
 		gEngine.Textures.loadTexture(this.mImageNames[i]);
 };
 
 MenuScene.prototype.unloadScene = function() {
+	gEngine.AudioClips.unloadAudio(this.aScreenChange);
 	gEngine.AudioClips.stopBackgroundAudio();
 
 	for(var i = 0; i < this.mImageNames.length; ++i)
