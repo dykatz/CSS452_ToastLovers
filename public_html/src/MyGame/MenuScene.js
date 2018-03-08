@@ -198,6 +198,84 @@ MenuScene.prototype.update = function(dt) {
 				gEngine.GameLoop.stop();
 			}
 		}
+
+		if(this.mCam.isMouseInViewport() && gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
+			var mx = this.mCam.mouseWCX(), my = this.mCam.mouseWCY();
+
+			switch(this.mSegment) {
+			case MenuScene.currentState.splash:
+				if(my > MenuScene.currentState.splash.y - 2 && my < MenuScene.currentState.splash.y + 2) {
+					if(mx > MenuScene.currentState.splash.x - 44 && mx < MenuScene.currentState.splash.x - 29)
+						this.mSegment = MenuScene.currentState.help;
+					else if(mx > MenuScene.currentState.splash.x + 24 && mx < MenuScene.currentState.splash.x + 44)
+						this.mSegment = MenuScene.currentState.credits;
+				} else if(mx > MenuScene.currentState.splash.x - 12.5 && mx < MenuScene.currentState.splash.x + 12.5) {
+					if(my > MenuScene.currentState.splash.y + 37 && my < MenuScene.currentState.splash.y + 44)
+						this.mSegment = MenuScene.currentState.levelSelect;
+					else if(my > MenuScene.currentState.splash.y - 44 && my < MenuScene.currentState.splash.y - 37)
+						this.mSegment = MenuScene.currentState.confirmExit;
+				}
+
+				break;
+
+			case MenuScene.currentState.levelSelect:
+				if(my > MenuScene.currentState.levelSelect.y - 2 && my < MenuScene.currentState.levelSelect.y + 2) {
+					if(mx > MenuScene.currentState.levelSelect.x - 44 && mx < MenuScene.currentState.levelSelect.x - 29)
+						this.mSegment = MenuScene.currentState.confirmEasy;
+					else if(mx > MenuScene.currentState.levelSelect.x + 24 && mx < MenuScene.currentState.levelSelect.x + 44)
+						this.mSegment = MenuScene.currentState.confirmHard;
+				} else if(mx > MenuScene.currentState.levelSelect.x - 12.5 && mx < MenuScene.currentState.levelSelect.x + 12.5) {
+					if(my > MenuScene.currentState.levelSelect.y + 37 && my < MenuScene.currentState.levelSelect.y + 44)
+						this.mSegment = MenuScene.currentState.confirmMed;
+					else if(my > MenuScene.currentState.levelSelect.y - 44 && my < MenuScene.currentState.levelSelect.y - 37)
+						this.mSegment = MenuScene.currentState.splash;
+				}
+
+				break;
+
+			case MenuScene.currentState.credits:
+				if(mx > MenuScene.currentState.credits.x - 44 && mx < MenuScene.currentState.credits.x - 29 &&
+					my > MenuScene.currentState.credits.y - 2 && my < MenuScene.currentState.credits.y + 2)
+					this.mSegment = MenuScene.currentState.splash;
+
+				break;
+
+			case MenuScene.currentState.help:
+				if(mx > MenuScene.currentState.help.x + 29 && mx < MenuScene.currentState.help.x + 44 &&
+					my > MenuScene.currentState.help.y - 2 && my < MenuScene.currentState.help.y + 2)
+					this.mSegment = MenuScene.currentState.splash;
+
+				break;
+
+			case MenuScene.currentState.confirmExit:
+				if(mx > MenuScene.currentState.confirmExit.x - 7 && mx < MenuScene.currentState.confirmExit.x + 7 &&
+					my > MenuScene.currentState.confirmExit.y + 37 && my < MenuScene.currentState.confirmExit.y + 44)
+					this.mSegment = MenuScene.currentState.splash;
+
+				break;
+
+			case MenuScene.currentState.confirmEasy:
+				if(mx > MenuScene.currentState.confirmEasy.x + 29 && mx < MenuScene.currentState.confirmEasy.x + 44 &&
+					my > MenuScene.currentState.confirmEasy.y - 2 && my < MenuScene.currentState.confirmEasy.y + 2)
+					this.mSegment = MenuScene.currentState.levelSelect;
+
+				break;
+
+			case MenuScene.currentState.confirmMed:
+				if(mx > MenuScene.currentState.confirmMed.x - 7 && mx < MenuScene.currentState.confirmMed.x + 7 &&
+					my > MenuScene.currentState.confirmMed.y - 44 && my < MenuScene.currentState.confirmMed.y - 37)
+					this.mSegment = MenuScene.currentState.levelSelect;
+
+				break;
+
+			case MenuScene.currentState.confirmHard:
+				if(mx > MenuScene.currentState.confirmHard.x - 44 && mx < MenuScene.currentState.confirmHard.x - 29 &&
+					my > MenuScene.currentState.confirmHard.y - 2 && my < MenuScene.currentState.confirmHard.y + 2)
+					this.mSegment = MenuScene.currentState.levelSelect;
+
+				break;
+			}
+		}
 	}
 };
 
