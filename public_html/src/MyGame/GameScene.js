@@ -104,9 +104,9 @@ GameScene.prototype.unloadScene = function() {
 	gEngine.Textures.unloadTexture(this.iWoodTile);
 	gEngine.Textures.unloadTexture(this.iDirtTile);
 	gEngine.Textures.unloadTexture(this.iGrassTile);
-	gEngine.Textures.unloadAudio(this.aShotFired);
-	gEngine.Textures.unloadAudio(this.aWaveCompleted);
-	gEngine.Textures.unloadAudio(this.aEnemyDeath);
+	gEngine.AudioClips.unloadAudio(this.aShotFired);
+	gEngine.AudioClips.unloadAudio(this.aWaveCompleted);
+	gEngine.AudioClips.unloadAudio(this.aEnemyDeath);
 	gEngine.AudioClips.stopBackgroundAudio();
 
 	var nextScene;
