@@ -1,12 +1,12 @@
 "use strict";
 
-function Node(pf, center, w, h, tileSet) {
+function Node(pf, center, w, h, tileSet, outlined = true) {
 	this.w = w;
 	this.h = h;
 	this.pf = pf;
 
 	this.br = [center[0] - w / 2, center[1] - h / 2];
-	this.drawOutline = true;
+	this.drawOutline = outlined;
 
 	if(tileSet) {
 		this.tile = new LightRenderable(tileSet);

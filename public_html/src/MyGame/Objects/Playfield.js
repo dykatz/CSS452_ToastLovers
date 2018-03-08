@@ -28,6 +28,7 @@ function Playfield(size, camRef, shop, difficulty) {
 
 	this.numObstacles = 15;
 	this.numFactories = 3;
+	this.gridActive = true;
 	if (difficulty === 0) {
 		this.numObstacles = 15;
 		this.numFactories = 3;
@@ -35,11 +36,13 @@ function Playfield(size, camRef, shop, difficulty) {
 	} else if (difficulty === 1) {
 		this.numObstacles = 10;
 		this.numFactories = 6;
-		this.tileSet = "assets/WoodTile.png";
+		this.tileSet = "assets/Dirt.png";
+		this.gridActive = false;
 	} else if (difficulty === 2) {
 		this.numObstacles = 5;
 		this.numFactories = 9;
-		this.tileSet = "assets/WoodTile.png";
+		this.tileSet = "assets/grass.png";
+		this.gridActive = false;
 	}
 	this.minionFactory = new MinionFactory(this, this.numFactories);
 	this.allWavesSpawned = false;
@@ -55,7 +58,6 @@ function Playfield(size, camRef, shop, difficulty) {
 
 	this.graph = new Graph(tmpGraph);
 	this.nodes = [];
-	this.nodesActive = true;
 	this.playerLost = false;
 	this.playerWon = false;
 
@@ -159,7 +161,7 @@ Playfield.prototype.initNodes = function () {
 		for (var j = 0; j < this.gHeight; j++) {
 			var x = i * this.nW + this.nW / 2;
 			var y = -j * this.nH - this.nH / 2;
-			var tmpRend = new Node(this, [x, y], this.nW, this.nH, this.tileSet);
+			var tmpRend = new Node(this, [x, y], this.nW, this.nH, this.tileSet, this.gridActive);
 			this.nodes.push(tmpRend);
 		}
 	}
@@ -181,7 +183,7 @@ Playfield.prototype.spawnObstacles = function (numObstacles) {
 };
 
 Playfield.prototype.draw = function (cam, drawGrid = true) {
-	if (this.nodesActive && drawGrid)
+	if (drawGrid)
 		this.nodes.forEach(node => node.draw(cam));
 
 	this.towers.draw(cam);
@@ -223,8 +225,10 @@ Playfield.prototype.update = function (dt) {
 		if (gEngine.Input.isKeyClicked(gEngine.Input.keys.W) && !this.selectedTower)
 			this.pfState = Playfield.State.grab;
 
-		if (gEngine.Input.isKeyClicked(gEngine.Input.keys.G))
-			this.nodesActive = !this.nodesActive;
+		if (gEngine.Input.isKeyClicked(gEngine.Input.keys.G)) {
+			this.gridActive = !this.gridActive;
+			this.nodes.forEach(node => node.drawOutline = this.gridActive);
+		}
 
 		if (gEngine.Input.isKeyClicked(gEngine.Input.keys.Escape) && this.pfState === Playfield.State.placement)
 			this.CancelPlacement();

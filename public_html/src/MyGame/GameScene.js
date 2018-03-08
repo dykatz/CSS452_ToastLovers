@@ -11,7 +11,9 @@ function GameScene(difficulty) {
 	this.iMinion = "assets/ant.png";
 	this.iRangeIndicator = "assets/indicator.png";
 	this.iCursors = "assets/tools.png";
-	this.iTile = "assets/WoodTile.png";
+	this.iWoodTile = "assets/WoodTile.png";
+	this.iDirtTile = "assets/Dirt.png";
+	this.iGrassTile = "assets/grass.png";
 
 	this.playfield = null;
 	this.mCam = null;
@@ -73,7 +75,9 @@ GameScene.prototype.loadScene = function() {
 	gEngine.Textures.loadTexture(this.iMinion);
 	gEngine.Textures.loadTexture(this.iRangeIndicator);
 	gEngine.Textures.loadTexture(this.iCursors);
-	gEngine.Textures.loadTexture(this.iTile);
+	gEngine.Textures.loadTexture(this.iWoodTile);
+	gEngine.Textures.loadTexture(this.iDirtTile);
+	gEngine.Textures.loadTexture(this.iGrassTile);
 };
 
 GameScene.prototype.unloadScene = function() {
@@ -86,7 +90,9 @@ GameScene.prototype.unloadScene = function() {
 	gEngine.Textures.unloadTexture(this.iMinion);
 	gEngine.Textures.unloadTexture(this.iRangeIndicator);
 	gEngine.Textures.unloadTexture(this.iCursors);
-	gEngine.Textures.unloadTexture(this.iTile);
+	gEngine.Textures.unloadTexture(this.iWoodTile);
+	gEngine.Textures.unloadTexture(this.iDirtTile);
+	gEngine.Textures.unloadTexture(this.iGrassTile);
 
 	var nextScene;
 	if (!this.winner)
