@@ -111,10 +111,10 @@ Minion.prototype.enablePhysics = function() {
 };
 
 Minion.prototype.draw = function(cam) {
-	GameObject.prototype.draw.call(this, cam);
-
 	if(this.drawPath)
 		this.pathLine.forEach(line => line.draw(cam));
+	
+	GameObject.prototype.draw.call(this, cam);
 };
 
 Minion.prototype.updatePath = function() {

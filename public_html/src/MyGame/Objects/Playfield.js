@@ -6,63 +6,64 @@ function Playfield(size, camRef, shop, difficulty) {
 	this.gHeight = size[1];
 	this.nW = this.cam.getWCWidth() / this.gWidth;
 	this.nH = this.cam.getWCHeight() / this.gHeight;
-	this.pfState = Playfield.State.inactive;
+	this.toastCords = [Math.floor(this.gWidth / 2), Math.floor(this.gHeight / 2)];
+	this.pfState = Playfield.State.inactive;	
 	this.shop = shop;
-	this.mProjectiles = new Set();
-	this.tileSet = "assets/WoodTile.png";
-	this.mLights = [];
 	this.mDifficulty = difficulty;
 
-	this.removeTool = new SpriteRenderable("assets/tools.png");
-	this.removeTool.setElementUVCoordinate(0, 0.5, 0, 1);
-	this.removeTool.getXform().setSize(this.nW, this.nH);
+	this.tileSet = "assets/WoodTile.png";
+	this.removeTool = new LightRenderable("assets/tools.png");
+	this.grabTool = new LightRenderable("assets/tools.png");
 
-	this.grabTool = new SpriteRenderable("assets/tools.png");
-	this.grabTool.setElementUVCoordinate(0.55, 1, 0, 1);
-	this.grabTool.getXform().setSize(this.nW, this.nH);
-
-	this.toastCords = [Math.floor(this.gWidth / 2), Math.floor(this.gHeight / 2)];
+	this.mLights = [];
+	this.graph = null;
+	this.nodes = [];
 	this.towers = new GameObjectSet();
 	this.minions = new GameObjectSet();
+	this.mProjectiles = new Set();
 	this.selectedTower = null;
 	this.hoveredTower = null;
 
+	this.playerLost = false;
+	this.playerWon = false;
+	this.mPhysicsEnabled = false;
+
 	this.numObstacles = 15;
 	this.numFactories = 3;
-	this.gridActive = true;
-	if (difficulty === 0) {
+	this.gridActive = true;	
+	this.minionFactory = null;
+	this.allWavesSpawned = false;	
+
+	this.preparePlayfield();
+};
+
+Playfield.State = Object.freeze({
+	inactive: 0,
+	placement: 1,
+	deletion: 2,
+	grab: 3
+});
+
+Playfield.prototype.preparePlayfield = function () {
+	if (this.mDifficulty === 0) {
 		this.numObstacles = 15;
 		this.numFactories = 3;
 		this.tileSet = "assets/WoodTile.png";
-	} else if (difficulty === 1) {
+	} else if (this.mDifficulty === 1) {
 		this.numObstacles = 10;
 		this.numFactories = 6;
 		this.tileSet = "assets/Dirt.png";
 		this.gridActive = false;
-	} else if (difficulty === 2) {
+	} else if (this.mDifficulty === 2) {
 		this.numObstacles = 5;
 		this.numFactories = 9;
 		this.tileSet = "assets/grass.png";
 		this.gridActive = false;
 	}
+
 	this.minionFactory = new MinionFactory(this, this.numFactories);
-	this.allWavesSpawned = false;
 
-	this.mPhysicsEnabled = false;
-
-	var tmpGraph = [];
-	for (var i = 0; i < this.gWidth; i++) {
-		var tmp = new Array(this.gHeight);
-		tmp.fill(1, 0);
-		tmpGraph.push(tmp);
-	}
-
-	this.graph = new Graph(tmpGraph);
-	this.nodes = [];
-	this.playerLost = false;
-	this.playerWon = false;
-
-	if (difficulty !== 1) {
+	if (this.mDifficulty !== 1) {
 		this.mLightsSecretValues = [];
 
 		for (var i = 0; i < 4; ++i) {
@@ -84,14 +85,43 @@ function Playfield(size, camRef, shop, difficulty) {
 		this.mLights[3].set2DPosition([
 			this.cam.getWCCenter()[0] - this.cam.getWCWidth() / 4,
 			this.cam.getWCCenter()[1] - this.cam.getWCHeight() / 4]);
-	} else {
-		this.mLights.push(new Light());
-		this.mLights[0].setLightType(Light.eLightType.eDirectionalLight);
+		} else {
+			this.mLights.push(new Light());
+			this.mLights[0].setLightType(Light.eLightType.eDirectionalLight);
+	}
+	
+	var tmpGraph = [];
+	for (var i = 0; i < this.gWidth; i++) {
+		var tmp = new Array(this.gHeight);
+		tmp.fill(1, 0);
+		tmpGraph.push(tmp);
 	}
 
-	this.initNodes();
+	this.graph = new Graph(tmpGraph);
 
-	if(difficulty === 0) {
+	for (var i = 0; i < this.gWidth; i++) {
+		for (var j = 0; j < this.gHeight; j++) {
+			var x = i * this.nW + this.nW / 2;
+			var y = -j * this.nH - this.nH / 2;
+			var tmpRend = new Node(this, [x, y], this.nW, this.nH, this.tileSet, this.gridActive);
+			this.nodes.push(tmpRend);
+		}
+	}
+
+	this.removeTool.setElementUVCoordinate(0, 0.5, 0, 1);
+	this.removeTool.getXform().setSize(this.nW, this.nH);
+	this.grabTool.setElementUVCoordinate(0.55, 1, 0, 1);
+	this.grabTool.getXform().setSize(this.nW, this.nH);
+
+	for(var i = 0; i < this.mLights.length; i++) {
+		this.removeTool.addLight(this.mLights[i]);
+		this.grabTool.addLight(this.mLights[i]);
+	}
+
+	this.PlaceTower(this.toastCords, new Toast(this));
+	this.spawnObstacles(this.numObstacles);
+
+	if(this.mDifficulty === 0) {
 		var args = [];
 		var holeNumbers = [];
 
@@ -137,27 +167,6 @@ function Playfield(size, camRef, shop, difficulty) {
 		for (var i = 0; i < args.length; ++i)
 			this.nodes[args[i][0] * this.gHeight + args[i][1]].tile.setColor([0, 0, 0, 0.2]);
 	}
-};
-
-Playfield.State = Object.freeze({
-	inactive: 0,
-	placement: 1,
-	deletion: 2,
-	grab: 3
-});
-
-Playfield.prototype.initNodes = function () {
-	for (var i = 0; i < this.gWidth; i++) {
-		for (var j = 0; j < this.gHeight; j++) {
-			var x = i * this.nW + this.nW / 2;
-			var y = -j * this.nH - this.nH / 2;
-			var tmpRend = new Node(this, [x, y], this.nW, this.nH, this.tileSet, this.gridActive);
-			this.nodes.push(tmpRend);
-		}
-	}
-
-	this.PlaceTower(this.toastCords, new Toast(this));
-	this.spawnObstacles(this.numObstacles);
 };
 
 Playfield.prototype.spawnObstacles = function (numObstacles) {
@@ -490,9 +499,11 @@ Playfield.prototype.GrabTower = function (gPos) {
 	if (currentTower && !(currentTower instanceof Toast) && !(currentTower instanceof Obstacle)
 		&& !(currentTower instanceof Honeypot)) {
 		this.selectedTower = currentTower;
+		this.towers.removeAt(this.towers.mSet.findIndex(tower => tower.mGridPos[0] === gPos[0] &&
+			tower.mGridPos[1] === gPos[1]));
 		this.selectedTower.mFiringEnabled = false;
 		this.graph.grid[gPos[0]][gPos[1]].weight = 1;
-		this.towers.removeAt(currentTower);
+		this.graph.grid[gPos[0]][gPos[1]].object = null;
 		this.pfState = Playfield.State.placement;
 		this.OnPlayfieldModified();
 	}
