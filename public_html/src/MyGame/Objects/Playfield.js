@@ -450,7 +450,7 @@ Playfield.prototype.DeleteTower = function (gPos) {
 	if (gPos[0] < this.gWidth && gPos[1] < this.gHeight) {
 		var currentTower = this.GetTowerAtGridPos(gPos);
 
-		if (currentTower !== null && !(currentTower instanceof Toast)) {
+		if (currentTower !== null && !(currentTower instanceof Toast) && !(currentTower instanceof Obstacle)) {
 			this.shop.sellTower(currentTower);
 			this.towers.removeAt(this.towers.mSet.findIndex(tower => tower.mGridPos[0] === gPos[0] &&
 					tower.mGridPos[1] === gPos[1]));

@@ -2,7 +2,7 @@
 
 function Shop() {
 	this.cam = new Camera(
-		vec2.fromValues(50, 37.5),
+		vec2.fromValues(50, 137.5),
 		100,
 		[266, 0, 534, 200]
 	);
@@ -12,6 +12,9 @@ function Shop() {
 	this.shopState = Shop.shopState.towerShop;
 	this.playerCurrency = 10;
 	this.playerCurrencyText = new FontRenderable("$10");
+	this.shopLight = new Light();
+	this.shopLight.set2DPosition([this.cam.getWCCenter()[0], this.cam.getWCCenter()[1]]);
+	this.shopLight.setFar(80);
 
 	this.towerButtons = [];
 	this.towerButtonTitles = [];
@@ -30,15 +33,16 @@ Shop.prototype.initializeShop = function(towers, padding) {
 
 	for(var i = 0; i < towers.length; ++i) {
 		var tower = towers[i].getRenderable();
+		towers[i].obj.addLight(this.shopLight);
 		var x = bSz * (i + 0.5) + padding * (i + 1);
 
-		var newButton = new Button(this.pf, [x, 37.5], bSz, bSz, tower, i + 49);
+		var newButton = new Button(this.pf, [x, 137.5], bSz, bSz, tower, i + 49);
 		var newTitle = new FontRenderable(towers[i].mName);
 		var newCost = new FontRenderable("$" + towers[i].mCost.toString());
 
-		newTitle.getXform().setPosition(x, 40 + 1 + bSz / 2);
+		newTitle.getXform().setPosition(x, 140 + 1 + bSz / 2);
 		newTitle.getXform().setSize(bSz, 5);
-		newCost.getXform().setPosition(x, 35 - bSz / 2);
+		newCost.getXform().setPosition(x, 135 - bSz / 2);
 		newCost.getXform().setSize(5, 5);
 
 		this.towerButtons.push(newButton);
@@ -47,7 +51,7 @@ Shop.prototype.initializeShop = function(towers, padding) {
 	}
 
 	this.playerCurrencyText.getXform().setSize(6, 4);
-	this.playerCurrencyText.getXform().setPosition(shopWidth - 3, 40.5 - shopHeight / 2);
+	this.playerCurrencyText.getXform().setPosition(shopWidth - 3, 140.5 - shopHeight / 2);
 };
 
 Shop.prototype.getTowers = function() {
@@ -73,7 +77,8 @@ Shop.prototype.purchaseTower = function(index) {
 				this.pf.pfState = Playfield.State.placement;
 			}
 		}
-		this.pf.selectedTower.showIndicator = true;
+		if(this.pf.selectedTower)
+			this.pf.selectedTower.showIndicator = true;
 	}
 };
 
@@ -130,15 +135,22 @@ Shop.prototype.draw = function() {
 
 Shop.prototype.completeTransaction = function(tower) {
 	this.playerCurrency -= tower.mCost;
-	this.playerCurrencyText.setText("$" + this.playerCurrency);
+	this.updateCurrency();
 };
 
 Shop.prototype.sellTower = function(tower) {
-	this.playerCurrency += tower.mCost * 0.8 * tower.mHealth / tower.baseHealth;
-	this.playerCurrencyText.setText("$" + this.playerCurrency);
+	this.playerCurrency += tower.mCost * 0.8 * (tower.mHealth / tower.baseHealth);
+	this.updateCurrency();
 };
 
 Shop.prototype.setPlayerCurrency = function(m) {
 	this.playerCurrency = m;
-	this.playerCurrencyText.setText("$" + this.playerCurrency);
+	this.updateCurrency();
+}
+
+Shop.prototype.updateCurrency = function() {
+	if(this.playerCurrency % 1 >= 0.1)
+		this.playerCurrencyText.setText("$" + this.playerCurrency.toFixed(1));
+	else
+		this.playerCurrencyText.setText("$" + this.playerCurrency);
 }
