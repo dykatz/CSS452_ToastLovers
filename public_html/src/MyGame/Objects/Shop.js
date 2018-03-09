@@ -64,7 +64,7 @@ Shop.prototype.purchaseTower = function(index) {
 		if(this.pf.selectedTower === null) {
 			this.pf.selectedTower = newTower;
 			this.pf.pfState = Playfield.State.placement;
-		} else if(this.pf.selectedTower.gridPos === null) {
+		} else if(this.pf.selectedTower.mGridPos === null) {
 			if(newTower instanceof this.pf.selectedTower.constructor) {
 				this.pf.selectedTower = null;
 				this.pf.pfState = Playfield.State.inactive;
