@@ -51,7 +51,8 @@ Shop.prototype.initializeShop = function(towers, padding) {
 };
 
 Shop.prototype.getTowers = function() {
-	return [new LongRange(this.pf, null), new ShortRange(this.pf, null), new Honeypot(this.pf, null)];
+	return [new LongRange(this.pf, null), new ShortRange(this.pf, null),
+		new Honeypot(this.pf, null), new LootFarm(this.pf, null)];
 };
 
 Shop.prototype.purchaseTower = function(index) {

@@ -217,3 +217,4 @@ Tower.prototype.disableFiring = function() {
 Tower.prototype.spawnProjectile = function() {};
 Tower.prototype.changeAnimationNoShoot = function() {};
 Tower.prototype.changeAnimationShoot = function() {};
+Tower.prototype.onWaveComplete = function() {};

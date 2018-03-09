@@ -124,7 +124,7 @@ Minion.prototype.updatePath = function() {
 	for(var i = 0; i < this.pf.towers.size(); ++i) {
 		var tower = this.pf.towers.getObjectAt(i);
 
-		if(tower.mName === "Honeypot" || tower.mName === "Toast") {
+		if(tower.mName === "Honeypot" || tower.mName === "Toast" || tower.mName === "Loot Farm") {
 			paths.push(astar.search(this.graph,
 				this.graph.grid[this.gPos[0]][this.gPos[1]],
 				this.graph.grid[tower.mGridPos[0]][tower.mGridPos[1]]));

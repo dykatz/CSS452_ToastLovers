@@ -515,4 +515,7 @@ Playfield.prototype.OnPlayfieldModified = function () {
 
 Playfield.prototype.onWaveCompleted = function (wave) {
 	this.shop.setPlayerCurrency(this.shop.playerCurrency + Math.ceil(10 + Math.pow(1.1, wave)));
+
+	for(var i = 0; i < this.towers.size(); ++i)
+		this.towers.getObjectAt(i).onWaveComplete(wave);
 }
