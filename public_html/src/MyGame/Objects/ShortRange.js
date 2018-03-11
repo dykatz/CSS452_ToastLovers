@@ -12,6 +12,9 @@ function ShortRange(pf, pos) {
 }
 gEngine.Core.inheritPrototype(ShortRange, Tower);
 
+ShortRange.maxLevels = 4;
+ShortRange.upgradeCosts = [1, 3, 8, 20];
+
 ShortRange.prototype.draw = function(cam) {
 	Tower.prototype.draw.call(this, cam);
 	this.mProjectiles.forEach(p => { p.draw(cam); });
@@ -46,5 +49,38 @@ ShortRange.prototype.spawnProjectile = function() {
 		x += Math.cos(d) * (s + this.mProjectileSpeed * this.mAccumulator);
 		y += Math.sin(d) * (s + this.mProjectileSpeed * this.mAccumulator);
 		new Projectile(this.pf, x, y, d, this.mRange, this.mProjectileSpeed, this.mDamage);
+	}
+};
+
+ShortRange.prototype.upgrade = function() {
+	if(this.mLevels >= LootFarm.maxLevels)
+		return;
+
+	switch(++this.mLevels) {
+	case 1:
+		this.mDamage = 15;
+		this.mRange = 20;
+		this.mProjectileSpeed = 40;
+		break;
+
+	case 2:
+		this.mDamage = 20;
+		this.mFireRate = 3.5;
+		this.mRange = 22.5;
+		this.mProjectileSpeed = 42.5;
+		break;
+
+	case 3:
+		this.mDamage = 25;
+		this.mRange = 30;
+		this.mProjectileSpeed = 45;
+		break;
+
+	case 4:
+		this.mFireRate = 4;
+		this.mRange = 35;
+		this.mDamage = 28;
+		this.mProjectileSpeed = 50;
+		break;
 	}
 };

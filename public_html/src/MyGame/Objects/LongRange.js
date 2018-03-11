@@ -28,6 +28,9 @@ function LongRange(pf, pos) {
 }
 gEngine.Core.inheritPrototype(LongRange, Tower);
 
+LongRange.maxLevels = 5;
+LongRange.upgradeCosts = [5, 10, 20, 40, 80];
+
 LongRange.prototype.draw = function(cam) {
 	this.bg.draw(cam);
 	Tower.prototype.draw.call(this, cam);
@@ -75,3 +78,43 @@ LongRange.prototype.changeAnimationNoShoot = function() {
 	this.obj.mTexRight = 0.5;
 	this.obj._setTexInfo();
 };
+
+LootFarm.prototype.upgrade = function() {
+	if(this.mLevels >= LootFarm.maxLevels)
+		return;
+
+	switch(++this.mLevels) {
+	case 1:
+		this.mRange = 50;
+		this.mProjectileSpeed = 55;
+		this.mDamage = 12;
+		break;
+
+	case 2:
+		this.mRange = 60;
+		this.mProjectileSpeed = 60;
+		this.mDamage = 15;
+		break;
+
+	case 3:
+		this.mRange = 70;
+		this.mProjectileSpeed = 65;
+		this.mDamage = 18;
+		this.mFireRate = 2.5;
+		break;
+
+	case 4:
+		this.mRange = 75;
+		this.mProjectileSpeed = 70;
+		this.mDamage = 22;
+		this.mFireRate = 3;
+		break;
+
+	case 5:
+		this.mRange = 80;
+		this.mProjectileSpeed = 75;
+		this.mDamage = 30;
+		this.mFireRate = 3.5;
+		break;
+	}
+}

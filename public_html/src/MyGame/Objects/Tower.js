@@ -15,6 +15,7 @@ function Tower(playfield, texture, pos) {
 	this.mDamage = 0;
 	this.mRange = 20;
 	this.mCost = 1;
+	this.mLevel = 0;
 	this.mName = "";
 	this.obj = new LightRenderable(texture);  
 	this.mProjectiles = null;
@@ -218,3 +219,4 @@ Tower.prototype.spawnProjectile = function() {};
 Tower.prototype.changeAnimationNoShoot = function() {};
 Tower.prototype.changeAnimationShoot = function() {};
 Tower.prototype.onWaveComplete = function() {};
+Tower.prototype.upgrade = function() { };
