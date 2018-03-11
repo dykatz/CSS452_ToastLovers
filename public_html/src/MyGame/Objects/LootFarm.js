@@ -5,6 +5,8 @@ function LootFarm(pf, pos) {
 	this.mName = "Loot Farm";
 	this.mCost = 3;
 	this.mAllowance = 2;
+	this.mMaxLevel = 5;
+	this.upgradeCosts = [5, 10, 20, 32, 50];
 
 	this.fg = new LightRenderable("assets/lootfarm.png");
 	this.fg.mNumElems = 4;
@@ -17,9 +19,6 @@ function LootFarm(pf, pos) {
 		this.fg.addLight(pf.mLights[i]);
 }
 gEngine.Core.inheritPrototype(LootFarm, Honeypot);
-
-LootFarm.maxLevels = 5;
-LootFarm.upgradeCosts = [5, 10, 20, 32, 50];
 
 LootFarm.prototype.update = function(dt) {
 	if(!this.mPhysicsEnabled)
@@ -38,10 +37,10 @@ LootFarm.prototype.onWaveComplete = function(wave) {
 };
 
 LootFarm.prototype.upgrade = function() {
-	if(this.mLevels >= LootFarm.maxLevels)
+	if(this.mLevel >= this.maxLevels)
 		return;
 
-	switch(++this.mLevels) {
+	switch(++this.mLevel) {
 	case 1:
 		this.mAllowance = 4;
 		break;

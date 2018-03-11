@@ -19,6 +19,11 @@ function Shop() {
 	this.towerButtons = [];
 	this.towerButtonTitles = [];
 	this.towerButtonCosts = [];
+
+	this.upgradeButton;
+	this.upgradeCost;
+	this.upgradeText;
+	this.closeUpgradeButton;
 };
 
 Shop.shopState = Object.freeze({
@@ -49,6 +54,15 @@ Shop.prototype.initializeShop = function(towers, padding) {
 		this.towerButtonTitles.push(newTitle);
 		this.towerButtonCosts.push(newCost);
 	}
+	this.upgradeButton = new Button(this.pf, [shopWidth / 2, 137.5], bSz, bSz, new LightRenderable("assets/long_range.png"), 85);
+	this.upgradeButton.image.addLight(this.shopLight);
+	this.closeUpgradeButton = new Button(this.pf, [shopWidth - 7.5, 140 + bSz / 2], 15, 10, new FontRenderable("Back"), 27);
+	this.upgradeText = new FontRenderable("Upgrade");
+	this.upgradeCost = new FontRenderable("$0");
+	this.upgradeText.getXform().setPosition(shopWidth / 2, 141 + bSz / 2);
+	this.upgradeText.getXform().setSize(bSz, 5);
+	this.upgradeCost.getXform().setPosition(shopWidth / 2, 135 - bSz / 2);
+	this.upgradeCost.getXform().setSize(5, 5);
 
 	this.playerCurrencyText.getXform().setSize(6, 4);
 	this.playerCurrencyText.getXform().setPosition(shopWidth - 3, 140.5 - shopHeight / 2);
@@ -59,7 +73,7 @@ Shop.prototype.getTowers = function() {
 		new Honeypot(this.pf, null), new LootFarm(this.pf, null)];
 };
 
-Shop.prototype.purchaseTower = function(index) {
+Shop.prototype.PurchaseTower = function(index) {
 	var newTower = this.getTowers()[index];
 	newTower.getXform().setSize(this.pf.nW, this.pf.nH);
 	newTower.mFiringEnabled = false;
@@ -99,10 +113,16 @@ Shop.prototype.update = function(dt) {
 		case Shop.shopState.towerShop:
 			for(var i = 0; i < this.towerButtons.length; ++i)
 				if(this.towerButtons[i].checkButton(x, y))
-					this.purchaseTower(i);
+					this.PurchaseTower(i);
 			break;
 
 		case Shop.shopState.upgradeShop:
+			if(this.closeUpgradeButton.checkButton(x, y)) {
+				this.pf.clickedTower = null;
+				this.shopState = Shop.shopState.towerShop;
+			}
+			if(this.upgradeButton.checkButton(x, y))
+				this.PurchaseUpgrade();
 			break;
 	}
 };
@@ -129,28 +149,71 @@ Shop.prototype.draw = function() {
 			break;
 
 		case Shop.shopState.upgradeShop:
+			this.upgradeButton.draw(this.cam);
+			this.closeUpgradeButton.draw(this.cam);
+			this.upgradeText.draw(this.cam);
+			this.upgradeCost.draw(this.cam);
 			break;
 	}
 };
 
-Shop.prototype.completeTransaction = function(tower) {
-	this.playerCurrency -= tower.mCost;
-	this.updateCurrency();
+Shop.prototype.OnTowerClicked = function(tower) {
+	if(tower instanceof Obstacle || tower instanceof Toast || tower.mName === "Honeypot") {
+		this.shopState = Shop.shopState.towerShop;
+		return;
+	}
+
+	if(tower instanceof ShortRange) {
+		this.upgradeButton.image.setTexture("assets/short_range.png");
+		this.upgradeButton.image.mTexRight = 0.5;
+	} else if(tower instanceof LongRange) {
+		this.upgradeButton.image.setTexture("assets/long_range.png");
+		this.upgradeButton.image.mTexLeft = 0.2535;
+		this.upgradeButton.image.mTexRight = 0.5;
+	} else if(tower instanceof LootFarm) {
+		this.upgradeButton.image.setTexture("assets/lootfarm.png");
+	}
+	this.upgradeButton.image._setTexInfo();
+
+	this.UpdateUpgradeText(tower);
+	this.shopState = Shop.shopState.upgradeShop;
 };
 
-Shop.prototype.sellTower = function(tower) {
+Shop.prototype.PurchaseUpgrade = function() {
+	var tower = this.pf.clickedTower;
+	if(tower.mLevel < tower.mMaxLevel && this.playerCurrency - tower.upgradeCosts[tower.mLevel] >= 0) {
+		this.playerCurrency -= tower.upgradeCosts[tower.mLevel];
+		this.UpdateCurrency();
+		tower.upgrade();
+		this.UpdateUpgradeText(tower);
+	}
+};
+
+Shop.prototype.CompleteTransaction = function(tower) {
+	this.playerCurrency -= tower.mCost;
+	this.UpdateCurrency();
+};
+
+Shop.prototype.SellTower = function(tower) {
 	this.playerCurrency += tower.mCost * 0.8 * (tower.mHealth / tower.baseHealth);
-	this.updateCurrency();
+	this.UpdateCurrency();
 };
 
 Shop.prototype.setPlayerCurrency = function(m) {
 	this.playerCurrency = m;
-	this.updateCurrency();
-}
+	this.UpdateCurrency();
+};
 
-Shop.prototype.updateCurrency = function() {
+Shop.prototype.UpdateUpgradeText = function(tower) {
+	if(tower.mLevel < tower.mMaxLevel)
+		this.upgradeCost.setText("$" + tower.upgradeCosts[tower.mLevel]);
+	else
+		this.upgradeCost.setText("Max Level");
+};
+
+Shop.prototype.UpdateCurrency = function() {
 	if(this.playerCurrency % 1 >= 0.1)
 		this.playerCurrencyText.setText("$" + this.playerCurrency.toFixed(1));
 	else
 		this.playerCurrencyText.setText("$" + this.playerCurrency);
-}
+};

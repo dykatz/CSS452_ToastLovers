@@ -16,6 +16,8 @@ function Tower(playfield, texture, pos) {
 	this.mRange = 20;
 	this.mCost = 1;
 	this.mLevel = 0;
+	this.mMaxLevel = 0;
+	this.upgradeCosts = [];
 	this.mName = "";
 	this.obj = new LightRenderable(texture);  
 	this.mProjectiles = null;

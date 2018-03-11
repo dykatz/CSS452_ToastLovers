@@ -23,6 +23,7 @@ function Playfield(size, camRef, shop, difficulty) {
 	this.mProjectiles = new Set();
 	this.selectedTower = null;
 	this.hoveredTower = null;
+	this.clickedTower = null;
 
 	this.playerLost = false;
 	this.playerWon = false;
@@ -240,7 +241,6 @@ Playfield.prototype.update = function (dt) {
 			var gPos = this.WCToGridIndex(x, y);
 
 			var hovered = this.GetTowerAtGridPos(gPos);
-
 			if (!hovered) {
 				if (this.hoveredTower)
 					this.hoveredTower.showIndicator = false;
@@ -253,6 +253,18 @@ Playfield.prototype.update = function (dt) {
 			}
 
 			switch (this.pfState) {
+				case Playfield.State.inactive:
+					if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
+						var clicked = this.GetTowerAtGridPos(gPos);
+						this.clickedTower = clicked;
+						if(clicked) 
+							this.shop.OnTowerClicked(clicked);
+						else
+							this.shop.shopState = Shop.shopState.towerShop;
+					}
+
+					break;
+
 				case Playfield.State.placement:
 					if (this.selectedTower) {
 						this.selectedTower.update(dt);
@@ -439,7 +451,7 @@ Playfield.prototype.PlaceTower = function (gPos, tower) {
 			this.selectedTower = null;
 
 		if(!t.mGridPos)
-			this.shop.completeTransaction(t);
+			this.shop.CompleteTransaction(t);
 		t.mGridPos = gPos;
 		t.showIndicator = false;
 		t.mFiringEnabled = true;
@@ -460,7 +472,7 @@ Playfield.prototype.DeleteTower = function (gPos) {
 		var currentTower = this.GetTowerAtGridPos(gPos);
 
 		if (currentTower !== null && !(currentTower instanceof Toast) && !(currentTower instanceof Obstacle)) {
-			this.shop.sellTower(currentTower);
+			this.shop.SellTower(currentTower);
 			this.towers.removeAt(this.towers.mSet.findIndex(tower => tower.mGridPos[0] === gPos[0] &&
 					tower.mGridPos[1] === gPos[1]));
 			this.graph.grid[gPos[0]][gPos[1]].weight = 1;
