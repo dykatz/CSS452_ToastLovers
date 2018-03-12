@@ -1,7 +1,7 @@
 "use strict";
 
 function Projectile(pf, x, y, direction, range, speed, damage) {
-	this.mRenderComponent = new LightRenderable("assets/projectile.png");
+	this.mRenderComponent = new IllumRenderable("assets/projectile.png", "assets/NormalProjectile.png");
 	this.mRenderComponent.getXform().setRotationInRad(direction);
 	this.mRenderComponent.getXform().setPosition(x, y);
 	this.mRenderComponent.getXform().setSize(5, 5);

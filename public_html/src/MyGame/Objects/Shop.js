@@ -109,6 +109,12 @@ Shop.prototype.update = function(dt) {
 		}
 	}
 
+	//This is a cheat.
+	//if (gEngine.Input.isKeyClicked(gEngine.Input.keys.T)){
+	//		this.playerCurrency += 100;
+	//		this.UpdateCurrency();
+	//	}
+
 	switch(this.shopState) {
 		case Shop.shopState.towerShop:
 			for(var i = 0; i < this.towerButtons.length; ++i)

@@ -24,7 +24,7 @@ struct Material {
 };
 uniform Material uMaterial;
 
-#define kGLSLuLightArraySize 4
+#define kGLSLuLightArraySize 25
     // GLSL Fragment shader requires loop control
     // variable to be a constant number. This number 4
     // says, this fragment shader will _ALWAYS_ process
@@ -82,6 +82,7 @@ float AngularDropOff(Light lgt, vec3 lgtDir, vec3 L) {
 
 float DistanceDropOff(Light lgt, float dist) {
     float atten = 0.0;
+    dist /= 200.0;
     if (dist <= lgt.Far) {
         if (dist <= lgt.Near)
             atten = 1.0;  //  no attenuation
@@ -89,7 +90,10 @@ float DistanceDropOff(Light lgt, float dist) {
             // simple quadratic drop off
             float n = dist - lgt.Near;
             float d = lgt.Far - lgt.Near;
-            atten = smoothstep(0.0, 1.0, 1.0-(n*n)/(d*d)); // blended attenuation
+            float fourth = (1.0-(n*n)/(d*d));
+            if(fourth > 1.0)
+                fourth = 1.0;
+            atten = smoothstep(0.0, 1.0, fourth); // blended attenuation
         }   
     }
     return atten;

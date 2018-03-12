@@ -24,6 +24,10 @@ ShortRange.prototype.update = function(dt) {
 	if(!this.mPhysicsEnabled){
 	    this.mProjectiles.forEach(p => { p.update(dt); });
 	}
+	//This is a cheat
+	//if(gEngine.Input.isKeyClicked(gEngine.Input.keys.T)){
+	//	this.spawnProjectile();
+	//}
 };
 
 ShortRange.prototype.changeAnimationNoShoot = function() {

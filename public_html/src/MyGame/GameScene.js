@@ -7,6 +7,7 @@ function GameScene(difficulty) {
 	this.iLongRange = "assets/long_range.png";
 	this.iShortRange = "assets/short_range.png";
 	this.iProjectile = "assets/projectile.png";
+	this.iNormalProjectile = "assets/NormalProjectile.png";
 	this.iHoneypot = "assets/honeypot.png";
 	this.iMinion = "assets/ant.png";
 	this.iRangeIndicator = "assets/indicator.png";
@@ -79,6 +80,7 @@ GameScene.prototype.loadScene = function() {
 	gEngine.Textures.loadTexture(this.iLongRange);
 	gEngine.Textures.loadTexture(this.iShortRange);
 	gEngine.Textures.loadTexture(this.iProjectile);
+	gEngine.Textures.loadTexture(this.iNormalProjectile);
 	gEngine.Textures.loadTexture(this.iHoneypot);
 	gEngine.Textures.loadTexture(this.iMinion);
 	gEngine.Textures.loadTexture(this.iRangeIndicator);
@@ -99,6 +101,7 @@ GameScene.prototype.unloadScene = function() {
 	gEngine.Textures.unloadTexture(this.iLongRange);
 	gEngine.Textures.unloadTexture(this.iShortRange);
 	gEngine.Textures.unloadTexture(this.iProjectile);
+	gEngine.Textures.unloadTexture(this.iNormalProjectile);
 	gEngine.Textures.unloadTexture(this.iHoneypot);
 	gEngine.Textures.unloadTexture(this.iMinion);
 	gEngine.Textures.unloadTexture(this.iRangeIndicator);

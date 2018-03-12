@@ -72,6 +72,7 @@ Playfield.prototype.preparePlayfield = function () {
 			this.mLights[i].setNear(20);
 			this.mLights[i].setFar(70);
 			this.mLightsSecretValues.push(0);
+			this.mLights[i].setIntensity(1);
 		}
 
 		this.mLights[0].set2DPosition([
@@ -86,10 +87,10 @@ Playfield.prototype.preparePlayfield = function () {
 		this.mLights[3].set2DPosition([
 			this.cam.getWCCenter()[0] - this.cam.getWCWidth() / 4,
 			this.cam.getWCCenter()[1] - this.cam.getWCHeight() / 4]);
-		} else {
+	} else {
 			this.mLights.push(new Light());
 			this.mLights[0].setLightType(Light.eLightType.eDirectionalLight);
-	}
+		}
 	
 	var tmpGraph = [];
 	for (var i = 0; i < this.gWidth; i++) {
@@ -218,6 +219,7 @@ Playfield.prototype.update = function (dt) {
 		this.mProjectiles.forEach(p => {
 			p.update(dt);
 		});
+
 
 		if (gEngine.Input.isKeyClicked(gEngine.Input.keys.R) && !this.selectedTower)
 			this.pfState = Playfield.State.deletion;
