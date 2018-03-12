@@ -6,7 +6,7 @@ function ShortRange(pf, pos) {
 	this.mProjectiles = new Set();
 	this.mName = "Short Range";
 	this.mMaxLevel = 4;
-	this.upgradeCosts = [1, 3, 8, 20];
+	this.upgradeCosts = [2, 4, 9, 20];
 	this.mRange = 15;
 	this.mFireRate = 2;
 	this.mDamage = 10.5;
@@ -62,28 +62,28 @@ ShortRange.prototype.upgrade = function() {
 
 	switch(++this.mLevel) {
 	case 1:
-		this.mDamage = 15;
+		this.mDamage = 22;
 		this.mRange = 20;
 		this.mProjectileSpeed = 40;
 		break;
 
 	case 2:
-		this.mDamage = 20;
-		this.mFireRate = 3.5;
+		this.mDamage = 29;
+		this.mFireRate = 2.25;
 		this.mRange = 22.5;
 		this.mProjectileSpeed = 42.5;
 		break;
 
 	case 3:
-		this.mDamage = 25;
+		this.mDamage = 35;
 		this.mRange = 30;
 		this.mProjectileSpeed = 45;
 		break;
 
 	case 4:
-		this.mFireRate = 4;
+		this.mFireRate = 2.5;
 		this.mRange = 35;
-		this.mDamage = 28;
+		this.mDamage = 42;
 		this.mProjectileSpeed = 50;
 		break;
 	}
