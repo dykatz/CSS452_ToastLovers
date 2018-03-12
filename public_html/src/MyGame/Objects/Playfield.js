@@ -100,7 +100,7 @@ Playfield.prototype.preparePlayfield = function () {
 	} else {
 			this.mLights.push(new Light());
 			this.mLights[0].setLightType(Light.eLightType.eDirectionalLight);
-		}
+	}
 	
 	var tmpGraph = [];
 	for (var i = 0; i < this.gWidth; i++) {
@@ -526,6 +526,7 @@ Playfield.prototype.GrabTower = function (gPos) {
 		this.towers.removeAt(this.towers.mSet.findIndex(tower => tower.mGridPos[0] === gPos[0] &&
 			tower.mGridPos[1] === gPos[1]));
 		this.selectedTower.mFiringEnabled = false;
+		this.shop.setPlayerCurrency(this.playerCurrency - 1);
 		this.graph.grid[gPos[0]][gPos[1]].weight = 1;
 		this.graph.grid[gPos[0]][gPos[1]].object = null;
 		this.pfState = Playfield.State.placement;

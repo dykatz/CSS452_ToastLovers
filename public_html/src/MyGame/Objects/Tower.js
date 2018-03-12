@@ -25,8 +25,7 @@ function Tower(playfield, texture, pos) {
 	this.mHealth = 1;
 	this.baseHealth = 1;
 	this.markedForDeletion = false;
-	this.mIndicator = new TextureRenderable("assets/indicator.png");
-	this.mIndicator.setColor([0, 1, 0, 1]);
+	this.mIndicator = new LightRenderable("assets/indicator.png");
 	this.showIndicator = false;
 
 	GameObject.call(this, this.obj);
@@ -35,8 +34,10 @@ function Tower(playfield, texture, pos) {
 	this.mPhysicsEnabled = false;
 	this.mRigid = new RigidRectangle(this.getXform(), 1, 1);
 
-	for(var i = 0; i < playfield.mLights.length; ++i)
+	for(var i = 0; i < playfield.mLights.length; ++i) {
 		this.obj.addLight(playfield.mLights[i]);
+		this.mIndicator.addLight(playfield.mLights[i]);
+	}
 }
 gEngine.Core.inheritPrototype(Tower, GameObject);
 
