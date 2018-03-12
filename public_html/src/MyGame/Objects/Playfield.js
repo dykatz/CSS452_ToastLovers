@@ -94,7 +94,7 @@ Playfield.prototype.preparePlayfield = function () {
     	this.mLights[4].setFar(100);
     	this.mLights[4].setInner(1.65);
     	this.mLights[4].setOuter(1.7);
-    	this.mLights[4].setIntensity(2);
+    	this.mLights[4].setIntensity(1);
     	this.mLights[4].setDropOff(1.2);
 
 	} else {
