@@ -24,7 +24,8 @@ function Playfield(size, camRef, shop, difficulty) {
 	this.selectedTower = null;
 	this.hoveredTower = null;
 	this.clickedTower = null;
-
+	this.skip = false;
+	this.fastForwardMultiplier = 3;
 	this.playerLost = false;
 	this.playerWon = false;
 	this.mPhysicsEnabled = false;
@@ -214,164 +215,173 @@ Playfield.prototype.draw = function (cam, drawGrid = true) {
 };
 
 Playfield.prototype.update = function (dt) {
-	if (!this.playerLost && !this.playerWon) {
-		if (this.allWavesSpawned && this.minions.size() === 0) {
-			this.playerWin();
-			return null;
-		}
-
-		for (var i = 0; i < this.towers.size(); i++)
-			this.towers.mSet[i].checkMinionsInRange(this.minions);
-
-		this.towers.update(dt);
-		this.minions.update(dt);
-		this.minionFactory.update(dt);
-		this.mProjectiles.forEach(p => {
-			p.update(dt);
-		});
-
-
-		if (gEngine.Input.isKeyClicked(gEngine.Input.keys.R) && !this.selectedTower)
-			this.pfState = Playfield.State.deletion;
-
-		if (gEngine.Input.isKeyClicked(gEngine.Input.keys.W) && !this.selectedTower)
-			this.pfState = Playfield.State.grab;
-
-		if (gEngine.Input.isKeyClicked(gEngine.Input.keys.G)) {
-			this.gridActive = !this.gridActive;
-			this.nodes.forEach(node => node.drawOutline = this.gridActive);
-		}
-
-		if (gEngine.Input.isKeyClicked(gEngine.Input.keys.Escape) && this.pfState === Playfield.State.placement)
-			this.CancelPlacement();
-
-		if (gEngine.Input.isKeyClicked(gEngine.Input.keys.Escape))
-			this.pfState = Playfield.State.inactive;
-
-		if (this.cam.isMouseInViewport()) {
-			var x = this.cam.mouseWCX(), y = this.cam.mouseWCY();
-			var gPos = this.WCToGridIndex(x, y);
-
-			var hovered = this.GetTowerAtGridPos(gPos);
-			if (!hovered) {
-				if (this.hoveredTower)
-					this.hoveredTower.showIndicator = false;
-			} else if (!this.selectedTower) {
-				if (this.hoveredTower)
-					this.hoveredTower.showIndicator = false;
-
-				this.hoveredTower = hovered
-				this.hoveredTower.showIndicator = true;
+	if(!gEngine.Input.isKeyPressed(gEngine.Input.keys.F) || this.skip){
+		if (!this.playerLost && !this.playerWon) {
+			if (this.allWavesSpawned && this.minions.size() === 0) {
+				this.playerWin();
+				return null;
 			}
 
-			switch (this.pfState) {
-				case Playfield.State.inactive:
-					if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
-						var clicked = this.GetTowerAtGridPos(gPos);
-						this.clickedTower = clicked;
-						if(clicked) 
-							this.shop.OnTowerClicked(clicked);
-						else
-							this.shop.shopState = Shop.shopState.towerShop;
-					}
+			for (var i = 0; i < this.towers.size(); i++)
+				this.towers.mSet[i].checkMinionsInRange(this.minions);
 
-					break;
+			this.towers.update(dt);
+			this.minions.update(dt);
+			this.minionFactory.update(dt);
+			this.mProjectiles.forEach(p => {
+				p.update(dt);
+			});
 
-				case Playfield.State.placement:
-					if (this.selectedTower) {
-						this.selectedTower.update(dt);
-						this.TowerPlacement(gPos);
-					}
 
-					break;
+			if (gEngine.Input.isKeyClicked(gEngine.Input.keys.R) && !this.selectedTower)
+				this.pfState = Playfield.State.deletion;
 
-				case Playfield.State.deletion:
-					this.removeTool.getXform().setPosition(x, y - 2);
-					if (gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left))
-						this.DeleteTower(gPos);
+			if (gEngine.Input.isKeyClicked(gEngine.Input.keys.W) && !this.selectedTower)
+				this.pfState = Playfield.State.grab;
 
-					break;
-
-				case Playfield.State.grab:
-					this.grabTool.getXform().setPosition(x, y + 2);
-					if (gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left))
-						this.GrabTower(gPos);
-
-					break;
-			}
-		}
-
-		for (var i = 0; i < this.minions.size(); ++i) {
-			var _do_play_audio = false;
-			this.CheckProjectileCollisions(this.minions.mSet[i]);
-
-			if (this.minions.mSet[i].markedForDeletion) {
-				_do_play_audio = true;
-				this.minions.removeAt(i);
-				--i;
+			if (gEngine.Input.isKeyClicked(gEngine.Input.keys.G)) {
+				this.gridActive = !this.gridActive;
+				this.nodes.forEach(node => node.drawOutline = this.gridActive);
 			}
 
-			if(_do_play_audio)
-				gEngine.AudioClips.playACue("assets/audio/key.ogg");
-		}
+			if (gEngine.Input.isKeyClicked(gEngine.Input.keys.Escape) && this.pfState === Playfield.State.placement)
+				this.CancelPlacement();
 
-		if(this.mDifficulty !== 1) {
-			for(var i = 0; i < 4; ++i) {
-				if(this.mLightsSecretValues[i] > 0) {
-					var l = this.mLights[i];
-					var x = this.mLightsSecretValues[i] - 5*dt;
-					this.mLightsSecretValues[i] = x;
+			if (gEngine.Input.isKeyClicked(gEngine.Input.keys.Escape))
+				this.pfState = Playfield.State.inactive;
 
-					if(this.mLightsSecretValues[i] <= 0) {
-						this.mLightsSecretValues[i] = 0;
-						l.setIntensity(1);
-						continue;
-					}
+			if (this.cam.isMouseInViewport()) {
+				var x = this.cam.mouseWCX(), y = this.cam.mouseWCY();
+				var gPos = this.WCToGridIndex(x, y);
 
-					l.setIntensity(0.5*x*(x-1)+0.1*Math.cos(6*Math.PI*x)+0.9);
-				} else {
-					if(Math.random() * 1000 < 1)
-						this.mLightsSecretValues[i] = 1;
+				var hovered = this.GetTowerAtGridPos(gPos);
+				if (!hovered) {
+					if (this.hoveredTower)
+						this.hoveredTower.showIndicator = false;
+				} else if (!this.selectedTower) {
+					if (this.hoveredTower)
+						this.hoveredTower.showIndicator = false;
+
+					this.hoveredTower = hovered
+					this.hoveredTower.showIndicator = true;
+				}
+
+				switch (this.pfState) {
+					case Playfield.State.inactive:
+						if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
+							var clicked = this.GetTowerAtGridPos(gPos);
+							this.clickedTower = clicked;
+							if(clicked) 
+								this.shop.OnTowerClicked(clicked);
+							else
+								this.shop.shopState = Shop.shopState.towerShop;
+						}
+
+						break;
+
+					case Playfield.State.placement:
+						if (this.selectedTower) {
+							this.selectedTower.update(dt);
+							this.TowerPlacement(gPos);
+						}
+
+						break;
+
+					case Playfield.State.deletion:
+						this.removeTool.getXform().setPosition(x, y - 2);
+						if (gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left))
+							this.DeleteTower(gPos);
+
+						break;
+
+					case Playfield.State.grab:
+						this.grabTool.getXform().setPosition(x, y + 2);
+						if (gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left))
+							this.GrabTower(gPos);
+
+						break;
 				}
 			}
-		} else {
-			// TODO -- make the directional camera rotate
-		}
-	} else if (this.mPhysicsEnabled) {
-		this.updatePhysics(dt);
-		var reset = true;
 
-		for (var i = 0; i < this.minions.size(); ++i) {
-			reset = false;
+			for (var i = 0; i < this.minions.size(); ++i) {
+				var _do_play_audio = false;
+				this.CheckProjectileCollisions(this.minions.mSet[i]);
 
-			if (this.minions.mSet[i].markedForDeletion) {
-				this.minions.removeAt(i);
-				--i;
+				if (this.minions.mSet[i].markedForDeletion) {
+					_do_play_audio = true;
+					this.minions.removeAt(i);
+					--i;
+				}
+
+				if(_do_play_audio)
+					gEngine.AudioClips.playACue("assets/audio/key.ogg");
 			}
-		}
 
-		for (var i = 0; i < this.towers.size(); ++i) {
-			reset = false;
+			if(this.mDifficulty !== 1) {
+				for(var i = 0; i < 4; ++i) {
+					if(this.mLightsSecretValues[i] > 0) {
+						var l = this.mLights[i];
+						var x = this.mLightsSecretValues[i] - 5*dt;
+						this.mLightsSecretValues[i] = x;
 
-			if (this.towers.mSet[i].markedForDeletion) {
-				this.towers.removeAt(i);
-				--i;
+						if(this.mLightsSecretValues[i] <= 0) {
+							this.mLightsSecretValues[i] = 0;
+							l.setIntensity(1);
+							continue;
+						}
+
+						l.setIntensity(0.5*x*(x-1)+0.1*Math.cos(6*Math.PI*x)+0.9);
+					} else {
+						if(Math.random() * 1000 < 1)
+							this.mLightsSecretValues[i] = 1;
+					}
+				}
+			} else {
+				// TODO -- make the directional camera rotate
 			}
+		} else if (this.mPhysicsEnabled) {
+			this.updatePhysics(dt);
+			var reset = true;
+
+			for (var i = 0; i < this.minions.size(); ++i) {
+				reset = false;
+
+				if (this.minions.mSet[i].markedForDeletion) {
+					this.minions.removeAt(i);
+					--i;
+				}
+			}
+
+			for (var i = 0; i < this.towers.size(); ++i) {
+				reset = false;
+
+				if (this.towers.mSet[i].markedForDeletion) {
+					this.towers.removeAt(i);
+					--i;
+				}
+			}
+
+			this.mProjectiles.forEach(p => {
+				reset = false;
+
+				if (p.mRenderComponent.getXform().getYPos() < -200)
+					p.destroy(p);
+			});
+
+			var offset = this.shake.mShake.getShakeResults();
+			this.cam.setWCCenter(this.cameraPosition[0] + offset[0], this.cameraPosition[1] + offset[1]);
+			this.cam.mCameraState.updateCameraState();
+
+			if (reset)
+				this.finishedLevel = true;
 		}
-
-		this.mProjectiles.forEach(p => {
-			reset = false;
-
-			if (p.mRenderComponent.getXform().getYPos() < -200)
-				p.destroy(p);
-		});
-
-		var offset = this.shake.mShake.getShakeResults();
-		this.cam.setWCCenter(this.cameraPosition[0] + offset[0], this.cameraPosition[1] + offset[1]);
-		this.cam.mCameraState.updateCameraState();
-
-		if (reset)
-			this.finishedLevel = true;
+	}
+	else{
+		this.skip = true;
+		for(var i = 0; i < this.fastForwardMultiplier; ++i){
+			this.update(dt);
+		}
+		this.skip = false;
 	}
 };
 

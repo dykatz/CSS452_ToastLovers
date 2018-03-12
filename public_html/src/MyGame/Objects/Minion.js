@@ -92,6 +92,20 @@ Minion.prototype.update = function(dt) {
 	}
 };
 
+Minion.prototype.changeColor = function(type) {
+	switch(type) {
+	case 2:
+		this.mRenderComponent.setColor([0, 1, 1, 0.3]);
+		break;
+	case 3:
+		this.mRenderComponent.setColor([1, 0, 0, 0.3]);
+		break;
+	case 4:
+	this.mRenderComponent.setColor([0.5, 0.5, 0.5, 0.5]);
+		break;
+	}
+};
+
 Minion.prototype.enablePhysics = function() {
 	if(!this.mPhysicsEnabled){
 		this.mPhysicsEnabled = true;

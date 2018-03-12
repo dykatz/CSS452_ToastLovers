@@ -153,7 +153,7 @@ MinionFactory.prototype.spawn = function(type) {
 		newMinion.mHealth = 150;
 		break;
 	}
-
+	newMinion.changeColor(type);
 	newMinion.mHealth *= Math.pow(1.2, this.wave);
 	this.minions.addToSet(newMinion);
 };
