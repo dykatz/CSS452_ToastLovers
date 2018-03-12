@@ -8,8 +8,9 @@ function ShortRange(pf, pos) {
 	this.mMaxLevel = 4;
 	this.upgradeCosts = [1, 3, 8, 20];
 	this.mRange = 15;
-	this.mFireRate = 3;
-	this.mDamage = 7;
+	this.mFireRate = 2;
+	this.mDamage = 10.5;
+	this.mCost = 2;
 	this.mIndicator.getXform().setSize(this.mRange * 2, this.mRange * 2);
 }
 gEngine.Core.inheritPrototype(ShortRange, Tower);
