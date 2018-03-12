@@ -38,14 +38,14 @@ Minion.prototype.update = function(dt) {
 	if(!this.mPhysicsEnabled) {
 		this.mRenderComponent.updateAnimation(dt);
 
-		if(!this.movementEnabled)
-			return;
-
 		var pos = this.getXform().getPosition();
 
 		this.gPos = this.pf.WCToGridIndex(pos[0], pos[1]);
 		var weight = this.pf.getGridIndexWeight(this.gPos[0], this.gPos[1]);
 		this.pf.DamageGridSpace(this.gPos, this.mDamage * dt);
+
+		if(!this.movementEnabled)
+			return;
 
 		if(this.pathIndex < this.path.length) {
 			var targetGridPos = [this.path[this.pathIndex].x, this.path[this.pathIndex].y];
