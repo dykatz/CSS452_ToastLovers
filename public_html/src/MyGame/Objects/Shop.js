@@ -47,8 +47,10 @@ Shop.prototype.initializeShop = function(towers, padding) {
 
 		newTitle.getXform().setPosition(x, 140 + 1 + bSz / 2);
 		newTitle.getXform().setSize(bSz, 5);
+		newTitle.mOneChar.addLight(this.shopLight);
 		newCost.getXform().setPosition(x, 135 - bSz / 2);
 		newCost.getXform().setSize(5, 5);
+		newCost.mOneChar.addLight(this.shopLight);
 
 		this.towerButtons.push(newButton);
 		this.towerButtonTitles.push(newTitle);
@@ -57,8 +59,11 @@ Shop.prototype.initializeShop = function(towers, padding) {
 	this.upgradeButton = new Button(this.pf, [shopWidth / 2, 137.5], bSz, bSz, new LightRenderable("assets/long_range.png"), 85);
 	this.upgradeButton.image.addLight(this.shopLight);
 	this.closeUpgradeButton = new Button(this.pf, [shopWidth - 7.5, 140 + bSz / 2], 15, 10, new FontRenderable("Back"), 27);
+	this.closeUpgradeButton.image.mOneChar.addLight(this.shopLight);
 	this.upgradeText = new FontRenderable("Upgrade");
+	this.upgradeText.mOneChar.addLight(this.shopLight);
 	this.upgradeCost = new FontRenderable("$0");
+	this.upgradeCost.mOneChar.addLight(this.shopLight);
 	this.upgradeText.getXform().setPosition(shopWidth / 2, 141 + bSz / 2);
 	this.upgradeText.getXform().setSize(bSz, 5);
 	this.upgradeCost.getXform().setPosition(shopWidth / 2, 135 - bSz / 2);
