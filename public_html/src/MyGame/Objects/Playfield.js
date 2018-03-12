@@ -67,7 +67,7 @@ Playfield.prototype.preparePlayfield = function () {
 	if (this.mDifficulty !== 1) {
 		this.mLightsSecretValues = [];
 
-		for (var i = 0; i < 4; ++i) {
+		for (var i = 0; i < 5; ++i) {
 			this.mLights.push(new Light());
 			this.mLights[i].setNear(20);
 			this.mLights[i].setFar(70);
@@ -87,6 +87,16 @@ Playfield.prototype.preparePlayfield = function () {
 		this.mLights[3].set2DPosition([
 			this.cam.getWCCenter()[0] - this.cam.getWCWidth() / 4,
 			this.cam.getWCCenter()[1] - this.cam.getWCHeight() / 4]);
+		this.mLights[4].set2DPosition(
+			[this.cam.getWCCenter()[0], this.cam.getWCCenter()[1]]);
+		this.mLights[4].setLightType(Light.eLightType.eSpotLight);
+		this.mLights[4].setNear(100);
+    	this.mLights[4].setFar(100);
+    	this.mLights[4].setInner(1.65);
+    	this.mLights[4].setOuter(1.7);
+    	this.mLights[4].setIntensity(2);
+    	this.mLights[4].setDropOff(1.2);
+
 	} else {
 			this.mLights.push(new Light());
 			this.mLights[0].setLightType(Light.eLightType.eDirectionalLight);
