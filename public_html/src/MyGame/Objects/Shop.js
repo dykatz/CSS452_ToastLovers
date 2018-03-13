@@ -38,9 +38,12 @@ Shop.prototype.initializeShop = function(towers, padding) {
 
 	for(var i = 0; i < towers.length; ++i) {
 		var tower = towers[i].getRenderable();
-		towers[i].obj.addLight(this.shopLight);
 		var x = bSz * (i + 0.5) + padding * (i + 1);
 
+		if(towers[i].mName === "Loot Farm")
+			tower = towers[i].fg;
+
+		tower.addLight(this.shopLight);
 		var newButton = new Button(this.pf, [x, 137.5], bSz, bSz, tower, i + 49);
 		var newTitle = new FontRenderable(towers[i].mName);
 		var newCost = new FontRenderable("$" + towers[i].mCost.toString());
@@ -70,7 +73,7 @@ Shop.prototype.initializeShop = function(towers, padding) {
 	this.upgradeCost.getXform().setSize(5, 5);
 
 	this.playerCurrencyText.getXform().setSize(6, 4);
-	this.playerCurrencyText.getXform().setPosition(shopWidth - 3, 140.5 - shopHeight / 2);
+	this.playerCurrencyText.getXform().setPosition(shopWidth, 140.5 - shopHeight / 2);
 };
 
 Shop.prototype.getTowers = function() {
@@ -176,6 +179,7 @@ Shop.prototype.OnTowerClicked = function(tower) {
 
 	if(tower instanceof ShortRange) {
 		this.upgradeButton.image.setTexture("assets/short_range.png");
+		this.upgradeButton.image.mTexLeft = 0;
 		this.upgradeButton.image.mTexRight = 0.5;
 	} else if(tower instanceof LongRange) {
 		this.upgradeButton.image.setTexture("assets/long_range.png");
@@ -183,6 +187,8 @@ Shop.prototype.OnTowerClicked = function(tower) {
 		this.upgradeButton.image.mTexRight = 0.5;
 	} else if(tower instanceof LootFarm) {
 		this.upgradeButton.image.setTexture("assets/lootfarm.png");
+		this.upgradeButton.image.mTexLeft = 0;
+		this.upgradeButton.image.mTexRight = 0.25;
 	}
 	this.upgradeButton.image._setTexInfo();
 
