@@ -531,12 +531,12 @@ Playfield.prototype.DamageGridSpace = function (gPos, damageNumber) {
 Playfield.prototype.GrabTower = function (gPos) {
 	var currentTower = this.GetTowerAtGridPos(gPos);
 	if (currentTower && !(currentTower instanceof Toast) && !(currentTower instanceof Obstacle)
-		&& !(currentTower instanceof Honeypot)) {
+		&& !(currentTower instanceof Honeypot && this.shop.playerCurrency > 0)) {
 		this.selectedTower = currentTower;
 		this.towers.removeAt(this.towers.mSet.findIndex(tower => tower.mGridPos[0] === gPos[0] &&
 			tower.mGridPos[1] === gPos[1]));
 		this.selectedTower.mFiringEnabled = false;
-		this.shop.setPlayerCurrency(this.playerCurrency - 1);
+		this.shop.setPlayerCurrency(this.shop.playerCurrency - 1);
 		this.graph.grid[gPos[0]][gPos[1]].weight = 1;
 		this.graph.grid[gPos[0]][gPos[1]].object = null;
 		this.pfState = Playfield.State.placement;
